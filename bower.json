@@ -1,0 +1,27 @@
+{
+  "name": "three-js",
+  "version": "0.0.0",
+  "authors": [
+    "Ando Yasushi <andyjpn@gmail.com>"
+  ],
+  "description": "Custom Element for Three.js",
+  "main": "three-js.html",
+  "keywords": [
+    "WebGL",
+    "web-components"
+  ],
+  "license": "MIT",
+  "homepage": "http://github.com/technohippy/three-js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.5",
+    "threejs": "*"
+  }
+}

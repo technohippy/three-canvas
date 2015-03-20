@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-js.html">
+  </head>
+  <body>
+    <three-js width="500" height="500" antialias clearcolor="0x000000">
+      <three-js-camera position="0,0,8" lookat="0,0,0"></three-js-camera>
+      <three-js-light direction="0.577,0.577,0.577" color="0xcccccc"></three-js-light>
+      <three-js-light ambient color="0x333333"></three-js-light>
+      <three-js-sphere radius="1" color="0xffffff" map="images/earth.jpg"></three-js-sphere>
+    </three-js>
+    <!--
+    <script>
+      var angle = 0;
+      document.querySelector('three-js-camera').addEventListener('render', function() {
+        this.setAttribute('position', 
+          '' + (8*Math.sin(angle)) + ',0,' + (8*Math.cos(angle)));
+        angle += 0.01;
+      });
+    </script>
+    -->
+  </body>
+</html>

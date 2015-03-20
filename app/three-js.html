@@ -1,0 +1,126 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<script src="bower_components/threejs/build/three.js"></script>
+
+<polymer-element name="three-js" attributes="width,height,antialias,clearcolor">
+  <template>
+    <canvas id="canvas" width="{{width}}" height="{{height}}">
+    </canvas>
+  </template>
+
+  <script>
+    Polymer({
+      domReady: function() {
+        var antialias = this.antialias !== undefined;
+        var clearColor = eval(this.clearcolor || '0x000000');
+        var canvas = this.querySelector('::shadow canvas');
+
+        var camera = this.querySelector('three-js-camera').camera;
+        var lights = Array.prototype.map.call(
+          this.querySelectorAll('three-js-light'),
+          function(item) {return item.light;}
+        );
+        var sphere = this.querySelector('three-js-sphere').mesh;
+
+        this.renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: antialias});
+        this.renderer.setClearColor(clearColor, 1);
+
+        this.scene = new THREE.Scene();
+        this.scene.add(camera);
+        lights.forEach(function(light) {
+          this.scene.add(light);
+        }.bind(this));
+        this.scene.add(sphere);
+        this.start();
+      },
+      start: function() {
+        ((function render() {
+          requestAnimationFrame(render.bind(this));
+          this.renderer.render(this.scene, camera);
+          this.querySelector('three-js-camera').fire('render');
+        }).bind(this))();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-camera" attributes="position,lookat">
+  <script>
+    function setCameraPosition(camera, positions) {
+      var position = eval("[" + positions + "]");
+      camera.position.set(position[0], position[1], position[2]);
+    }
+    function setCameraLookAt(camera, positions) {
+      var position = eval("[" + positions + "]");
+      camera.lookAt(new THREE.Vector3(position[0], position[1], position[2]));
+    }
+
+    Polymer({
+      ready: function() {
+        var width = this.parentNode.width;
+        var height = this.parentNode.height;
+
+        this.camera = new THREE.PerspectiveCamera(15, width / height);
+        setCameraPosition(this.camera, this.position || '0,0,0');
+        setCameraLookAt(this.camera, this.lookat || '0,0,0');
+      },
+      attributeChanged: function(attrName, oldVal, newVal) {
+        if (attrName === 'position') {
+          setCameraPosition(this.camera, this.position || '0,0,0');
+          setCameraLookAt(this.camera, this.lookat || '0,0,0');
+        }
+        else if (attrName === 'lookat') {
+          setCameraLookAt(this.camera, this.lookat || '0,0,0');
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-light" attributes="direction,ambient,color">
+  <script>
+    Polymer({
+      ready: function() {
+        var color = this.color ? eval(this.color) : 0xffffff;
+        if (this.direction) {
+          var direction = eval("[" + this.direction + "]");
+          this.light = new THREE.DirectionalLight(color);
+          this.light.position.set(direction[0], direction[1], direction[2]);
+        }
+        else if (this.ambient !== undefined) {
+          this.light = new THREE.AmbientLight(color);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-sphere" attributes="radius,color,map">
+  <script>
+    function setMeshMaterial(mesh, color, map) {
+      var material = new THREE.MeshPhongMaterial({color: color});
+      if (map) material.map = THREE.ImageUtils.loadTexture(map);
+      mesh.material = material;
+    }
+
+    Polymer({
+      ready: function() {
+        var radius = eval(this.radius || '1');
+        var color = this.color ? eval(this.color) : 0xffffff;
+
+        var geometry = new THREE.SphereGeometry(radius, 32, 16);
+        var material = new THREE.MeshPhongMaterial({color: color});
+        if (this.map) material.map = THREE.ImageUtils.loadTexture(this.map);
+        this.mesh = new THREE.Mesh(geometry, material);
+      },
+      attributeChanged: function(attrName, oldVal, newVal) {
+        if (attrName === 'color') {
+          this.mesh.material.color.set(eval(newVal));
+        }
+        else if (attrName === 'map') {
+          var color = this.color ? eval(this.color) : 0xffffff;
+          setMeshMaterial(this.mesh, color, newVal);
+        }
+      }
+    });
+  </script>
+</polymer-element>
