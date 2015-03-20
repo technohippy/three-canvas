@@ -30,9 +30,9 @@
           this.scene.add(light);
         }.bind(this));
         this.scene.add(sphere);
-        this.start();
+        this.start(camera);
       },
-      start: function() {
+      start: function(camera) {
         ((function render() {
           requestAnimationFrame(render.bind(this));
           this.renderer.render(this.scene, camera);
