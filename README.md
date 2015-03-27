@@ -14,11 +14,11 @@ I noticed about the [PolymerLabs/three-js](https://github.com/PolymerLabs/three-
         <link rel="import" href="three-js.html">
       </head>
       <body>
-        <three-js width="500" height="500" antialias clearcolor="0x000000">
-          <three-js-camera position="0,0,8" lookat="0,0,0"></three-js-camera>
-          <three-js-light direction="0.577,0.577,0.577" color="0xcccccc"></three-js-light>
-          <three-js-light ambient color="0x333333"></three-js-light>
-          <three-js-sphere radius="1" color="0xffffff" map="images/earth.jpg"></three-js-sphere>
-        </three-js>
+        <three-js-canvas width="200" height="200" antialias clearColor="#000000">
+          <three-js-camera position="0,0,8" lookAt="0,0,0"></three-js-camera>
+          <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
+          <three-js-light ambient color="#333333"></three-js-light>
+          <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
+        </three-js-canvas>
       </body>
     </html>
