@@ -6,6 +6,7 @@
     Polymer({
       isSetup: false,
       domReady: function() {
+        if (typeof this.parentNode.tagName === 'undefined') return; // #shadowroot
         this.setup();
         this.start();
       },
@@ -93,6 +94,13 @@
         Array.apply(null, this.children).forEach(function(child) {
           if (child.setup) child.setup(threejs);
           if (child.object) this.scene.add(child.object);
+          // TODO: 後でリファクタリング
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(threejs);
+              if (contentChild.object) this.scene.add(contentChild.object);
+            }, this);
+          }
         }, this);
         this.isSetup = true;
       }
@@ -168,76 +176,21 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-canvas" attributes="width,height,antialias,clearcolor">
+<polymer-element name="three-js-canvas" attributes="width,height,antialias,clearColor">
   <template>
-    <canvas id="canvas" width="{{width}}" height="{{height}}">
-    </canvas>
+    <three-js width="{{width}}" height="{{height}}">
+      <three-js-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-js-renderer>
+      <three-js-scene>
+        <content></content>
+      </three-js-scene>
+    </three-js>
   </template>
-
   <script>
     Polymer({
       domReady: function() {
-        var antialias = this.antialias !== undefined;
-        var clearColor = eval(this.clearcolor || '0x000000');
-        var canvas = this.querySelector('::shadow canvas');
-
-        var camera = this.querySelector('three-js-camera1').camera;
-        var lights = Array.prototype.map.call(
-          this.querySelectorAll('three-js-light'),
-          function(item) {return item.light;}
-        );
-        var sphere = this.querySelector('three-js-sphere').mesh;
-
-        this.renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: antialias});
-        this.renderer.setClearColor(clearColor, 1);
-
-        this.scene = new THREE.Scene();
-        this.scene.add(camera);
-        lights.forEach(function(light) {
-          this.scene.add(light);
-        }.bind(this));
-        this.scene.add(sphere);
-        this.start(camera);
-      },
-      start: function(camera) {
-        ((function render() {
-          requestAnimationFrame(render.bind(this));
-          this.renderer.render(this.scene, camera);
-          this.querySelector('three-js-camera1').fire('render');
-        }).bind(this))();
-      }
-    });
-  </script>
-</polymer-element>
-
-<polymer-element name="three-js-camera1" attributes="position,lookAt">
-  <script>
-    function setCameraPosition(camera, positions) {
-      var position = eval("[" + positions + "]");
-      camera.position.set(position[0], position[1], position[2]);
-    }
-    function setCameraLookAt(camera, positions) {
-      var position = eval("[" + positions + "]");
-      camera.lookAt(new THREE.Vector3(position[0], position[1], position[2]));
-    }
-
-    Polymer({
-      ready: function() {
-        var width = this.parentNode.width;
-        var height = this.parentNode.height;
-
-        this.camera = new THREE.PerspectiveCamera(15, width / height);
-        setCameraPosition(this.camera, this.position || '0,0,0');
-        setCameraLookAt(this.camera, this.lookAt || '0,0,0');
-      },
-      attributeChanged: function(attrName, oldVal, newVal) {
-        if (attrName === 'position') {
-          setCameraPosition(this.camera, this.position || '0,0,0');
-          setCameraLookAt(this.camera, this.lookAt || '0,0,0');
-        }
-        else if (attrName === 'lookAt') {
-          setCameraLookAt(this.camera, this.lookAt || '0,0,0');
-        }
+        var threejs = this.shadowRoot.children[0];
+        threejs.setup();
+        threejs.start();
       }
     });
   </script>
@@ -346,40 +299,4 @@
       }
     });
   </script>
-<!--
-  <script>
-    function setMeshMaterial(mesh, color, map) {
-      var material = new THREE.MeshPhongMaterial({color: color});
-      if (map) material.map = THREE.ImageUtils.loadTexture(map);
-      mesh.material = material;
-    }
-
-    Polymer({
-      ready: function() {
-        this.setup();
-      },
-      setup: function() {
-        if (this.isSetup) return;
-        var radius = parseFloat(this.radius || '1');
-        var color = new THREE.Color(this.color || '#ffffff');
-
-        var geometry = new THREE.SphereGeometry(radius, 32, 16);
-        var material = new THREE.MeshPhongMaterial({color: color});
-        if (this.map) material.map = THREE.ImageUtils.loadTexture(this.map);
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.object = this.mesh;
-        this.isSetup = true;
-      },
-      attributeChanged: function(attrName, oldVal, newVal) {
-        if (attrName === 'color') {
-          this.mesh.material.color.set(new THREE.Color(newVal));
-        }
-        else if (attrName === 'map') {
-          var color = new THREE.Color(this.color || '#ffffff');
-          setMeshMaterial(this.mesh, color, newVal);
-        }
-      }
-    });
-  </script>
-  -->
 </polymer-element>
