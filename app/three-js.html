@@ -60,7 +60,11 @@
         ((function animate() {
           requestAnimationFrame(animate.bind(this));
           this.render();
-          //this.querySelector('three-js-camera').fire('render');
+          this.scene.children.forEach(function(child) {
+            if (typeof child.userData.element !== 'undefined') {
+              child.userData.element.fire('render');
+            }
+          });
         }).bind(this))();
       }
     });
@@ -150,9 +154,9 @@
           throw 'invalid argument: ' + val;
         }
       },
-      attributeChanged: function(attrName, oldVal, newVal) {
-        if (attrName === 'position') {
-          this.position = this.vector3(newVal);
+      positionChanged: function(oldVal, newVal) {
+        this.position = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
           this.object.position.copy(this.position);
         }
       }
@@ -167,10 +171,16 @@
         if (this.isSetup) return;
         var aspect = threejs.canvas.width / threejs.canvas.height;
         this.camera = new THREE.PerspectiveCamera(15, aspect);
+        this.camera.userData['element'] = this;
         this.camera.position.copy(this.vector3(this.position));
-        this.camera.lookAt(this.vector3(this.position));
+        this.camera.lookAt(this.vector3(this.lookAt));
         this.object = this.camera;
         this.isSetup = true;
+      },
+      lookAtChanged: function(oldVal, newVal) {
+        if (typeof this.camera !== 'undefined') {
+          this.camera.lookAt(this.vector3(newVal));
+        }
       }
     });
   </script>
@@ -231,6 +241,7 @@
           if (child.geometry) geometries.push(child.geometry);
         });
         this.mesh = new THREE.Mesh(geometries[0], material);
+        this.mesh.userData['element'] = this;
         this.mesh.position.copy(this.position);
         this.object = this.mesh;
       }
@@ -296,6 +307,7 @@
         child.setup(threejs);
         this.object = child.object
         this.mesh = this.object;
+        this.mesh.userData['element'] = this;
       }
     });
   </script>

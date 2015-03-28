@@ -34,15 +34,18 @@
       <three-js-light ambient color="#333333"></three-js-light>
       <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
     </three-js-canvas>
-    <!--
     <script>
-      var angle = 0;
-      document.querySelector('three-js-camera1').addEventListener('render', function() {
-        this.setAttribute('position', 
-          '' + (8*Math.sin(angle)) + ',0,' + (8*Math.cos(angle)));
-        angle += 0.01;
-      });
+      (function() {
+        var angle = 0;
+        var cameraElement = document.querySelector('three-js-canvas three-js-camera');
+        cameraElement.addEventListener('render', function() {
+          var x = 8 * Math.sin(angle);
+          var z = 8 * Math.cos(angle);
+          angle += 0.01;
+          this.setAttribute('position', '' + x + ',0,' + z);
+          this.setAttribute('lookAt', '0,0,0,' + Math.random());
+        });
+      })();
     </script>
-    -->
   </body>
 </html>
