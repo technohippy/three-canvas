@@ -130,8 +130,14 @@
           return val;
         }
         else if (typeof val === 'string') { // ex) 1,2,3
-          var vals = eval('[' + val + ']');
-          return new THREE.Vector3(vals[0], vals[1], vals[2]);
+          try {
+            var vals = eval('[' + val + ']');
+            return new THREE.Vector3(vals[0], vals[1], vals[2]);
+          }
+          catch (e) {
+            console.log('invalid args: ' + val);
+            throw e;
+          }
         }
         else {
           console.log('invalid argument: ', val);
@@ -146,8 +152,13 @@
           return val;
         }
         else if (typeof val === 'string') { // ex) 1,2,3
-          var vals = eval('[' + val + ']');
-          return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
+          try {
+            var vals = eval('[' + val + ']');
+            return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
+          catch (e) {
+            console.log('invalid args: ' + val);
+            throw e;
+          }
         }
         else {
           console.log('invalid argument: ', val);
