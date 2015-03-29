@@ -1,6 +1,69 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <script src="bower_components/threejs/build/three.js"></script>
 
+<!--
+<script src="bower_components/three.js-controls/src/DeviceOrientationControls.js"></script>
+<script src="bower_components/three.js-controls/src/FirstPersonControls.js"></script>
+<script src="bower_components/three.js-controls/src/OculusControls.js"></script>
+<script src="bower_components/three.js-controls/src/PathControls.js"></script>
+<script src="bower_components/three.js-controls/src/TrackballControls.js"></script>
+<script src="bower_components/three.js-controls/src/EditorControls.js"></script>
+<script src="bower_components/three.js-controls/src/FlyControls.js"></script>
+-->
+<script src="bower_components/three.js-controls/src/OrbitControls.js"></script>
+<!--
+<script src="bower_components/three.js-controls/src/PointerLockControls.js"></script>
+<script src="bower_components/three.js-controls/src/TransformControls.js"></script>
+-->
+
+<script>
+  THREE.Element = THREE.Element || {Utils:{}};
+  THREE.Element.Utils.vector3 = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Vector3();
+    }
+    else if (val instanceof THREE.Vector3) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Vector3(vals[0], vals[1], vals[2]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+  THREE.Element.Utils.euler = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Euler();
+    }
+    else if (val instanceof THREE.Euler) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+</script>
+
 <polymer-element name="three-js" attributes="canvas,width,height">
   <script>
     Polymer({
@@ -123,47 +186,10 @@
         this.rotation = this.euler(this.rotation);
       },
       vector3: function(val) {
-        if (typeof val === 'undefined') {
-          return new THREE.Vector3();
-        }
-        else if (val instanceof THREE.Vector3) {
-          return val;
-        }
-        else if (typeof val === 'string') { // ex) 1,2,3
-          try {
-            var vals = eval('[' + val + ']');
-            return new THREE.Vector3(vals[0], vals[1], vals[2]);
-          }
-          catch (e) {
-            console.log('invalid args: ' + val);
-            throw e;
-          }
-        }
-        else {
-          console.log('invalid argument: ', val);
-          throw 'invalid argument: ' + val;
-        }
+        return THREE.Element.Utils.vector3(val);
       },
       euler: function(val) {
-        if (typeof val === 'undefined') {
-          return new THREE.Euler();
-        }
-        else if (val instanceof THREE.Euler) {
-          return val;
-        }
-        else if (typeof val === 'string') { // ex) 1,2,3
-          try {
-            var vals = eval('[' + val + ']');
-            return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
-          catch (e) {
-            console.log('invalid args: ' + val);
-            throw e;
-          }
-        }
-        else {
-          console.log('invalid argument: ', val);
-          throw 'invalid argument: ' + val;
-        }
+        return THREE.Element.Utils.euler(val);
       },
       positionChanged: function(oldVal, newVal) {
         this.position = this.vector3(newVal);
@@ -175,7 +201,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-camera" extends="three-js-object3d" attributes="lookAt">
+<polymer-element name="three-js-camera" extends="three-js-object3d" attributes="lookAt,controls">
   <script>
     Polymer({
       setup: function(threejs) {
@@ -187,6 +213,15 @@
         this.camera.lookAt(this.vector3(this.lookAt));
         this.object = this.camera;
         this.isSetup = true;
+
+        if (this.controls === 'orbit') {
+          var controlsElm = document.createElement('three-js-controls');
+          controlsElm.setAttribute('type', 'orbit');
+          controlsElm.setAttribute('center', this.lookAt);
+          this.appendChild(controlsElm);
+        }
+        var controls = this.querySelector('three-js-controls');
+        if (controls) controls.setup(this.camera);
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -319,6 +354,22 @@
         this.object = child.object
         this.mesh = this.object;
         this.mesh.userData['element'] = this;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-controls" attributes="type,center">
+  <script>
+    Polymer({
+      setup: function(camera) {
+        if (this.type === 'orbit') {
+          this.controls = new THREE.OrbitControls(camera);
+          this.controls.center = THREE.Element.Utils.vector3(this.center);
+        }
+        else {
+          throw 'Unknown type: ' + this.type;
+        }
       }
     });
   </script>
