@@ -4,80 +4,10 @@
     <link rel="import" href="three-js.html">
   </head>
   <body>
-    <canvas width="200" height="200"></canvas>
-    <three-js>
-      <three-js-renderer antialias clearColor="#000000"></three-js-renderer>
-      <three-js-scene>
-        <three-js-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-js-camera>
-        <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
-        <three-js-light ambient color="#333333"></three-js-light>
-        <three-js-mesh>
-          <three-js-material color="#ffffff" map="images/earth.jpg"></three-js-material>
-          <three-js-sphere-geometry radius="1"></three-js-sphere-geometry>
-        </three-js-mesh>
-      </three-js-scene>
-    </three-js>
-
-    <three-js width="200" height="200">
-      <three-js-renderer antialias clearColor="#000000"></three-js-renderer>
-      <three-js-scene>
-        <three-js-camera position="0,0,8" lookAt="0,0,0">
-          <three-js-controls type="orbit" center="0,0,0"></three-js-controls>
-        </three-js-camera>
-        <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
-        <three-js-light ambient color="#333333"></three-js-light>
-        <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
-      </three-js-scene>
-    </three-js>
-
-    <three-js-canvas width="200" height="200" antialias clearColor="#000000">
-      <three-js-camera id="camera1" position="0,0,8" lookAt="0,0,0"></three-js-camera>
-      <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
-      <three-js-light ambient color="#333333"></three-js-light>
-      <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
-    </three-js-canvas>
-    <script>
-      (function() {
-        var angle = 0;
-        var cameraElement = document.getElementById('camera1');
-        cameraElement.addEventListener('render', function() {
-          var x = 8 * Math.sin(angle);
-          var z = 8 * Math.cos(angle);
-          angle += 0.01;
-          this.setAttribute('position', '' + x + ',0,' + z); // TODO: ずれる？
-          this.setAttribute('lookAt', '0,0,0,' + Math.random());
-        });
-      })();
-    </script>
-
-    <three-js-canvas width="200" height="200" antialias clearColor="#000000">
-      <three-js-camera id="camera2" position="0,0,8" lookAt="0,0,0"></three-js-camera>
-      <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
-      <three-js-light ambient color="#333333"></three-js-light>
-      <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
-    </three-js-canvas>
-    <script>
-      (function() {
-        var angle = 0;
-        var cameraElement = document.getElementById('camera2');
-        cameraElement.addEventListener('render', function() {
-          angle += 0.01;
-          var camera = cameraElement.camera;
-          if (typeof camera !== 'undefined') {
-            camera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
-            camera.lookAt(new THREE.Vector3(0,0,0));
-          }
-        });
-      })();
-    </script>
-
-    <three-js-canvas width="200" height="200" antialias clearColor="#000000">
-      <three-js-camera position="0,0,8" lookAt="0,0,0">
-        <three-js-controls type="orbit" center="0,0,0"></three-js-controls>
-      </three-js-camera>
-      <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
-      <three-js-light ambient color="#333333"></three-js-light>
-      <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
-    </three-js-canvas>
+    <ul>
+      <li><a href="basic.html">Basic</a></li>
+      <li><a href="controls.html">Controls</a></li>
+      <li><a href="fullscreen.html">Fullscreen</a></li>
+    </ul>
   </body>
 </html>

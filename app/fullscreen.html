@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-js.html">
+  </head>
+  <body>
+    <button style="z-index:1; position:absolute;" onclick="window.open('view-source:' + window.location);">View Source</button><br/>
+
+    <!--
+    <three-js fullscreen>
+      <three-js-renderer antialias clearColor="#000000"></three-js-renderer>
+      <three-js-scene>
+        <three-js-camera position="0,0,8" lookAt="0,0,0"></three-js-camera>
+        <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
+        <three-js-light ambient color="#333333"></three-js-light>
+        <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
+      </three-js-scene>
+    </three-js>
+    -->
+
+    <three-js-canvas fullscreen antialias clearColor="#000000">
+      <three-js-camera position="0,0,8" lookAt="0,0,0"></three-js-camera>
+      <three-js-light direction="0.577,0.577,0.577" color="#cccccc"></three-js-light>
+      <three-js-light ambient color="#333333"></three-js-light>
+      <three-js-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-js-sphere>
+    </three-js-canvas>
+  </body>
+</html>
+
