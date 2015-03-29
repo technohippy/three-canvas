@@ -2,19 +2,10 @@
 <script src="bower_components/threejs/build/three.js"></script>
 
 <!--
-<script src="bower_components/three.js-controls/src/DeviceOrientationControls.js"></script>
 <script src="bower_components/three.js-controls/src/FirstPersonControls.js"></script>
-<script src="bower_components/three.js-controls/src/OculusControls.js"></script>
-<script src="bower_components/three.js-controls/src/PathControls.js"></script>
-<script src="bower_components/three.js-controls/src/TrackballControls.js"></script>
-<script src="bower_components/three.js-controls/src/EditorControls.js"></script>
 <script src="bower_components/three.js-controls/src/FlyControls.js"></script>
 -->
 <script src="bower_components/three.js-controls/src/OrbitControls.js"></script>
-<!--
-<script src="bower_components/three.js-controls/src/PointerLockControls.js"></script>
-<script src="bower_components/three.js-controls/src/TransformControls.js"></script>
--->
 
 <script>
   THREE.Element = THREE.Element || {Utils:{}};
@@ -64,7 +55,7 @@
   };
 </script>
 
-<polymer-element name="three-js" attributes="canvas,width,height">
+<polymer-element name="three-js" attributes="canvas,width,height,fullscreen">
   <script>
     Polymer({
       isSetup: false,
@@ -75,6 +66,7 @@
       },
       setup: function() {
         if (this.isSetup) return;
+        var isFullscreen = this.fullscreen || this.fullscreen === '';
         if (this.canvas) {
           this.canvas = document.getElementById(this.canvas);
         }
@@ -83,11 +75,24 @@
         }
         else {
           if (typeof this.width === 'undefined' || typeof this.height === 'undefined') {
-            throw 'no canvas';
+            if (isFullscreen) {
+              this.width = window.innerWidth;
+              this.height = window.innerHeight;
+            }
+            else {
+              throw 'no canvas';
+            }
           }
           this.canvas = document.createElement('canvas');
           this.canvas.width = this.width;
           this.canvas.height = this.height;
+          if (isFullscreen) {
+            this.canvas.style.margin = 0;
+            this.canvas.style.padding = 0;
+            this.canvas.style.position = 'absolute';
+            this.canvas.style.top = 0;
+            this.canvas.style.left = 0;
+          }
           this.parentNode.insertBefore(this.canvas, this);
         }
 
@@ -113,6 +118,10 @@
           this.camera = cameraElm.camera;
         }
         if (typeof this.camera === 'undefined') throw 'no camera';
+        if (typeof this.camera.userData['element'] !== 'undefined') {
+          var controls = this.camera.userData['element'].querySelector('three-js-controls');
+          if (controls) controls.setup(this.camera, this.canvas);
+        }
 
         this.isSetup = true;
       },
@@ -120,6 +129,14 @@
         this.renderer.render(this.scene, this.camera);
       },
       start: function() {
+        if (this.fullscreen || this.fullscreen === '') {
+          window.addEventListener('resize', function() {
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+          }.bind(this), false);
+        }
+
         ((function animate() {
           requestAnimationFrame(animate.bind(this));
           this.render();
@@ -220,8 +237,6 @@
           controlsElm.setAttribute('center', this.lookAt);
           this.appendChild(controlsElm);
         }
-        var controls = this.querySelector('three-js-controls');
-        if (controls) controls.setup(this.camera);
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -232,9 +247,9 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-canvas" attributes="width,height,antialias,clearColor">
+<polymer-element name="three-js-canvas" attributes="width,height,antialias,clearColor,fullscreen">
   <template>
-    <three-js width="{{width}}" height="{{height}}">
+    <three-js fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
       <three-js-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-js-renderer>
       <three-js-scene>
         <content></content>
@@ -362,9 +377,9 @@
 <polymer-element name="three-js-controls" attributes="type,center">
   <script>
     Polymer({
-      setup: function(camera) {
+      setup: function(camera, canvas) {
         if (this.type === 'orbit') {
-          this.controls = new THREE.OrbitControls(camera);
+          this.controls = new THREE.OrbitControls(camera, canvas);
           this.controls.center = THREE.Element.Utils.vector3(this.center);
         }
         else {
