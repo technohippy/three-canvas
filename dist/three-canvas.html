@@ -1,0 +1,436 @@
+<link rel="import" href="./polymer/polymer.html">
+<script src="./threejs/build/three.js"></script>
+
+<script src="./three.js-controls/src/FirstPersonControls.js"></script>
+<script src="./three.js-controls/src/FlyControls.js"></script>
+<script src="./three.js-controls/src/OrbitControls.js"></script>
+
+<script>
+  THREE.Element = THREE.Element || {Utils:{}};
+  THREE.Element.Utils.vector3 = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Vector3();
+    }
+    else if (val instanceof THREE.Vector3) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Vector3(vals[0], vals[1], vals[2]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+  THREE.Element.Utils.euler = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Euler();
+    }
+    else if (val instanceof THREE.Euler) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+</script>
+
+<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen">
+  <script>
+    Polymer({
+      isSetup: false,
+      domReady: function() {
+        if (typeof this.parentNode.tagName === 'undefined') return; // #shadowroot
+        this.setup();
+        this.start();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var isFullscreen = this.fullscreen || this.fullscreen === '';
+        if (this.canvas) {
+          this.canvas = document.getElementById(this.canvas);
+        }
+        else if (this.previousElementSibling && this.previousElementSibling.tagName === 'CANVAS') {
+          this.canvas = this.previousElementSibling;
+        }
+        else {
+          if (typeof this.width === 'undefined' || typeof this.height === 'undefined') {
+            if (isFullscreen) {
+              this.width = window.innerWidth;
+              this.height = window.innerHeight;
+            }
+            else {
+              throw 'no canvas';
+            }
+          }
+          this.canvas = document.createElement('canvas');
+          this.canvas.width = this.width;
+          this.canvas.height = this.height;
+          if (isFullscreen) {
+            this.canvas.style.margin = 0;
+            this.canvas.style.padding = 0;
+            this.canvas.style.position = 'absolute';
+            this.canvas.style.top = 0;
+            this.canvas.style.left = 0;
+          }
+          this.parentNode.insertBefore(this.canvas, this);
+        }
+
+        var rendererElm = this.querySelector('three-renderer');
+        rendererElm.setup(this);
+        this.renderer = rendererElm.renderer;
+
+        var sceneElm = this.querySelector('three-scene');
+        sceneElm.setup(this);
+        this.scene = sceneElm.scene;
+
+        if (typeof rendererElm.cameraId === 'undefined') {
+          this.scene.children.forEach(function(child) {
+            if (child instanceof THREE.Camera) {
+              this.camera = child;
+            }
+          }.bind(this));
+        }
+        else {
+          var cameraId = rendererElm.cameraId;
+          var cameraElm = sceneElm.querySelector('#' + cameraId);
+          cameraElm.setup(this);
+          this.camera = cameraElm.camera;
+        }
+        if (typeof this.camera === 'undefined') throw 'no camera';
+        if (typeof this.camera.userData['element'] !== 'undefined') {
+          var controlsElm = this.camera.userData['element'].querySelector('three-controls');
+          if (controlsElm) {
+            controlsElm.setup(this.camera, this.canvas);
+            this.controls = controlsElm.controls;
+          }
+        }
+
+        this.isSetup = true;
+      },
+      render: function() {
+        this.renderer.render(this.scene, this.camera);
+      },
+      start: function() {
+        if (this.fullscreen || this.fullscreen === '') {
+          window.addEventListener('resize', function() {
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+          }.bind(this), false);
+        }
+
+        var clock = new THREE.Clock();
+        ((function animate() {
+          requestAnimationFrame(animate.bind(this));
+          this.render();
+          this.scene.children.forEach(function(child) {
+            if (typeof child.userData.element !== 'undefined') {
+              child.userData.element.fire('render');
+            }
+          });
+          if (this.controls) this.controls.update(clock.getDelta());
+        }).bind(this))();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-renderer" attributes="antialias,clearColor,sceneId,cameraId">
+  <script>
+    Polymer({
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.canvas = threejs.canvas;
+        var antialias = this.antialias !== undefined;
+        var clearColor = new THREE.Color(this.clearColor || '#000000');
+        this.renderer = new THREE.WebGLRenderer({canvas:this.canvas, antialias:antialias});
+        this.renderer.setClearColor(clearColor, 1);
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-scene" attributes="defaultLight">
+  <script>
+    Polymer({
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+
+        this.scene = new THREE.Scene();
+
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(threejs);
+          if (child.object) this.scene.add(child.object);
+          // TODO: 後でリファクタリング
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(threejs);
+              if (contentChild.object) this.scene.add(contentChild.object);
+            }, this);
+          }
+        }, this);
+
+        this.setupDefaultLightIfNeeded(threejs);
+
+        this.isSetup = true;
+      },
+      setupDefaultLightIfNeeded: function(threejs) {
+        if (this.defaultLight === 'false') return;
+        var hasLight = false;
+        this.scene.children.forEach(function(child) {
+          if (hasLight) return;
+          hasLight = child.type.match('Light');
+        });
+        if (!hasLight) {
+          var light1 = new THREE.DirectionalLight('#cccccc');
+          light1.position.set(0.577, 0.577, 0.577);
+          this.scene.add(light1);
+          var light2 = new THREE.AmbientLight('#333333');
+          this.scene.add(light2);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-object3d" attributes="position,rotation">
+  <script>
+    Polymer({
+      isSetup: false,
+      setup: function() {
+      },
+      ready: function() {
+        this.position = this.vector3(this.position);
+        this.rotation = this.euler(this.rotation);
+      },
+      vector3: function(val) {
+        return THREE.Element.Utils.vector3(val);
+      },
+      euler: function(val) {
+        return THREE.Element.Utils.euler(val);
+      },
+      positionChanged: function(oldVal, newVal) {
+        this.position = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.position.copy(this.position);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-camera" extends="three-object3d" attributes="lookAt,controls">
+  <script>
+    Polymer({
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        var aspect = threejs.canvas.width / threejs.canvas.height;
+        this.camera = new THREE.PerspectiveCamera(15, aspect);
+        this.camera.userData['element'] = this;
+        this.camera.position.copy(this.vector3(this.position));
+        this.camera.lookAt(this.vector3(this.lookAt));
+        this.object = this.camera;
+        this.isSetup = true;
+
+        if (this.controls === 'orbit') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'orbit');
+          controlsElm.setAttribute('center', this.lookAt);
+          this.appendChild(controlsElm);
+        }
+        else if (this.controls === 'fly') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'fly');
+          this.appendChild(controlsElm);
+        }
+        else if (this.controls === 'firstperson') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'firstperson');
+          this.appendChild(controlsElm);
+        }
+      },
+      lookAtChanged: function(oldVal, newVal) {
+        if (typeof this.camera !== 'undefined') {
+          this.camera.lookAt(this.vector3(newVal));
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight">
+  <template>
+    <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
+      <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
+      <three-scene defaultLight={{defaultLight}}>
+        <content></content>
+      </three-scene>
+    </three-engine>
+  </template>
+  <script>
+    Polymer({
+      domReady: function() {
+        var threejs = this.shadowRoot.children[0];
+        threejs.setup();
+        threejs.start();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color">
+  <script>
+    Polymer({
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var color = new THREE.Color(this.color || '#ffffff');
+        if (this.direction) {
+          var direction = eval("[" + this.direction + "]");
+          this.light = new THREE.DirectionalLight(color);
+          this.light.position.set(direction[0], direction[1], direction[2]);
+        }
+        else if (this.ambient !== undefined) {
+          this.light = new THREE.AmbientLight(color);
+        }
+        this.object = this.light;
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-mesh" extends="three-object3d">
+  <script>
+    Polymer({
+      setup: function() {
+        var material;
+        var geometries = [];
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.material) material = child.material;
+          if (child.geometry) geometries.push(child.geometry);
+        });
+        this.mesh = new THREE.Mesh(geometries[0], material);
+        this.mesh.userData['element'] = this;
+        this.mesh.position.copy(this.position);
+        this.object = this.mesh;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-material" attributes="color,map,type">
+  <script>
+    Polymer({
+      type: 'MeshPhongMaterial',
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        var color = new THREE.Color(this.color || '#ffffff');
+        this.material = new THREE[this.type]({color: color});
+        if (typeof this.map !== 'undefined') {
+          this.material.map = THREE.ImageUtils.loadTexture(this.map);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-geomerty">
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+
+<!-- TODO: phiStart,phiLength,thetaStart,thetaLength -->
+<polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
+  <script>
+    Polymer({
+      widthSegments: '32',
+      heightSegments: '16',
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        var radius = parseFloat(this.radius || '1');
+        var widthSegments = parseInt(this.widthSegments, 10);
+        var heightSegments = parseInt(this.heightSegments, 10);
+        this.geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
+  <template>
+    <three-mesh position="{{position}}">
+      <three-material color="{{color}}" map="{{map}}"></three-material>
+      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      setup: function(threejs) {
+        var child = this.shadowRoot.children[0];
+        child.setup(threejs);
+        this.object = child.object
+        this.mesh = this.object;
+        this.mesh.userData['element'] = this;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed">
+  <script>
+    Polymer({
+      setup: function(camera, canvas) {
+        if (this.type === 'orbit') {
+          this.controls = new THREE.OrbitControls(camera, canvas);
+          this.controls.center = THREE.Element.Utils.vector3(this.center);
+        }
+        else if (this.type === 'fly') {
+          this.controls = new THREE.FlyControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.rollSpeed !== 'undefined') {
+            this.controls.rollSpeed = parseFloat(this.rollSpeed);
+          }
+        }
+        else if (this.type === 'firstperson') {
+          this.controls = new THREE.FirstPersonControls(camera, canvas);
+        }
+        else {
+          throw 'Unknown type: ' + this.type;
+        }
+      }
+    });
+  </script>
+</polymer-element>

@@ -4,6 +4,7 @@
     "grunt": "*",
     "grunt-cli": "*",
     "grunt-contrib-connect": "*",
+    "grunt-contrib-copy": "*",
     "grunt-gh-pages": "*",
     "grunt-text-replace": "*"
   }
