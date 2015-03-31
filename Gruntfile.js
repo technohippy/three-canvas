@@ -11,9 +11,11 @@ module.exports = function(grunt) {
       }
     },
     'gh-pages': {
+      options: {
+        base: 'dist'
+      },
       src: [
-        'dist/**/*',
-        '!app/bower_components/three-canvass/**/*'
+        '**'
       ]
     },
     'copy': {
@@ -21,6 +23,12 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'app/bower_components',
         src: ['**'],
+        dest: 'dist'
+      },
+      images: {
+        expand: true,
+        cwd: 'app',
+        src: ['images/**'],
         dest: 'dist'
       }
     },
@@ -41,7 +49,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-text-replace');
 
-  grunt.registerTask('build',  ['copy', 'replace']);
+  grunt.registerTask('build',  ['copy:bower', 'copy:images', 'replace']);
   grunt.registerTask('deploy', ['gh-pages']);
   grunt.registerTask('server', ['connect']);
 };
