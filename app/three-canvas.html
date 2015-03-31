@@ -3,8 +3,8 @@
 
 <!--
 <script src="bower_components/three.js-controls/src/FirstPersonControls.js"></script>
-<script src="bower_components/three.js-controls/src/FlyControls.js"></script>
 -->
+<script src="bower_components/three.js-controls/src/FlyControls.js"></script>
 <script src="bower_components/three.js-controls/src/OrbitControls.js"></script>
 
 <script>
@@ -55,7 +55,7 @@
   };
 </script>
 
-<polymer-element name="three-js" attributes="canvas,width,height,fullscreen">
+<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen">
   <script>
     Polymer({
       isSetup: false,
@@ -96,11 +96,11 @@
           this.parentNode.insertBefore(this.canvas, this);
         }
 
-        var rendererElm = this.querySelector('three-js-renderer');
+        var rendererElm = this.querySelector('three-renderer');
         rendererElm.setup(this);
         this.renderer = rendererElm.renderer;
 
-        var sceneElm = this.querySelector('three-js-scene');
+        var sceneElm = this.querySelector('three-scene');
         sceneElm.setup(this);
         this.scene = sceneElm.scene;
 
@@ -119,8 +119,11 @@
         }
         if (typeof this.camera === 'undefined') throw 'no camera';
         if (typeof this.camera.userData['element'] !== 'undefined') {
-          var controls = this.camera.userData['element'].querySelector('three-js-controls');
-          if (controls) controls.setup(this.camera, this.canvas);
+          var controlsElm = this.camera.userData['element'].querySelector('three-controls');
+          if (controlsElm) {
+            controlsElm.setup(this.camera, this.canvas);
+            this.controls = controlsElm.controls;
+          }
         }
 
         this.isSetup = true;
@@ -137,6 +140,7 @@
           }.bind(this), false);
         }
 
+        var clock = new THREE.Clock();
         ((function animate() {
           requestAnimationFrame(animate.bind(this));
           this.render();
@@ -145,13 +149,14 @@
               child.userData.element.fire('render');
             }
           });
+          if (this.controls) this.controls.update(clock.getDelta());
         }).bind(this))();
       }
     });
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-renderer" attributes="antialias,clearColor,sceneId,cameraId">
+<polymer-element name="three-renderer" attributes="antialias,clearColor,sceneId,cameraId">
   <script>
     Polymer({
       isSetup: false,
@@ -168,7 +173,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-scene">
+<polymer-element name="three-scene">
   <script>
     Polymer({
       isSetup: false,
@@ -192,7 +197,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-object3d" attributes="position,rotation">
+<polymer-element name="three-object3d" attributes="position,rotation">
   <script>
     Polymer({
       isSetup: false,
@@ -218,7 +223,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-camera" extends="three-js-object3d" attributes="lookAt,controls">
+<polymer-element name="three-camera" extends="three-object3d" attributes="lookAt,controls">
   <script>
     Polymer({
       setup: function(threejs) {
@@ -232,11 +237,17 @@
         this.isSetup = true;
 
         if (this.controls === 'orbit') {
-          var controlsElm = document.createElement('three-js-controls');
+          var controlsElm = document.createElement('three-controls');
           controlsElm.setAttribute('type', 'orbit');
           controlsElm.setAttribute('center', this.lookAt);
           this.appendChild(controlsElm);
         }
+        else if (this.controls === 'fly') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'fly');
+          this.appendChild(controlsElm);
+        }
+
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -247,14 +258,14 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-canvas" attributes="width,height,antialias,clearColor,fullscreen">
+<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen">
   <template>
-    <three-js fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
-      <three-js-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-js-renderer>
-      <three-js-scene>
+    <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
+      <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
+      <three-scene>
         <content></content>
-      </three-js-scene>
-    </three-js>
+      </three-scene>
+    </three-engine>
   </template>
   <script>
     Polymer({
@@ -267,7 +278,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-light" extends="three-js-object3d" attributes="direction,ambient,color">
+<polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color">
   <script>
     Polymer({
       ready: function() {
@@ -291,7 +302,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-mesh" extends="three-js-object3d">
+<polymer-element name="three-mesh" extends="three-object3d">
   <script>
     Polymer({
       setup: function() {
@@ -310,7 +321,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-material" attributes="color,map,type">
+<polymer-element name="three-material" attributes="color,map,type">
   <script>
     Polymer({
       type: 'MeshPhongMaterial',
@@ -328,7 +339,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-geomerty">
+<polymer-element name="three-geomerty">
   <script>
     Polymer({
     });
@@ -336,7 +347,7 @@
 </polymer-element>
 
 <!-- TODO: phiStart,phiLength,thetaStart,thetaLength -->
-<polymer-element name="three-js-sphere-geometry" extends="three-js-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
+<polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
   <script>
     Polymer({
       widthSegments: '32',
@@ -354,12 +365,12 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-sphere" extends="three-js-object3d" attributes="radius,color,map">
+<polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
   <template>
-    <three-js-mesh position="{{position}}">
-      <three-js-material color="{{color}}" map="{{map}}"></three-js-material>
-      <three-js-sphere-geometry radius="{{radius}}"></three-js-sphere-geometry>
-    </three-js-mesh>
+    <three-mesh position="{{position}}">
+      <three-material color="{{color}}" map="{{map}}"></three-material>
+      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
+    </three-mesh>
   </template>
   <script>
     Polymer({
@@ -374,13 +385,16 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-controls" attributes="type,center">
+<polymer-element name="three-controls" attributes="type,center">
   <script>
     Polymer({
       setup: function(camera, canvas) {
         if (this.type === 'orbit') {
           this.controls = new THREE.OrbitControls(camera, canvas);
           this.controls.center = THREE.Element.Utils.vector3(this.center);
+        }
+        else if (this.type === 'fly') {
+          this.controls = new THREE.FlyControls(camera, canvas);
         }
         else {
           throw 'Unknown type: ' + this.type;
