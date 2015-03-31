@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-gh-pages": "*",
+    "grunt-text-replace": "*"
+  }
+}

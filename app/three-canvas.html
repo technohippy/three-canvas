@@ -1,9 +1,7 @@
 <link rel="import" href="bower_components/polymer/polymer.html">
 <script src="bower_components/threejs/build/three.js"></script>
 
-<!--
 <script src="bower_components/three.js-controls/src/FirstPersonControls.js"></script>
--->
 <script src="bower_components/three.js-controls/src/FlyControls.js"></script>
 <script src="bower_components/three.js-controls/src/OrbitControls.js"></script>
 
@@ -267,7 +265,11 @@
           controlsElm.setAttribute('type', 'fly');
           this.appendChild(controlsElm);
         }
-
+        else if (this.controls === 'firstperson') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'firstperson');
+          this.appendChild(controlsElm);
+        }
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -405,7 +407,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-controls" attributes="type,center">
+<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed">
   <script>
     Polymer({
       setup: function(camera, canvas) {
@@ -415,6 +417,15 @@
         }
         else if (this.type === 'fly') {
           this.controls = new THREE.FlyControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.rollSpeed !== 'undefined') {
+            this.controls.rollSpeed = parseFloat(this.rollSpeed);
+          }
+        }
+        else if (this.type === 'firstperson') {
+          this.controls = new THREE.FirstPersonControls(camera, canvas);
         }
         else {
           throw 'Unknown type: ' + this.type;

@@ -1,17 +1,19 @@
 {
-  "name": "three-js",
+  "name": "three-canvas",
   "version": "0.0.0",
   "authors": [
     "Ando Yasushi <andyjpn@gmail.com>"
   ],
   "description": "Custom Element for Three.js",
-  "main": "three-js.html",
+  "main": "dist/three-canvas.html",
   "keywords": [
     "WebGL",
-    "web-components"
+    "Polymer",
+    "web-components",
+    "web-component"
   ],
   "license": "MIT",
-  "homepage": "http://github.com/technohippy/three-js",
+  "homepage": "http://github.com/technohippy/three-canvas",
   "ignore": [
     "**/.*",
     "node_modules",
