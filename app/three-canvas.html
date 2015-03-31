@@ -173,13 +173,15 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-scene">
+<polymer-element name="three-scene" attributes="defaultLight">
   <script>
     Polymer({
       isSetup: false,
       setup: function(threejs) {
         if (this.isSetup) return;
+
         this.scene = new THREE.Scene();
+
         Array.apply(null, this.children).forEach(function(child) {
           if (child.setup) child.setup(threejs);
           if (child.object) this.scene.add(child.object);
@@ -191,7 +193,25 @@
             }, this);
           }
         }, this);
+
+        this.setupDefaultLightIfNeeded(threejs);
+
         this.isSetup = true;
+      },
+      setupDefaultLightIfNeeded: function(threejs) {
+        if (this.defaultLight === 'false') return;
+        var hasLight = false;
+        this.scene.children.forEach(function(child) {
+          if (hasLight) return;
+          hasLight = child.type.match('Light');
+        });
+        if (!hasLight) {
+          var light1 = new THREE.DirectionalLight('#cccccc');
+          light1.position.set(0.577, 0.577, 0.577);
+          this.scene.add(light1);
+          var light2 = new THREE.AmbientLight('#333333');
+          this.scene.add(light2);
+        }
       }
     });
   </script>
@@ -258,11 +278,11 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen">
+<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight">
   <template>
     <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
       <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
-      <three-scene>
+      <three-scene defaultLight={{defaultLight}}>
         <content></content>
       </three-scene>
     </three-engine>
