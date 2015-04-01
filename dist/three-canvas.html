@@ -410,7 +410,49 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed">
+<polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
+  <script>
+    Polymer({
+      widthSegments: '1',
+      heightSegments: '1',
+      depthSegments: '1',
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        var width = parseFloat(this.width || '1');
+        var height = parseFloat(this.height || '1');
+        var depth = parseFloat(this.depth || '1');
+        var widthSegments = parseInt(this.widthSegments, 10);
+        var heightSegments = parseInt(this.heightSegments, 10);
+        var depthSegments = parseInt(this.depthSegments, 10);
+        this.geometry = new THREE.BoxGeometry(width, height, depth, widthSegments, heightSegments, depthSegments);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-box" extends="three-object3d" attributes="radius,color,map">
+  <template>
+    <three-mesh position="{{position}}">
+      <three-material color="{{color}}" map="{{map}}"></three-material>
+      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-sphere-geometry>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      setup: function(threejs) {
+        var child = this.shadowRoot.children[0];
+        child.setup(threejs);
+        this.object = child.object
+        this.mesh = this.object;
+        this.mesh.userData['element'] = this;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed,lookSpeed,lon,noFly">
   <script>
     Polymer({
       setup: function(camera, canvas) {
@@ -429,6 +471,19 @@
         }
         else if (this.type === 'firstperson') {
           this.controls = new THREE.FirstPersonControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.lookSpeed !== 'undefined') {
+            this.controls.lookSpeed = parseFloat(this.lookSpeed);
+          }
+          if (typeof this.lon !== 'undefined') {
+            this.controls.lon = parseFloat(this.lon);
+          }
+          if (typeof this.noFly !== 'undefined') {
+            this.controls.noFly = this.noFly === 'true';
+          }
+          console.log(this.controls.movementSpeed, this.controls.lookSpeed, this.controls.lon);
         }
         else {
           throw 'Unknown type: ' + this.type;

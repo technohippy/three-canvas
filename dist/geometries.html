@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <script src="./webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-canvas.html">
+  </head>
+  <body>
+    <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
+
+    <h2>Box</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <three-material color="#ffffff" map="images/earth.jpg"></three-material>
+        <three-box-geometry width="1" height="1" depth="1"></three-sphere-geometry>
+      </three-mesh>
+    </three-canvas>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-box width="1" height="1" depth="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+    </three-canvas>
+
+    <h2>Sphere</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <three-material color="#ffffff" map="images/earth.jpg"></three-material>
+        <three-sphere-geometry radius="1"></three-sphere-geometry>
+      </three-mesh>
+    </three-canvas>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+    </three-canvas>
+  </body>
+</html>
