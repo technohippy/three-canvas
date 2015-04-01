@@ -2,7 +2,7 @@
 
 Custom Element for Three.js
 
-## sample
+## Sample Code
 
 ```html
 <html>
@@ -20,3 +20,7 @@ Custom Element for Three.js
   </body>
 </html>
 ```
+
+## Examples
+
+http://technohippy.github.io/three-canvas/
