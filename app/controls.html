@@ -6,10 +6,13 @@
   <body>
     <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
+    <h2>Orbit Controls</h2>
+
     <canvas width="200" height="200"></canvas>
     <three-engine>
       <three-renderer antialias clearColor="#000000"></three-renderer>
       <three-scene>
+        <!-- Add a controls attribute with 'orbit' value -->
         <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
         <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
         <three-light ambient color="#333333"></three-light>
@@ -24,6 +27,7 @@
       <three-renderer antialias clearColor="#000000"></three-renderer>
       <three-scene>
         <three-camera position="0,0,8" lookAt="0,0,0">
+          <!-- Add a three-controls element as a child of a three-camera element -->
           <three-controls type="orbit" center="0,0,0"></three-controls>
         </three-camera>
         <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
@@ -34,6 +38,7 @@
 
     <three-canvas width="200" height="200" antialias clearColor="#000000">
       <three-camera position="0,0,8" lookAt="0,0,0">
+        <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="orbit" center="0,0,0"></three-controls>
       </three-camera>
       <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
@@ -41,9 +46,32 @@
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
+    <h2>Fly Controls</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <!-- Add a controls attribute with 'fly' value -->
+      <three-camera position="0,0,8" lookAt="0,0,0" controls="fly"></three-camera>
+      <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light ambient color="#333333"></three-light>
+      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+    </three-canvas>
+
     <three-canvas width="200" height="200" antialias clearColor="#000000">
       <three-camera position="0,0,8" lookAt="0,0,0">
+        <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="fly"></three-controls>
+      </three-camera>
+      <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light ambient color="#333333"></three-light>
+      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+    </three-canvas>
+
+    <h2>First Person Controls</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera position="0,0,8" lookAt="0,0,0">
+        <!-- Add a three-controls element as a child of a three-camera element -->
+        <three-controls type="firstperson" movementSpeed="0.5" lookSpeed="0.07" lon="-85"></three-controls>
       </three-camera>
       <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light ambient color="#333333"></three-light>

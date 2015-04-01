@@ -410,7 +410,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed">
+<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed,lookSpeed,lon,noFly">
   <script>
     Polymer({
       setup: function(camera, canvas) {
@@ -429,6 +429,19 @@
         }
         else if (this.type === 'firstperson') {
           this.controls = new THREE.FirstPersonControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.lookSpeed !== 'undefined') {
+            this.controls.lookSpeed = parseFloat(this.lookSpeed);
+          }
+          if (typeof this.lon !== 'undefined') {
+            this.controls.lon = parseFloat(this.lon);
+          }
+          if (typeof this.noFly !== 'undefined') {
+            this.controls.noFly = this.noFly === 'true';
+          }
+          console.log(this.controls.movementSpeed, this.controls.lookSpeed, this.controls.lon);
         }
         else {
           throw 'Unknown type: ' + this.type;
