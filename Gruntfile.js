@@ -41,6 +41,13 @@ module.exports = function(grunt) {
           to: '.'
         }]
       }
+    },
+    pkg: grunt.file.readJSON('package.json'),
+    release: {
+      options: {
+        file: 'bower.json', 
+        npm: false
+      }
     }
   });
 
@@ -48,6 +55,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-gh-pages');
   grunt.loadNpmTasks('grunt-text-replace');
+  grunt.loadNpmTasks('grunt-release');
 
   grunt.registerTask('build',  ['copy:bower', 'copy:images', 'replace']);
   grunt.registerTask('deploy', ['gh-pages']);
