@@ -192,24 +192,7 @@
           }
         }, this);
 
-        this.setupDefaultLightIfNeeded(threejs);
-
         this.isSetup = true;
-      },
-      setupDefaultLightIfNeeded: function(threejs) {
-        if (this.defaultLight === 'false') return;
-        var hasLight = false;
-        this.scene.children.forEach(function(child) {
-          if (hasLight) return;
-          hasLight = child.type.match('Light');
-        });
-        if (!hasLight) {
-          var light1 = new THREE.DirectionalLight('#cccccc');
-          light1.position.set(0.577, 0.577, 0.577);
-          this.scene.add(light1);
-          var light2 = new THREE.AmbientLight('#333333');
-          this.scene.add(light2);
-        }
       }
     });
   </script>
@@ -284,14 +267,34 @@
   <template>
     <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
       <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
-      <three-scene defaultLight={{defaultLight}}>
+      <three-scene id="scene" defaultLight={{defaultLight}}>
         <content></content>
       </three-scene>
     </three-engine>
   </template>
   <script>
     Polymer({
+      needDefaultLight: false,
       domReady: function() {
+        if (this.querySelector('three-light') === null && this.defaultLight !== 'false') {
+          /*
+          <template if={{needDefaultLight}}>
+            <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
+            <three-light ambient color="#333333"></three-light>
+          </template>
+          this.needDefaultLight = true;
+          */
+          var directionalLight = document.createElement('three-light');
+          directionalLight.setAttribute('direction', '0.577,0.577,0.577');
+          directionalLight.setAttribute('color', '#cccccc');
+          directionalLight.isSetup = false;
+          this.$.scene.appendChild(directionalLight);
+          var ambientLight = document.createElement('three-light');
+          ambientLight.setAttribute('ambient', '');
+          ambientLight.setAttribute('color', '#333333');
+          ambientLight.isSetup = false;
+          this.$.scene.appendChild(ambientLight);
+        }
         var threejs = this.shadowRoot.children[0];
         threejs.setup();
         threejs.start();
