@@ -1,6 +1,6 @@
 # three-canvas
 
-Custom Element to Use WebGL Easily by Utilizing Three.js
+A Custom Element to Use WebGL Easily by Utilizing Three.js
 
 ## Sample Code
 
