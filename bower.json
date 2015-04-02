@@ -4,7 +4,7 @@
   "authors": [
     "Ando Yasushi <andyjpn@gmail.com>"
   ],
-  "description": "Custom Element for Three.js",
+  "description": "Custom Element to Use WebGL Easily by Utilizing Three.js",
   "main": "dist/three-canvas.html",
   "keywords": [
     "WebGL",
