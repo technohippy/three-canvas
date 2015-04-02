@@ -352,14 +352,6 @@
         Array.apply(null, this.children).forEach(function(child) {
           if (child.material) material = child.material;
           if (child.geometry) geometries.push(child.geometry);
-          // TODO: 後でリファクタリング
-console.log(child);
-          if (child.getDistributedNodes) {
-            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
-              if (contentChild.material) material = contentChild.material;
-              if (contentChild.geometry) geometries.push(contentChild.geometry);
-            });
-          }
         });
         this.mesh = new THREE.Mesh(geometries[0], material);
         this.mesh.userData['element'] = this;
