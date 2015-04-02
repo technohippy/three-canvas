@@ -198,15 +198,19 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-object3d" attributes="position,rotation">
+<polymer-element name="three-object3d" attributes="position,rotation,scale,castShadow,receiveShadow">
   <script>
     Polymer({
       isSetup: false,
+      castShadow: false,
+      receiveShadow: false,
+      scale: '1,1,1',
       setup: function() {
       },
       ready: function() {
         this.position = this.vector3(this.position);
         this.rotation = this.euler(this.rotation);
+        this.scale = this.vector3(this.scale);
       },
       vector3: function(val) {
         return THREE.Element.Utils.vector3(val);
@@ -218,6 +222,18 @@
         this.position = this.vector3(newVal);
         if (typeof this.object !== 'undefined') {
           this.object.position.copy(this.position);
+        }
+      },
+      rotationChanged: function(oldVal, newVal) {
+        this.rotation = this.euler(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.rotation.copy(this.rotation);
+        }
+      },
+      scaleChanged: function(oldVal, newVal) {
+        this.scale = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.scale.copy(this.scale);
         }
       }
     });
@@ -340,6 +356,8 @@
         this.mesh = new THREE.Mesh(geometries[0], material);
         this.mesh.userData['element'] = this;
         this.mesh.position.copy(this.position);
+        this.mesh.rotation.copy(this.rotation);
+        this.mesh.scale.copy(this.scale);
         this.object = this.mesh;
       }
     });
@@ -392,7 +410,7 @@
 
 <polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
   <template>
-    <three-mesh position="{{position}}">
+    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
       <three-material color="{{color}}" map="{{map}}"></three-material>
       <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
     </three-mesh>
@@ -434,9 +452,9 @@
 
 <polymer-element name="three-box" extends="three-object3d" attributes="radius,color,map">
   <template>
-    <three-mesh position="{{position}}">
+    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
       <three-material color="{{color}}" map="{{map}}"></three-material>
-      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-sphere-geometry>
+      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
     </three-mesh>
   </template>
   <script>
