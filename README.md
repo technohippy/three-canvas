@@ -8,7 +8,7 @@ Custom Element for Three.js
 <html>
   <head>
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="three.html">
+    <link rel="import" href="three-canvas.html">
   </head>
   <body>
     <three-canvas width="200" height="200" antialias clearColor="#000000">
