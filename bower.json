@@ -23,6 +23,9 @@
     "tests"
   ],
   "dependencies": {
+    "webcomponentsjs": "*"
+  },
+  "devDependencies": {
     "polymer": "Polymer/polymer#~0.5.5",
     "threejs": "*",
     "three.js-controls": "~0.0.67"
