@@ -503,6 +503,27 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-cylinder-geometry" extends="three-geomerty" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength">
+  <script>
+    Polymer({
+      radiusTop: 20.0,
+      radiusBottom: 20.0,
+      height: 100.0,
+      radialSegments: 32,
+      heightSegments: 1,
+      openEnded: false,
+      thetaStart: 0,
+      thetaLength: 2 * Math.PI,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radialSegments, this.heightSegments, this.openEnded, this.thetaStart, this.thetaLength);
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
   <script>
     Polymer({
@@ -659,6 +680,57 @@
         thetaStart="{{thetaStart}}"
         thetaLength="{{thetaLength}}">
       </three-circle-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-cylinder" extends="three-mesh-phong-materialized-mesh" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-cylinder-geometry
+        radiusTop="{{radiusTop}}"
+        radiusBottom="{{radiusBottom}}"
+        height="{{height}}"
+        radialSegments="{{radialSegments}}"
+        heightSegments="{{heightSegments}}"
+        openEnded="{{openEnded}}"
+        thetaStart="{{thetaStart}}"
+        thetaLength="{{thetaLength}}">
+      </three-cylinder-geometry>
     </three-mesh-phong-materialized-mesh>
   </template>
   <script>
