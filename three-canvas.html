@@ -352,6 +352,13 @@
         Array.apply(null, this.children).forEach(function(child) {
           if (child.material) material = child.material;
           if (child.geometry) geometries.push(child.geometry);
+          // TODO: 後でリファクタリング
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.material) material = contentChild.material;
+              if (contentChild.geometry) geometries.push(contentChild.geometry);
+            }, this);
+          }
         });
         this.mesh = new THREE.Mesh(geometries[0], material);
         this.mesh.userData['element'] = this;
@@ -401,24 +408,53 @@
           overdraw: this.overdraw,
           visible: this.visible
         };
+      },
+      opacityChanged: function(oldVal, newVal) {
+        if (newVal < 1) this.material.transparent = true;
+        this.material.opacity = newVal;
       }
     });
   </script>
 </polymer-element>
 
-<polymer-element name="three-mesh-phong-material" extends="three-material" attributes="color,map">
+<polymer-element name="three-mesh-phong-material" extends="three-material" attributes="color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
   <script>
     Polymer({
+      color: '#ffffff',
+      ambient: '#ffffff',
+      emissive: '#000000',
+      specular: '#000000',
+      shininess: 30,
+      metal: false,
+      bumpScale: 1,
+      fog: true,
+      shading: THREE.SmoothShading,
+      wireframe: false,
       ready: function() {
         this.setup();
       },
       setup: function() {
-        var opts = this.getOptions();
-        opts['color'] = new THREE.Color(this.color || '#ffffff');;
-        this.material = new THREE.MeshPhongMaterial(opts);
+        this.material = new THREE.MeshPhongMaterial(this.getOptions());
         if (typeof this.map !== 'undefined') {
           this.material.map = THREE.ImageUtils.loadTexture(this.map);
         }
+        if (typeof this.bumpMap !== 'undefined') {
+          this.material.bumpMap = THREE.ImageUtils.loadTexture(this.bumpMap);
+        }
+      },
+      getOptions: function() {
+        var opts = this.super();
+        opts['color'] = new THREE.Color(this.color);
+        opts['ambient'] = new THREE.Color(this.ambient);
+        opts['emissive'] = new THREE.Color(this.emissive);
+        opts['specular'] = new THREE.Color(this.specular);
+        opts['shininess'] = this.shininess;
+        opts['metal'] = this.metal;
+        opts['bumpScale'] = this.bumpScale;
+        opts['fog'] = this.fog;
+        opts['shading'] = this.shading;
+        opts['wireframe'] = this.wireframe;
+        return opts;
       }
     });
   </script>
@@ -450,26 +486,6 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
-  <template>
-    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
-      <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
-      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
-    </three-mesh>
-  </template>
-  <script>
-    Polymer({
-      setup: function(threejs) {
-        var child = this.shadowRoot.children[0];
-        child.setup(threejs);
-        this.object = child.object
-        this.mesh = this.object;
-        this.mesh.userData['element'] = this;
-      }
-    });
-  </script>
-</polymer-element>
-
 <polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
   <script>
     Polymer({
@@ -492,22 +508,134 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-box" extends="three-object3d" attributes="radius,color,map">
+<polymer-element name="three-mesh-phong-materialized-mesh" extends="three-object3d" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible,color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
   <template>
     <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
-      <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
-      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blendSrc="{{blendSrc}}"
+        blendDst="{{blendDst}}"
+        blendEquation="{{blendEquation}}"
+        depthTest="{{depthTest}}"
+        depthWrite="{{depthWrite}}"
+        polygonOffset="{{polygonOffset}}"
+        polygonOffsetFactor="{{polygonOffsetFactor}}"
+        polygonOffsetUnits="{{polygonOffsetUnits}}"
+        alphaTest="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bumpMap="{{bumpMap}}"
+        bumpScale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <content></content>
     </three-mesh>
   </template>
   <script>
     Polymer({
       setup: function(threejs) {
-        var child = this.shadowRoot.children[0];
+        var child = this.shadowRoot.children[0].shadowRoot.children[0];
         child.setup(threejs);
         this.object = child.object
         this.mesh = this.object;
         this.mesh.userData['element'] = this;
       }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-sphere" extends="three-mesh-phong-materialized-mesh" attributes="radius">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-box" extends="three-mesh-phong-materialized-mesh" attributes="width,height,depth">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
     });
   </script>
 </polymer-element>
