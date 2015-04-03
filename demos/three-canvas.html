@@ -198,15 +198,19 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-object3d" attributes="position,rotation">
+<polymer-element name="three-object3d" attributes="position,rotation,scale,castShadow,receiveShadow">
   <script>
     Polymer({
       isSetup: false,
+      castShadow: false,
+      receiveShadow: false,
+      scale: '1,1,1',
       setup: function() {
       },
       ready: function() {
         this.position = this.vector3(this.position);
         this.rotation = this.euler(this.rotation);
+        this.scale = this.vector3(this.scale);
       },
       vector3: function(val) {
         return THREE.Element.Utils.vector3(val);
@@ -218,6 +222,18 @@
         this.position = this.vector3(newVal);
         if (typeof this.object !== 'undefined') {
           this.object.position.copy(this.position);
+        }
+      },
+      rotationChanged: function(oldVal, newVal) {
+        this.rotation = this.euler(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.rotation.copy(this.rotation);
+        }
+      },
+      scaleChanged: function(oldVal, newVal) {
+        this.scale = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.scale.copy(this.scale);
         }
       }
     });
@@ -340,22 +356,66 @@
         this.mesh = new THREE.Mesh(geometries[0], material);
         this.mesh.userData['element'] = this;
         this.mesh.position.copy(this.position);
+        this.mesh.rotation.copy(this.rotation);
+        this.mesh.scale.copy(this.scale);
         this.object = this.mesh;
       }
     });
   </script>
 </polymer-element>
 
-<polymer-element name="three-material" attributes="color,map,type">
+<polymer-element name="three-material" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
   <script>
     Polymer({
-      type: 'MeshPhongMaterial',
+      side: THREE.FrontSide,
+      opacity: 1,
+      transparent: false,
+      blending: THREE.NormalBlending,
+      blendSrc: THREE.SrcAlphaFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
+      blendEquation: THREE.AddEquation,
+      depthTest: true,
+      depthWrite: true,
+      polygonOffset: false,
+      polygonOffsetFactor: 0,
+      polygonOffsetUnits: 0,
+      alphaTest: 0,
+      overdraw: 0,
+      visible: true,
+      getOptions: function() {
+        if (this.opacity < 1) this.transparent = true;
+        return {
+          side: this.side,
+          opacity: this.opacity,
+          transparent: this.transparent,
+          blending: this.blending,
+          blendSrc: this.blendSrc,
+          blendDst: this.blendDst,
+          blendEquation: this.blendEquation,
+          depthTest: this.depthTest,
+          depthWrite: this.depthWrite,
+          polygonOffset: this.polygonOffset,
+          polygonOffsetFactor: this.polygonOffsetFactor,
+          polygonOffsetUnits: this.polygonOffsetUnits,
+          alphaTest: this.alphaTest,
+          overdraw: this.overdraw,
+          visible: this.visible
+        };
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-mesh-phong-material" extends="three-material" attributes="color,map">
+  <script>
+    Polymer({
       ready: function() {
         this.setup();
       },
       setup: function() {
-        var color = new THREE.Color(this.color || '#ffffff');
-        this.material = new THREE[this.type]({color: color});
+        var opts = this.getOptions();
+        opts['color'] = new THREE.Color(this.color || '#ffffff');;
+        this.material = new THREE.MeshPhongMaterial(opts);
         if (typeof this.map !== 'undefined') {
           this.material.map = THREE.ImageUtils.loadTexture(this.map);
         }
@@ -392,8 +452,8 @@
 
 <polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
   <template>
-    <three-mesh position="{{position}}">
-      <three-material color="{{color}}" map="{{map}}"></three-material>
+    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
       <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
     </three-mesh>
   </template>
@@ -434,9 +494,9 @@
 
 <polymer-element name="three-box" extends="three-object3d" attributes="radius,color,map">
   <template>
-    <three-mesh position="{{position}}">
-      <three-material color="{{color}}" map="{{map}}"></three-material>
-      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-sphere-geometry>
+    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
+      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
     </three-mesh>
   </template>
   <script>
