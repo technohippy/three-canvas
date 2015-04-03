@@ -545,6 +545,13 @@
   </template>
   <script>
     Polymer({
+      setup: function(threejs) {
+        var child = this.shadowRoot.children[0].shadowRoot.children[0];
+        child.setup(threejs);
+        this.object = child.object
+        this.mesh = this.object;
+        this.mesh.userData['element'] = this;
+      }
     });
   </script>
 </polymer-element>
@@ -587,13 +594,6 @@
   </template>
   <script>
     Polymer({
-      setup: function(threejs) {
-        var child = this.shadowRoot.children[0].shadowRoot.children[0];
-        child.setup(threejs);
-        this.object = child.object
-        this.mesh = this.object;
-        this.mesh.userData['element'] = this;
-      }
     });
   </script>
 </polymer-element>
@@ -636,13 +636,6 @@
   </template>
   <script>
     Polymer({
-      setup: function(threejs) {
-        var child = this.shadowRoot.children[0].shadowRoot.children[0];
-        child.setup(threejs);
-        this.object = child.object
-        this.mesh = this.object;
-        this.mesh.userData['element'] = this;
-      }
     });
   </script>
 </polymer-element>
