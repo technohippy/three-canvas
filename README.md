@@ -10,7 +10,7 @@ Install the custom element through bower.
 $ bower install three-canvas
 ```
 
-Edit a HTML file with your favorite editor and save as index.html.
+Edit a HTML file as following with your favorite editor and save as index.html.
 
 ```html
 <html>
