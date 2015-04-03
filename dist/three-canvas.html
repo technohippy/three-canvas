@@ -524,6 +524,23 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-plane-geometry" extends="three-geomerty" attributes="width,height,widthSegments,heightSegments">
+  <script>
+    Polymer({
+      width: 1,
+      height: 1,
+      widthSegments: 1,
+      heightSegments: 1,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
   <script>
     Polymer({
@@ -731,6 +748,53 @@
         thetaStart="{{thetaStart}}"
         thetaLength="{{thetaLength}}">
       </three-cylinder-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-plane" extends="three-mesh-phong-materialized-mesh" attributes="width,height,widthSegments,heightSegments">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-plane-geometry
+        width="{{width}}"
+        height="{{height}}"
+        widthSegments="{{widthSegments}}"
+        heightSegments="{{heightSegments}}">
+      </three-plane-geometry>
     </three-mesh-phong-materialized-mesh>
   </template>
   <script>
