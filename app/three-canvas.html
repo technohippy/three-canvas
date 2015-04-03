@@ -352,6 +352,13 @@
         Array.apply(null, this.children).forEach(function(child) {
           if (child.material) material = child.material;
           if (child.geometry) geometries.push(child.geometry);
+          // TODO: 後でリファクタリング
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.material) material = contentChild.material;
+              if (contentChild.geometry) geometries.push(contentChild.geometry);
+            }, this);
+          }
         });
         this.mesh = new THREE.Mesh(geometries[0], material);
         this.mesh.userData['element'] = this;
@@ -479,26 +486,6 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-sphere" extends="three-object3d" attributes="radius,color,map">
-  <template>
-    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
-      <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
-      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
-    </three-mesh>
-  </template>
-  <script>
-    Polymer({
-      setup: function(threejs) {
-        var child = this.shadowRoot.children[0];
-        child.setup(threejs);
-        this.object = child.object
-        this.mesh = this.object;
-        this.mesh.userData['element'] = this;
-      }
-    });
-  </script>
-</polymer-element>
-
 <polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
   <script>
     Polymer({
@@ -521,17 +508,48 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-box" extends="three-object3d" attributes="radius,color,map">
+<polymer-element name="three-mesh-phong-materialized-mesh" extends="three-object3d" attributes="color,map">
   <template>
     <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
       <three-mesh-phong-material color="{{color}}" map="{{map}}"></three-mesh-phong-material>
-      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
+      <content></content>
     </three-mesh>
   </template>
   <script>
     Polymer({
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-sphere" extends="three-mesh-phong-materialized-mesh" attributes="radius">
+  <template>
+    <three-mesh-phong-materialized-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}" color="{{color}}" map="{{map}}">
+      <three-sphere-geometry radius="{{radius}}"></three-sphere-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
       setup: function(threejs) {
-        var child = this.shadowRoot.children[0];
+        var child = this.shadowRoot.children[0].shadowRoot.children[0];
+        child.setup(threejs);
+        this.object = child.object
+        this.mesh = this.object;
+        this.mesh.userData['element'] = this;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-box" extends="three-mesh-phong-materialized-mesh" attributes="width,height,depth">
+  <template>
+    <three-mesh-phong-materialized-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}" color="{{color}}" map="{{map}}">
+      <three-box-geometry width="{{width}}" height="{{height}}" depth="{{depth}}"></three-box-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      setup: function(threejs) {
+        var child = this.shadowRoot.children[0].shadowRoot.children[0];
         child.setup(threejs);
         this.object = child.object
         this.mesh = this.object;
