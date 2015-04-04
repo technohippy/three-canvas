@@ -209,6 +209,9 @@
       receiveShadow: false,
       scale: '1,1,1',
       setup: function() {
+        if (typeof this.name !== 'undefined' && typeof this.object !== 'undefined') {
+          this.object.name = this.name;
+        }
       },
       ready: function() {
         this.position = this.vector3(this.position);
@@ -272,6 +275,8 @@
           controlsElm.setAttribute('type', 'firstperson');
           this.appendChild(controlsElm);
         }
+
+        this.super();
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -346,6 +351,7 @@
           this.light = new THREE.AmbientLight(color);
         }
         this.object = this.light;
+        this.super();
         this.isSetup = true;
       }
     });
@@ -374,10 +380,8 @@
         this.mesh.position.copy(this.position);
         this.mesh.rotation.copy(this.rotation);
         this.mesh.scale.copy(this.scale);
-        if (typeof this.name !== 'undefined') {
-          this.mesh.name = this.name;
-        }
         this.object = this.mesh;
+        this.super();
       }
     });
   </script>
@@ -688,10 +692,7 @@
         this.object = child.object
         this.mesh = this.object;
         this.mesh.userData['element'] = this;
-        // TODO: same code exists in three-mesh
-        if (typeof this.name !== 'undefined') {
-          this.mesh.name = this.name;
-        }
+        this.super();
       }
     });
   </script>
