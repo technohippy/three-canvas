@@ -129,6 +129,9 @@
       render: function() {
         this.renderer.render(this.scene, this.camera);
       },
+      getObjectByName: function(name) {
+        return this.scene.getObjectByName(name);
+      },
       start: function() {
         if (this.fullscreen || this.fullscreen === '') {
           window.addEventListener('resize', function() {
@@ -198,7 +201,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-object3d" attributes="position,rotation,scale,castShadow,receiveShadow">
+<polymer-element name="three-object3d" attributes="name,position,rotation,scale,castShadow,receiveShadow">
   <script>
     Polymer({
       isSetup: false,
@@ -206,6 +209,9 @@
       receiveShadow: false,
       scale: '1,1,1',
       setup: function() {
+        if (typeof this.name !== 'undefined' && typeof this.object !== 'undefined') {
+          this.object.name = this.name;
+        }
       },
       ready: function() {
         this.position = this.vector3(this.position);
@@ -269,6 +275,8 @@
           controlsElm.setAttribute('type', 'firstperson');
           this.appendChild(controlsElm);
         }
+
+        this.super();
       },
       lookAtChanged: function(oldVal, newVal) {
         if (typeof this.camera !== 'undefined') {
@@ -313,7 +321,13 @@
         }
         var threejs = this.shadowRoot.children[0];
         threejs.setup();
+        this.renderer = threejs.renderer;
+        this.scene = threejs.scene;
+        this.camera = threejs.camera;
         threejs.start();
+      },
+      getObjectByName: function(name) {
+        return this.scene.getObjectByName(name);
       }
     });
   </script>
@@ -337,6 +351,7 @@
           this.light = new THREE.AmbientLight(color);
         }
         this.object = this.light;
+        this.super();
         this.isSetup = true;
       }
     });
@@ -366,6 +381,7 @@
         this.mesh.rotation.copy(this.rotation);
         this.mesh.scale.copy(this.scale);
         this.object = this.mesh;
+        this.super();
       }
     });
   </script>
@@ -451,6 +467,60 @@
         opts['shininess'] = this.shininess;
         opts['metal'] = this.metal;
         opts['bumpScale'] = this.bumpScale;
+        opts['fog'] = this.fog;
+        opts['shading'] = this.shading;
+        opts['wireframe'] = this.wireframe;
+        return opts;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-mesh-lambert-material" extends="three-material" attributes="color,ambient,emissive,wrapAround,wrapRGB,map,lightMap,specularMap,alphaMap,envMap,combine,reflectivity,refractionRatio,fog,shading,wireframe">
+  <script>
+    Polymer({
+      color: '#ffffff',
+      ambient: '#ffffff',
+      emissive: '#000000',
+      wrapAround: false,
+      wrapRGB: '1,1,1',
+      combine: THREE.MultiplyOperation,
+      reflectivity: 1,
+      refractionRatio: 0.98,
+      fog: true,
+      shading: THREE.SmoothShading,
+      wireframe: false,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.material = new THREE.MeshPhongMaterial(this.getOptions());
+        if (typeof this.map !== 'undefined') {
+          this.material.map = THREE.ImageUtils.loadTexture(this.map);
+        }
+        if (typeof this.lightMap !== 'undefined') {
+          this.material.lightMap = THREE.ImageUtils.loadTexture(this.lightMap);
+        }
+        if (typeof this.specularMap !== 'undefined') {
+          this.material.specularMap = THREE.ImageUtils.loadTexture(this.specularMap);
+        }
+        if (typeof this.alphaMap !== 'undefined') {
+          this.material.alphaMap = THREE.ImageUtils.loadTexture(this.alphaMap);
+        }
+        if (typeof this.envMap !== 'undefined') {
+          this.material.envMap = THREE.ImageUtils.loadTexture(this.envMap);
+        }
+      },
+      getOptions: function() {
+        var opts = this.super();
+        opts['color'] = new THREE.Color(this.color);
+        opts['ambient'] = new THREE.Color(this.ambient);
+        opts['emissive'] = new THREE.Color(this.emissive);
+        opts['wrapAround'] = this.wrapAround;
+        opts['wrapRGB'] = THREE.Element.Utils.vector3(this.wrapRGB);
+        opts['combine'] = this.combine;
+        opts['reflectivity'] = this.reflectivity;
+        opts['refractionRatio'] = this.refractionRatio;
         opts['fog'] = this.fog;
         opts['shading'] = this.shading;
         opts['wireframe'] = this.wireframe;
@@ -581,7 +651,7 @@
 
 <polymer-element name="three-mesh-phong-materialized-mesh" extends="three-object3d" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible,color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
   <template>
-    <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -622,6 +692,7 @@
         this.object = child.object
         this.mesh = this.object;
         this.mesh.userData['element'] = this;
+        this.super();
       }
     });
   </script>
