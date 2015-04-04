@@ -80,5 +80,20 @@
       <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
+
+    <h2>Torus</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <three-mesh-phong-material color="#ffffff" map="images/earth.jpg"></three-mesh-phong-material>
+        <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>
+      </three-mesh>
+    </three-canvas>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-torus radius="0.5" tube="0.3" color="#ffffff" map="images/earth.jpg"></three-torus>
+    </three-canvas>
   </body>
 </html>

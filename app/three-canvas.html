@@ -561,6 +561,24 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-torus-geometry" extends="three-geomerty" attributes="radius,tube,radialSegments,tubularSegments,arc">
+  <script>
+    Polymer({
+      radius: 100,
+      tube: 40,
+      radialSegments: 16,
+      tubularSegments: 32,
+      arc: Math.PI * 2,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.TorusGeometry(parseFloat(this.radius), parseFloat(this.tube), this.radialSegments, this.tubularSegments, this.arc);
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-mesh-phong-materialized-mesh" extends="three-object3d" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible,color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
   <template>
     <three-mesh position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
@@ -845,6 +863,54 @@
         thetaStart="{{thetaStart}}"
         thetaLength="{{thetaLength}}">
       </three-sphere-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-torus" extends="three-mesh-phong-materialized-mesh" attributes="radius,tube,radialSegments,tubularSegments,arc">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-torus-geometry
+        radius="{{radius}}"
+        tube="{{tube}}"
+        radialSegments="{{radialSegments}}"
+        tubularSegments="{{tubularSegments}}"
+        arc="{{arc}}">
+      </three-torus-geometry>
     </three-mesh-phong-materialized-mesh>
   </template>
   <script>
