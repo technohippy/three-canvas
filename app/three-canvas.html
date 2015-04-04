@@ -460,6 +460,60 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-mesh-lambert-material" extends="three-material" attributes="color,ambient,emissive,wrapAround,wrapRGB,map,lightMap,specularMap,alphaMap,envMap,combine,reflectivity,refractionRatio,fog,shading,wireframe">
+  <script>
+    Polymer({
+      color: '#ffffff',
+      ambient: '#ffffff',
+      emissive: '#000000',
+      wrapAround: false,
+      wrapRGB: '1,1,1',
+      combine: THREE.MultiplyOperation,
+      reflectivity: 1,
+      refractionRatio: 0.98,
+      fog: true,
+      shading: THREE.SmoothShading,
+      wireframe: false,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.material = new THREE.MeshPhongMaterial(this.getOptions());
+        if (typeof this.map !== 'undefined') {
+          this.material.map = THREE.ImageUtils.loadTexture(this.map);
+        }
+        if (typeof this.lightMap !== 'undefined') {
+          this.material.lightMap = THREE.ImageUtils.loadTexture(this.lightMap);
+        }
+        if (typeof this.specularMap !== 'undefined') {
+          this.material.specularMap = THREE.ImageUtils.loadTexture(this.specularMap);
+        }
+        if (typeof this.alphaMap !== 'undefined') {
+          this.material.alphaMap = THREE.ImageUtils.loadTexture(this.alphaMap);
+        }
+        if (typeof this.envMap !== 'undefined') {
+          this.material.envMap = THREE.ImageUtils.loadTexture(this.envMap);
+        }
+      },
+      getOptions: function() {
+        var opts = this.super();
+        opts['color'] = new THREE.Color(this.color);
+        opts['ambient'] = new THREE.Color(this.ambient);
+        opts['emissive'] = new THREE.Color(this.emissive);
+        opts['wrapAround'] = this.wrapAround;
+        opts['wrapRGB'] = THREE.Element.Utils.vector3(this.wrapRGB);
+        opts['combine'] = this.combine;
+        opts['reflectivity'] = this.reflectivity;
+        opts['refractionRatio'] = this.refractionRatio;
+        opts['fog'] = this.fog;
+        opts['shading'] = this.shading;
+        opts['wireframe'] = this.wireframe;
+        return opts;
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-geomerty">
   <script>
     Polymer({
