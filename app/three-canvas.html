@@ -470,9 +470,9 @@
 <polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
   <script>
     Polymer({
-      width: 1.0,
-      height: 1.0,
-      depth: 1.0,
+      width: 1,
+      height: 1,
+      depth: 1,
       widthSegments: 1,
       heightSegments: 1,
       depthSegments: 1,
@@ -573,7 +573,7 @@
         this.setup();
       },
       setup: function() {
-        this.geometry = new THREE.TorusGeometry(parseFloat(this.radius), parseFloat(this.tube), this.radialSegments, this.tubularSegments, this.arc);
+        this.geometry = new THREE.TorusGeometry(this.radius, this.tube, this.radialSegments, this.tubularSegments, this.arc);
       }
     });
   </script>
@@ -672,6 +672,12 @@
   </template>
   <script>
     Polymer({
+      width: 1,
+      height: 1,
+      depth: 1,
+      widthSegments: 1,
+      heightSegments: 1,
+      depthSegments: 1
     });
   </script>
 </polymer-element>
@@ -719,6 +725,10 @@
   </template>
   <script>
     Polymer({
+      radius: 50,
+      segments: 32,
+      thetaStart: 0,
+      thetaLength: Math.PI * 2
     });
   </script>
 </polymer-element>
@@ -770,6 +780,14 @@
   </template>
   <script>
     Polymer({
+      radiusTop: 20.0,
+      radiusBottom: 20.0,
+      height: 100.0,
+      radialSegments: 32,
+      heightSegments: 1,
+      openEnded: false,
+      thetaStart: 0,
+      thetaLength: 2 * Math.PI
     });
   </script>
 </polymer-element>
@@ -817,6 +835,10 @@
   </template>
   <script>
     Polymer({
+      width: 1,
+      height: 1,
+      widthSegments: 1,
+      heightSegments: 1
     });
   </script>
 </polymer-element>
@@ -867,6 +889,13 @@
   </template>
   <script>
     Polymer({
+      radius: 50,
+      widthSegments: 32,
+      heightSegments: 16,
+      phiStart: 0,
+      phiLength: Math.PI * 2,
+      thetaStart: 0,
+      thetaLength: Math.PI
     });
   </script>
 </polymer-element>
@@ -915,6 +944,11 @@
   </template>
   <script>
     Polymer({
+      radius: 100,
+      tube: 40,
+      radialSegments: 16,
+      tubularSegments: 32,
+      arc: Math.PI * 2
     });
   </script>
 </polymer-element>
