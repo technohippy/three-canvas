@@ -51,6 +51,20 @@
       throw 'invalid argument: ' + val;
     }
   };
+  THREE.Element.Utils.constant = function(val) {
+    if (typeof val === 'string' && /^THREE\./.test(val)) {
+      var parts = val.split('.');
+      parts.shift();
+      var value = THREE;
+      while (parts.length !== 0) {
+        value = value[parts.shift()];
+      }
+      return value;
+    }
+    else {
+      return val;
+    }
+  };
 </script>
 
 <polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,useShadow">
