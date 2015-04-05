@@ -28,7 +28,7 @@ module.exports = function(grunt) {
       'demos-images': {
         expand: true,
         cwd: 'app',
-        src: ['images/**'],
+        src: ['images/**', 'models/**'],
         dest: 'demos'
       },
       'dist-bower': {

@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-canvas.html">
+  </head>
+  <body>
+    <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
+
+    <h2>JSONLoader</h2>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000">
+      <three-camera position="0,0,10" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-loader-mesh type="json" src="./models/suzanne.js"></three-loader-mesh>
+    </three-canvas>
+  </body>
+</html>

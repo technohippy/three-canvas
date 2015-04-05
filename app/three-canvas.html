@@ -387,6 +387,26 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-loader-mesh" extends="three-object3d" attributes="type,src">
+  <script>
+    Polymer({
+      type: 'json',
+      setup: function() {
+        this.mesh = new THREE.Mesh();
+        if (this.type === 'json') {
+          var loader = new THREE.JSONLoader(); 
+          loader.load(this.src, function(geometry, materials) {
+            this.mesh.geometry = geometry;
+            this.mesh.material = materials[0];
+          }.bind(this));
+        }
+        this.object = this.mesh;
+        this.super();
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-material" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
   <script>
     Polymer({
