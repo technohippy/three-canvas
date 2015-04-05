@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <script src="./webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-canvas.html">
+  </head>
+  <body>
+    <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
+
+    <three-canvas width="200" height="200" antialias clearColor="#000000" shadowMapEnabled="true">
+      <three-camera position="0,0,10" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-box width="1" height="1" depth="1" color="#ff0000" position="0,0,1" rotation="0.2,0.2,0.2"></three-box>
+      <three-plane width="3" height="3" color="#ffffff"></three-plane>
+    </three-canvas>
+  </body>
+</html>

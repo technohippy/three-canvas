@@ -157,17 +157,64 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-renderer" attributes="antialias,clearColor,sceneId,cameraId">
+<polymer-element name="three-renderer" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,,sceneId,cameraId">
   <script>
     Polymer({
+      precision: 'highp',
+      alpha: false,
+      depth: true,
+      stencil: true,
+      antialias: false,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      logarithmicDepthBuffer: false,
+      clearColor: '#000000',
+      autoClear: true,
+      autoClearColor: true,
+      autoClearDepth: true,
+      autoClearStencil: true,
+      sortObjects: true,
+      gammaInput: false,
+      gammaOutput: false,
+      shadowMapEnabled: false,
+      shadowMapType: THREE.PCFShadowMap,
+      shadowMapCullFace: THREE.CullFaceFront,
+      shadowMapDebug: false,
+      shadowMapCascade: false,
+      maxMorphTargets: 8,
+      maxMorphNormals: 4,
+      autoScaleCubemaps: true,
       isSetup: false,
       setup: function(threejs) {
         if (this.isSetup) return;
         this.canvas = threejs.canvas;
-        var antialias = this.antialias !== undefined;
-        var clearColor = new THREE.Color(this.clearColor || '#000000');
-        this.renderer = new THREE.WebGLRenderer({canvas:this.canvas, antialias:antialias});
-        this.renderer.setClearColor(clearColor, 1);
+        this.renderer = new THREE.WebGLRenderer({
+          canvas:this.canvas,
+          precision:this.precision,
+          alpha:this.alpha,
+          depth:this.depth,
+          stencil:this.stencil,
+          antialias:this.antialias,
+          premultipliedAlpha:this.premultipliedAlpha,
+          preserveDrawingBuffer:this.preserveDrawingBuffer,
+          logarithmicDepthBuffer:this.logarithmicDepthBuffer
+        });
+        this.renderer.setClearColor(new THREE.Color(this.clearColor), 1);
+        this.renderer.autoClear = this.autoClear;
+        this.renderer.autoClearColor = this.autoClearColor;
+        this.renderer.autoClearDepth = this.autoClearDepth;
+        this.renderer.autoClearStencil = this.autoClearStencil;
+        this.renderer.sortObjects = this.sortObjects;
+        this.renderer.gammaInput = this.gammaInput;
+        this.renderer.gammaOutput = this.gammaOutput;
+        this.renderer.shadowMapEnabled = this.shadowMapEnabled;
+        this.renderer.shadowMapType = this.shadowMapType;
+        this.renderer.shadowMapCullFace = this.shadowMapCullFace;
+        this.renderer.shadowMapDebug = this.shadowMapDebug;
+        this.renderer.shadowMapCascade = this.shadowMapCascade;
+        this.renderer.maxMorphTargets = this.maxMorphTargets;
+        this.renderer.maxMorphNormals = this.maxMorphNormals;
+        this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
         this.isSetup = true;
       }
     });
@@ -398,6 +445,7 @@
           loader.load(this.src, function(geometry, materials) {
             this.mesh.geometry = geometry;
             this.mesh.material = materials[0];
+            this.mesh.material.ambient = this.mesh.material.color;
           }.bind(this));
         }
         this.object = this.mesh;
