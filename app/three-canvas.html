@@ -274,10 +274,12 @@
       receiveShadow: false,
       scale: '1,1,1',
       setup: function() {
-        this.object.castShadow = this.castShadow;
-        this.object.receiveShadow = this.receiveShadow;
-        if (typeof this.name !== 'undefined' && typeof this.object !== 'undefined') {
-          this.object.name = this.name;
+        if (typeof this.object !== 'undefined') {
+          this.object.castShadow = this.castShadow;
+          this.object.receiveShadow = this.receiveShadow;
+          if (typeof this.name !== 'undefined') {
+            this.object.name = this.name;
+          }
         }
       },
       ready: function() {
