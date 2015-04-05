@@ -6,10 +6,21 @@
   <body>
     <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
-    <three-canvas width="200" height="200" antialias clearColor="#000000" shadowMapEnabled="true">
-      <three-camera position="0,0,10" lookAt="0,0,0" controls="orbit"></three-camera>
-      <three-box width="1" height="1" depth="1" color="#ff0000" position="0,0,1" rotation="0.2,0.2,0.2"></three-box>
-      <three-plane width="3" height="3" color="#ffffff"></three-plane>
-    </three-canvas>
+    <three-engine width="200" height="200">
+      <three-renderer antialias clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
+      <three-scene>
+        <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
+        <three-light direction="100,100,100" color="#cccccc" castShadow="true"></three-light>
+        <three-light ambient color="#333333"></three-light>
+        <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
+          <three-mesh-phong-material color="#ff0000"></three-mesh-phong-material>
+          <three-box-geometry width="50" height="50" depth="50"></three-box-geometry>
+        </three-mesh>
+        <three-mesh position="0,0,-100" receiveShadow="true">
+          <three-mesh-phong-material color="#dddddd"></three-mesh-phong-material>
+          <three-plane-geometry width="1000" height="1000" widthSegments="10" heightSegments="10"></three-plane>
+        </three-mesh>
+      </three-scene>
+    </three-engine>
   </body>
 </html>
