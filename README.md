@@ -2,7 +2,7 @@
 
 A Custom Element to Use WebGL Easily by Utilizing Three.js
 
-## How to Try
+## How to Use
 
 Install the custom element through bower.
 

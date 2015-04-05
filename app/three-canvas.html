@@ -53,9 +53,10 @@
   };
 </script>
 
-<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen">
+<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,useShadow">
   <script>
     Polymer({
+      fullscreen: false,
       isSetup: false,
       domReady: function() {
         if (typeof this.parentNode.tagName === 'undefined') return; // #shadowroot
@@ -215,6 +216,9 @@
         this.renderer.maxMorphTargets = this.maxMorphTargets;
         this.renderer.maxMorphNormals = this.maxMorphNormals;
         this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
+        if (threejs.useShadow) {
+          this.renderer.shadowMapEnabled = true;
+        }
         this.isSetup = true;
       }
     });
@@ -256,6 +260,8 @@
       receiveShadow: false,
       scale: '1,1,1',
       setup: function() {
+        this.object.castShadow = this.castShadow;
+        this.object.receiveShadow = this.receiveShadow;
         if (typeof this.name !== 'undefined' && typeof this.object !== 'undefined') {
           this.object.name = this.name;
         }
@@ -383,19 +389,19 @@
 <polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color">
   <script>
     Polymer({
+      color: '#ffffff',
       ready: function() {
         this.setup();
       },
       setup: function() {
         if (this.isSetup) return;
-        var color = new THREE.Color(this.color || '#ffffff');
         if (this.direction) {
-          var direction = eval("[" + this.direction + "]");
-          this.light = new THREE.DirectionalLight(color);
-          this.light.position.set(direction[0], direction[1], direction[2]);
+          var direction = THREE.Element.Utils.vector3(this.direction);
+          this.light = new THREE.DirectionalLight(new THREE.Color(this.color));
+          this.light.position.copy(direction);
         }
         else if (this.ambient !== undefined) {
-          this.light = new THREE.AmbientLight(color);
+          this.light = new THREE.AmbientLight(new THREE.Color(this.color));
         }
         this.object = this.light;
         this.super();
