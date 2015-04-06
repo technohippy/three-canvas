@@ -455,21 +455,40 @@
 <polymer-element name="three-mesh" extends="three-object3d">
   <script>
     Polymer({
+      isMesh: true,
       setup: function() {
         var material;
         var geometries = [];
+        var meshes = [];
         Array.apply(null, this.children).forEach(function(child) {
           if (child.material) material = child.material;
           if (child.geometry) geometries.push(child.geometry);
-          // TODO: 後でリファクタリング
+          if (child.isMesh) {
+            child.setup();
+            meshes.push(child.mesh);
+          }
+          // TODO: should be refactored
           if (child.getDistributedNodes) {
             Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
               if (contentChild.material) material = contentChild.material;
               if (contentChild.geometry) geometries.push(contentChild.geometry);
+              if (contentChild.isMesh) {
+                contentChild.setup();
+                meshes.push(contentChild.mesh);
+              }
             }, this);
           }
         });
-        this.mesh = new THREE.Mesh(geometries[0], material);
+        var geometry = geometries.shift();
+        while (0 < geometries.length) {
+          geometry.merge(geometries.shift());
+        }
+        while (0 < meshes.length) {
+          var mesh = meshes.shift();
+          mesh.updateMatrix();
+          geometry.merge(mesh.geometry, mesh.matrix);
+        }
+        this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.userData['element'] = this;
         this.mesh.position.copy(this.position);
         this.mesh.rotation.copy(this.rotation);
@@ -821,7 +840,7 @@
       scale="{{scale}}"
       side="{{side}}"
       opacity="{{opacity}}"
-      transparent="{{transparent}}"
+      jransparent="{{transparent}}"
       blending="{{blending}}"
       blendSrc="{{blendSrc}}"
       blendDst="{{blendDst}}"
@@ -854,10 +873,12 @@
         heightSegments="{{heightSegments}}"
         depthSegments="{{depthSegments}}">
       </three-box-geometry>
+      <content></content>
     </three-mesh-phong-materialized-mesh>
   </template>
   <script>
     Polymer({
+      isMesh: true,
       width: 1,
       height: 1,
       depth: 1,
@@ -911,6 +932,7 @@
   </template>
   <script>
     Polymer({
+      isMesh: true,
       radius: 50,
       segments: 32,
       thetaStart: 0,
@@ -966,6 +988,7 @@
   </template>
   <script>
     Polymer({
+      isMesh: true,
       radiusTop: 20.0,
       radiusBottom: 20.0,
       height: 100.0,
@@ -1021,6 +1044,7 @@
   </template>
   <script>
     Polymer({
+      isMesh: true,
       width: 1,
       height: 1,
       widthSegments: 1,
@@ -1071,10 +1095,12 @@
         thetaStart="{{thetaStart}}"
         thetaLength="{{thetaLength}}">
       </three-sphere-geometry>
+      <content></content>
     </three-mesh-phong-materialized-mesh>
   </template>
   <script>
     Polymer({
+      isMesh: true,
       radius: 50,
       widthSegments: 32,
       heightSegments: 16,
@@ -1130,6 +1156,7 @@
   </template>
   <script>
     Polymer({
+      isMesh: true,
       radius: 100,
       tube: 40,
       radialSegments: 16,
