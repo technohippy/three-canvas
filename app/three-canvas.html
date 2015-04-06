@@ -252,7 +252,7 @@
         Array.apply(null, this.children).forEach(function(child) {
           if (child.setup) child.setup(threejs);
           if (child.object) this.scene.add(child.object);
-          // TODO: 後でリファクタリング
+          // TODO: should be refactored
           if (child.getDistributedNodes) {
             Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
               if (contentChild.setup) contentChild.setup(threejs);
