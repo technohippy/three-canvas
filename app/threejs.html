@@ -1,6 +1,5 @@
 <html>
   <head>
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="three-canvas.html">
     <script>
@@ -18,7 +17,7 @@
     <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
     <button onclick="javascript:sunset()">Sunset</button><br/>
 
-    <three-canvas width="200" height="200" antialias clearColor="#000000">
+    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <three-camera name="camera" position="0,8,8" lookAt="0,0,0"></three-camera>
       <three-light name="light1" direction="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light name="light2" ambient color="#333333"></three-light>

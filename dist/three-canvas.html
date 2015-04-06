@@ -51,12 +51,27 @@
       throw 'invalid argument: ' + val;
     }
   };
+  THREE.Element.Utils.constant = function(val) {
+    if (typeof val === 'string' && /^THREE\./.test(val)) {
+      var parts = val.split('.');
+      parts.shift();
+      var value = THREE;
+      while (parts.length !== 0) {
+        value = value[parts.shift()];
+      }
+      return value;
+    }
+    else {
+      return val;
+    }
+  };
 </script>
 
-<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,useShadow">
+<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,shadowEnabled">
   <script>
     Polymer({
       fullscreen: false,
+      shadowEnabled: false,
       isSetup: false,
       domReady: function() {
         if (typeof this.parentNode.tagName === 'undefined') return; // #shadowroot
@@ -216,7 +231,7 @@
         this.renderer.maxMorphTargets = this.maxMorphTargets;
         this.renderer.maxMorphNormals = this.maxMorphNormals;
         this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
-        if (threejs.useShadow) {
+        if (threejs.shadowEnabled) {
           this.renderer.shadowMapEnabled = true;
         }
         this.isSetup = true;
@@ -246,6 +261,25 @@
           }
         }, this);
 
+        // TODO: should be refactored
+        if (threejs.shadowEnabled) {
+          this.scene.children.forEach(function(object3d) {
+            console.log(object3d.type);
+            if (object3d.type === 'DirectionalLight') {
+              object3d.castShadow = true;
+            }
+            else if (object3d.type === 'Mesh') {
+              if (object3d.geometry.type === 'PlaneBufferGeometry' 
+                  || object3d.geometry.type === 'PlaneGeometry') {
+                object3d.receiveShadow = true;
+              }
+              else {
+                object3d.castShadow = true;
+              }
+            }
+          }, this);
+        }
+
         this.isSetup = true;
       }
     });
@@ -260,10 +294,12 @@
       receiveShadow: false,
       scale: '1,1,1',
       setup: function() {
-        this.object.castShadow = this.castShadow;
-        this.object.receiveShadow = this.receiveShadow;
-        if (typeof this.name !== 'undefined' && typeof this.object !== 'undefined') {
-          this.object.name = this.name;
+        if (typeof this.object !== 'undefined') {
+          this.object.castShadow = this.castShadow;
+          this.object.receiveShadow = this.receiveShadow;
+          if (typeof this.name !== 'undefined') {
+            this.object.name = this.name;
+          }
         }
       },
       ready: function() {
@@ -340,9 +376,9 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight">
+<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight,shadowEnabled">
   <template>
-    <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}">
+    <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}" shadowEnabled={{shadowEnabled}}>
       <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
       <three-scene id="scene" defaultLight={{defaultLight}}>
         <content></content>
@@ -351,6 +387,7 @@
   </template>
   <script>
     Polymer({
+      shadowEnabled: false,
       needDefaultLight: false,
       domReady: function() {
         if (this.querySelector('three-light') === null && this.defaultLight !== 'false') {
@@ -362,7 +399,8 @@
           this.needDefaultLight = true;
           */
           var directionalLight = document.createElement('three-light');
-          directionalLight.setAttribute('direction', '0.577,0.577,0.577');
+          //directionalLight.setAttribute('direction', '0.577,0.577,0.577');
+          directionalLight.setAttribute('direction', '100,100,100');
           directionalLight.setAttribute('color', '#cccccc');
           directionalLight.isSetup = false;
           this.$.scene.appendChild(directionalLight);
@@ -386,19 +424,22 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color">
+<polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color,shadowMapWidth,shadowMapHeight">
   <script>
     Polymer({
       color: '#ffffff',
+      shadowMapWidth: 512,
+      shadowMapHeight: 512,
       ready: function() {
         this.setup();
       },
       setup: function() {
         if (this.isSetup) return;
         if (this.direction) {
-          var direction = THREE.Element.Utils.vector3(this.direction);
           this.light = new THREE.DirectionalLight(new THREE.Color(this.color));
-          this.light.position.copy(direction);
+          this.light.position.copy(THREE.Element.Utils.vector3(this.direction));
+          this.light.shadowMapWidth = this.shadowMapWidth;
+          this.light.shadowMapHeight = this.shadowMapHeight;
         }
         else if (this.ambient !== undefined) {
           this.light = new THREE.AmbientLight(new THREE.Color(this.color));

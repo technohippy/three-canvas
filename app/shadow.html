@@ -6,8 +6,16 @@
   <body>
     <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
+    <!-- set shadowEnabled attribute true in three-canvas element -->
+    <three-canvas width="200" height="200" antialias="true" clearColor="#ffffff" shadowEnabled="true">
+      <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-box width="50" height="50" depth="50" color="#ff0000" rotation="0.2,0.2,0.2"></three-box>
+      <three-plane width="1000" height="1000" color="#dddddd" position="0,0,-100"></three-plane>
+    </three-canvas>
+
+    <!-- use shadowMapEnabled, castShadow and receiveShadow attributes in each elements in an appropriate manner -->
     <three-engine width="200" height="200">
-      <three-renderer antialias clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
+      <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
       <three-scene>
         <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
         <three-light direction="100,100,100" color="#cccccc" castShadow="true"></three-light>
@@ -19,6 +27,24 @@
         <three-mesh position="0,0,-100" receiveShadow="true">
           <three-mesh-phong-material color="#dddddd"></three-mesh-phong-material>
           <three-plane-geometry width="1000" height="1000" widthSegments="10" heightSegments="10"></three-plane>
+        </three-mesh>
+      </three-scene>
+    </three-engine>
+
+    <!-- Note that you should set shadowMapWidth/shadowMapHeight for small objects -->
+    <three-engine width="200" height="200">
+      <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
+      <three-scene>
+        <three-camera position="0,0,20" lookAt="0,0,0" controls="orbit"></three-camera>
+        <three-light direction="100,100,100" color="#cccccc" castShadow="true" shadowMapWidth="4096" shadowMapHeight="4096"></three-light>
+        <three-light ambient color="#333333"></three-light>
+        <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
+          <three-mesh-phong-material color="#ff0000"></three-mesh-phong-material>
+          <three-box-geometry width="1" height="1" depth="1"></three-box-geometry>
+        </three-mesh>
+        <three-mesh position="0,0,-2" receiveShadow="true">
+          <three-mesh-phong-material color="#dddddd"></three-mesh-phong-material>
+          <three-plane-geometry width="100" height="100" widthSegments="10" heightSegments="10"></three-plane>
         </three-mesh>
       </three-scene>
     </three-engine>

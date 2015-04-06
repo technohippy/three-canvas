@@ -6,10 +6,10 @@
   <body>
     <button style="z-index:1; position:absolute;" onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
-    <!-- Add a fullscreen attribute in a three-engine element -->
+    <!-- Set a fullscreen attribute true in a three-engine element -->
     <!--
     <three-engine fullscreen>
-      <three-renderer antialias clearColor="#000000"></three-renderer>
+      <three-renderer antialias="true" clearColor="#000000"></three-renderer>
       <three-scene>
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
         <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
@@ -19,8 +19,8 @@
     </three-engine>
     -->
 
-    <!-- Add a fullscreen attribute in a three-canvas element -->
-    <three-canvas fullscreen antialias clearColor="#000000">
+    <!-- Set a fullscreen attribute true in a three-canvas element -->
+    <three-canvas fullscreen="true" antialias="true" clearColor="#000000">
       <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
       <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light ambient color="#333333"></three-light>
