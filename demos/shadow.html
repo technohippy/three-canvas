@@ -10,7 +10,7 @@
     <button onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
     <!-- set shadowEnabled attribute true in three-canvas element -->
-    <three-canvas width="200" height="200" antialias="true" clearColor="#ffffff" shadowEnabled="true">
+    <three-canvas width="200" height="200" antialias="true" clearColor="#ffffff" shadowEnabled="true" defaultLight="true">
       <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
       <three-box width="50" height="50" depth="50" color="#ff0000" rotation="0.2,0.2,0.2"></three-box>
       <three-plane width="1000" height="1000" color="#dddddd" position="0,0,-100"></three-plane>
@@ -21,8 +21,8 @@
       <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
       <three-scene>
         <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-light direction="100,100,100" color="#cccccc" castShadow="true"></three-light>
-        <three-light ambient color="#333333"></three-light>
+        <three-directional-light position="100,100,100" color="#cccccc" castShadow="true"></three-directional-light>
+        <three-ambient-light color="#333333"></three-ambient-light>
         <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
           <three-mesh-phong-material color="#ff0000"></three-mesh-phong-material>
           <three-box-geometry width="50" height="50" depth="50"></three-box-geometry>
@@ -39,8 +39,8 @@
       <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
       <three-scene>
         <three-camera position="0,0,20" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-light direction="100,100,100" color="#cccccc" castShadow="true" shadowMapWidth="4096" shadowMapHeight="4096"></three-light>
-        <three-light ambient color="#333333"></three-light>
+        <three-directional-light position="100,100,100" color="#cccccc" castShadow="true" shadowMapWidth="4096" shadowMapHeight="4096"></three-directional-light>
+        <three-ambient-light color="#333333"></three-ambient-light>
         <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
           <three-mesh-phong-material color="#ff0000"></three-mesh-phong-material>
           <three-box-geometry width="1" height="1" depth="1"></three-box-geometry>

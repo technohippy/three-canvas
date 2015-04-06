@@ -240,7 +240,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-scene" attributes="defaultLight">
+<polymer-element name="three-scene" attributes="">
   <script>
     Polymer({
       isSetup: false,
@@ -264,7 +264,6 @@
         // TODO: should be refactored
         if (threejs.shadowEnabled) {
           this.scene.children.forEach(function(object3d) {
-            console.log(object3d.type);
             if (object3d.type === 'DirectionalLight') {
               object3d.castShadow = true;
             }
@@ -387,25 +386,25 @@
   </template>
   <script>
     Polymer({
+      defaultLight: false,
       shadowEnabled: false,
       needDefaultLight: false,
       domReady: function() {
-        if (this.querySelector('three-light') === null && this.defaultLight !== 'false') {
+        if (this.defaultLight) {
           /*
           <template if={{needDefaultLight}}>
-            <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
-            <three-light ambient color="#333333"></three-light>
+            <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+            <three-ambient-light color="#333333"></three-light>
           </template>
           this.needDefaultLight = true;
           */
-          var directionalLight = document.createElement('three-light');
-          //directionalLight.setAttribute('direction', '0.577,0.577,0.577');
-          directionalLight.setAttribute('direction', '100,100,100');
+          var directionalLight = document.createElement('three-directional-light');
+          //directionalLight.setAttribute('position', '0.577,0.577,0.577');
+          directionalLight.setAttribute('position', '100,100,100');
           directionalLight.setAttribute('color', '#cccccc');
           directionalLight.isSetup = false;
           this.$.scene.appendChild(directionalLight);
-          var ambientLight = document.createElement('three-light');
-          ambientLight.setAttribute('ambient', '');
+          var ambientLight = document.createElement('three-ambient-light');
           ambientLight.setAttribute('color', '#333333');
           ambientLight.isSetup = false;
           this.$.scene.appendChild(ambientLight);
@@ -424,10 +423,36 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-light" extends="three-object3d" attributes="direction,ambient,color,shadowMapWidth,shadowMapHeight">
+<polymer-element name="three-light" extends="three-object3d" attributes="color">
   <script>
     Polymer({
       color: '#ffffff',
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.object = this.light;
+        this.super();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-directional-light" extends="three-light" attributes="intensity,castShadow,onlyShadow,shadowCameraNear,shadowCameraFar,shadowCameraLeft,shadowCameraRight,shadowCameraTop,shadowCameraBottom,shadowCameraVisible,shadowBias,shadowDarkness,shadowMapWidth,shadowMapHeight">
+  <script>
+    Polymer({
+      intensity: 1,
+      castShadow: false,
+      onlyShadow: false,
+      shadowCameraNear: 50,
+      shadowCameraFar: 5000,
+      shadowCameraLeft: -500,
+      shadowCameraRight: 500,
+      shadowCameraTop: 500,
+      shadowCameraBottom: -500,
+      shadowCameraVisible: false,
+      shadowBias: 0,
+      shadowDarkness: 0.5,
       shadowMapWidth: 512,
       shadowMapHeight: 512,
       ready: function() {
@@ -435,16 +460,26 @@
       },
       setup: function() {
         if (this.isSetup) return;
-        if (this.direction) {
-          this.light = new THREE.DirectionalLight(new THREE.Color(this.color));
-          this.light.position.copy(THREE.Element.Utils.vector3(this.direction));
-          this.light.shadowMapWidth = this.shadowMapWidth;
-          this.light.shadowMapHeight = this.shadowMapHeight;
-        }
-        else if (this.ambient !== undefined) {
-          this.light = new THREE.AmbientLight(new THREE.Color(this.color));
-        }
-        this.object = this.light;
+        this.light = new THREE.DirectionalLight(new THREE.Color(this.color));
+        this.light.position.copy(THREE.Element.Utils.vector3(this.position));
+        this.light.shadowMapWidth = this.shadowMapWidth;
+        this.light.shadowMapHeight = this.shadowMapHeight;
+        this.super();
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-ambient-light" extends="three-light" attributes="">
+  <script>
+    Polymer({
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        this.light = new THREE.AmbientLight(new THREE.Color(this.color));
         this.super();
         this.isSetup = true;
       }
@@ -820,6 +855,7 @@
   </template>
   <script>
     Polymer({
+      isMesh: true,
       setup: function(threejs) {
         var child = this.shadowRoot.children[0].shadowRoot.children[0];
         child.setup(threejs);
@@ -878,7 +914,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       width: 1,
       height: 1,
       depth: 1,
@@ -932,7 +967,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       radius: 50,
       segments: 32,
       thetaStart: 0,
@@ -988,7 +1022,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       radiusTop: 20.0,
       radiusBottom: 20.0,
       height: 100.0,
@@ -1044,7 +1077,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       width: 1,
       height: 1,
       widthSegments: 1,
@@ -1100,7 +1132,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       radius: 50,
       widthSegments: 32,
       heightSegments: 16,
@@ -1156,7 +1187,6 @@
   </template>
   <script>
     Polymer({
-      isMesh: true,
       radius: 100,
       tube: 40,
       radialSegments: 16,
@@ -1197,7 +1227,6 @@
           if (typeof this.noFly !== 'undefined') {
             this.controls.noFly = this.noFly === 'true';
           }
-          console.log(this.controls.movementSpeed, this.controls.lookSpeed, this.controls.lon);
         }
         else {
           throw 'Unknown type: ' + this.type;

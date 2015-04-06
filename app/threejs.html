@@ -22,8 +22,8 @@
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <three-camera name="camera" position="0,8,8" lookAt="0,0,0"></three-camera>
-      <three-light name="light1" direction="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-light name="light2" ambient color="#333333"></three-light>
+      <three-directional-light name="light1" position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
+      <three-ambient-light name="light2" color="#333333"></three-ambient-light>
       <three-box name="box" width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ffffff"></three-box>
     </three-canvas>
   </body>
