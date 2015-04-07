@@ -31,6 +31,12 @@ module.exports = function(grunt) {
         src: ['images/**', 'models/**'],
         dest: 'demos'
       },
+      'demos-vendors': {
+        expand: true,
+        cwd: 'app',
+        src: ['vendors/three.js/examples/**'],
+        dest: 'demos'
+      },
       'dist-bower': {
         expand: true,
         cwd: 'app/bower_components',
@@ -42,6 +48,12 @@ module.exports = function(grunt) {
           'three.js-controls/src/*.js',
           'threejs/build/three.js'
         ],
+        dest: 'dist'
+      },
+      'dist-vendors': {
+        expand: true,
+        cwd: 'app',
+        src: ['vendors/three.js/examples/js/**'],
         dest: 'dist'
       }
     },
@@ -78,8 +90,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-release');
 
-  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'replace:demos-html']);
-  grunt.registerTask('build-dist',  ['copy:dist-bower', 'replace:dist-html']);
+  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'copy:demos-vendors', 'replace:demos-html']);
+  grunt.registerTask('build-dist',  ['copy:dist-bower', 'copy:dist-vendors', 'replace:dist-html']);
   grunt.registerTask('build',  ['build-demos', 'build-dist']);
   grunt.registerTask('deploy', ['gh-pages']);
   grunt.registerTask('server', ['connect']);
