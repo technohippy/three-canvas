@@ -1,9 +1,14 @@
 <link rel="import" href="./polymer/polymer.html">
+
 <script src="./threejs/build/three.js"></script>
 
+<!-- controls -->
 <script src="./three.js-controls/src/FirstPersonControls.js"></script>
 <script src="./three.js-controls/src/FlyControls.js"></script>
 <script src="./three.js-controls/src/OrbitControls.js"></script>
+
+<!-- loaders -->
+<script src="vendors/three.js/examples/js/loaders/OBJLoader.js"></script>
 
 <script>
   THREE.Element = THREE.Element || {Utils:{}};
@@ -547,6 +552,14 @@
             this.mesh.geometry = geometry;
             this.mesh.material = materials[0];
             this.mesh.material.ambient = this.mesh.material.color;
+          }.bind(this));
+        }
+        else if (this.type === 'obj') {
+          var loader = new THREE.OBJLoader();
+          loader.load(this.src, function(object) {
+            object.children.forEach(function(child) {
+              this.mesh.children.push(child);
+            }.bind(this));
           }.bind(this));
         }
         this.object = this.mesh;
@@ -1202,7 +1215,7 @@
       setup: function(camera, canvas) {
         if (this.type === 'orbit') {
           this.controls = new THREE.OrbitControls(camera, canvas);
-          this.controls.center = THREE.Element.Utils.vector3(this.center);
+          this.controls.target.copy(THREE.Element.Utils.vector3(this.center));
         }
         else if (this.type === 'fly') {
           this.controls = new THREE.FlyControls(camera, canvas);
