@@ -10,6 +10,13 @@
 <!-- loaders -->
 <script src="vendors/three.js/examples/js/loaders/OBJLoader.js"></script>
 
+<!-- postprocess -->
+<script src="vendors/three.js/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="vendors/three.js/examples/js/shaders/CopyShader.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/MaskPass.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/RenderPass.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/ShaderPass.js"></script>
+
 <script>
   THREE.Element = THREE.Element || {Utils:{}};
   THREE.Element.Utils.vector3 = function(val) {
@@ -144,7 +151,6 @@
             this.controls = controlsElm.controls;
           }
         }
-
         this.isSetup = true;
       },
       render: function() {
@@ -501,19 +507,19 @@
         var geometries = [];
         var meshes = [];
         Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup();
           if (child.material) material = child.material;
           if (child.geometry) geometries.push(child.geometry);
           if (child.isMesh) {
-            child.setup();
             meshes.push(child.mesh);
           }
           // TODO: should be refactored
           if (child.getDistributedNodes) {
             Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup();
               if (contentChild.material) material = contentChild.material;
               if (contentChild.geometry) geometries.push(contentChild.geometry);
               if (contentChild.isMesh) {
-                contentChild.setup();
                 meshes.push(contentChild.mesh);
               }
             }, this);
@@ -569,7 +575,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-material" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
+<polymer-element name="three-material" attributes="ref,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
   <script>
     Polymer({
       side: THREE.FrontSide,
@@ -587,6 +593,18 @@
       alphaTest: 0,
       overdraw: 0,
       visible: true,
+
+      isSetup: false,
+      setup: function() {
+        if (this.isSetup) return;
+        var elm = document.getElementById(this.ref);
+        if (elm === null) {
+          throw 'Element Not Found: #' + this.ref;
+        }
+        elm.setup();
+        this.material = elm.material;
+        this.isSetup = true;
+      },
       getOptions: function() {
         if (this.opacity < 1) this.transparent = true;
         return {
@@ -707,6 +725,124 @@
         opts['shading'] = this.shading;
         opts['wireframe'] = this.wireframe;
         return opts;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-shader-material" extends="three-material" attributes="shading,linewidth,wireframe,wireframeLinewidth,fog,lights,vertexColors,skinning">
+  <script>
+    Polymer({
+      shading: THREE.SmoothShading,
+      linewidth: 1,
+      wireframe: false,
+      wireframeLinewidth: 1,
+      fog: false,
+      lights: false,
+      vertexColors: THREE.NoColors,
+      skinning: false,
+      isSetup: false,
+      domReady: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var shaderOptions = {};
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions);
+            }, this);
+          }
+        }, this);
+        this.material = new THREE.ShaderMaterial(shaderOptions);
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-vertex-shader">
+  <template>
+    <script type="x-shader/x-vertex">
+      <content></content>
+    </script>
+  </template>
+  <script>
+    Polymer({
+      setup: function(shaderOptions) {
+        shaderOptions['vertexShader'] = this.textContent;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-fragment-shader">
+  <template>
+    <script type="x-shader/x-fragment">
+      <content></content>
+    </script>
+  </template>
+  <script>
+    Polymer({
+      setup: function(shaderOptions) {
+        shaderOptions['fragmentShader'] = this.textContent;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-shader-uniforms">
+  <script>
+    Polymer({
+      setup: function(shaderOptions) {
+        shaderOptions['uniforms'] = {};
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions['uniforms']);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions['uniforms']);
+            }, this);
+          }
+        }, this);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-shader-attributes">
+  <script>
+    Polymer({
+      setup: function(shaderOptions) {
+        shaderOptions['attributes'] = {};
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions['attributes']);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions['attributes']);
+            }, this);
+          }
+        }, this);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-shader-variable" attributes="name,type,value">
+  <template>
+    <style>
+      #container {display:none}
+    </style>
+    <div id="container">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      setup: function(variableOptions) {
+        variableOptions[this.name] = {type: this.type, value: eval(this.value)};
+        return this.textContent;
       }
     });
   </script>
