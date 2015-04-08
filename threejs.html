@@ -8,8 +8,11 @@
     <script>
       function sunset() {
         var canvas = document.getElementsByTagName('three-canvas')[0];
+
+        // Retrieve three.js objects by name from a three-canvas element
         var threeCamera = canvas.getObjectByName('camera');
         var threeLight1 = canvas.getObjectByName('light1');
+
         threeCamera.position.set(0, 0, 8);
         threeCamera.lookAt(new THREE.Vector3());
         threeLight1.color = new THREE.Color('#ff0000');
@@ -21,6 +24,7 @@
     <button onclick="javascript:sunset()">Sunset</button><br/>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
+      <!-- Add a name attribute to use a corresponding three.js object later -->
       <three-camera name="camera" position="0,8,8" lookAt="0,0,0"></three-camera>
       <three-directional-light name="light1" position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
       <three-ambient-light name="light2" color="#333333"></three-ambient-light>
