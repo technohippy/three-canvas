@@ -8,37 +8,74 @@
     <link rel="import" href="three-canvas.html">
   </head>
   <body>
-    <h1>&lt;three-canvas></h1>
+    <section>
+      <h1 style="margin-top:40px; margin-bottom:30px;">&lt;three-canvas></h1>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
-      <three-box width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ff0000"></three-box>
-    </three-canvas>
-    <pre class="prettyprint" style="border:1px solid gray; padding:10px; overflow-x:scroll;"><code>&lt;html>
-  &lt;head>
-    &lt;script src="bower_components/webcomponentsjs/webcomponents.js">&lt;/script>
-    &lt;link rel="import" href="bower_components/three-canvas/dist/three-canvas.html">
-  &lt;/head>
-  &lt;body>
-    &lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
-      &lt;three-box width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ff0000">&lt;/three-box>
-    &lt;/three-canvas>
-  &lt;/body>
-&lt;/html></code></pre>
+      <p>&lt;three-canvas> is <strong>a set of custom elements for <a href="http://threejs.org/">three.js</a></strong>.</p>
+      
+      <p>Although three.js is a superb library which allows us to use WebGL very easier than itself, its way to use WebGL is procedural. IMHO the definition of a 3D scene should be declarative because we are not interested in how the scene is built but interested in what the scene is. By utilizing &lt;three-canvas> you can define a 3D scene in declarative way.</p>
 
-    <ul>
-      <li><a href="basic.html">Basic</a></li>
-      <li><a href="controls.html">Controls</a></li>
-      <li><a href="geometries.html">Geometries</a></li>
-      <li><a href="fullscreen.html">Fullscreen</a></li>
-      <li><a href="shadow.html">Shadow</a></li>
-      <li><a href="merge.html">Merge Meshes</a></li>
-      <li><a href="loader.html">Loaders</a></li>
-      <li><a href="shader.html">Shader</a></li>
-      <li><a href="threejs.html">Access Three.js Objects</a></li>
-      <li><a href="events.html">Events</a></li>
-    </ul>
+      <p>After building a 3D scene declaratively, you can handle the scene as you like by using three.js objects (<a href="./threejs.html">See this example</a>.) <strong>Build declaratively, use procedurally</strong>; I believe this is the best way to handle a 3D scene.</p>
+    </section>
+
+    <section>
+      <h2>Sample</h2>
+
+      <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+        <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+        <three-box name="box" width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ff0000"></three-box>
+      </three-canvas>
+      <button onclick="rotateBox()">Rotate a Box</button>
+      <script>
+        function rotateBox() {
+          var canvas = document.getElementsByTagName('three-canvas')[0];
+          var threeJsMesh = canvas.scene.getObjectByName('box');
+          threeJsMesh.rotation.x += 0.1;
+        }
+      </script>
+
+      <pre class="prettyprint" style="border:1px solid gray; padding:10px; overflow-x:scroll;"><code>&lt;html>
+    &lt;head>
+      &lt;script src="bower_components/webcomponentsjs/webcomponents.js">&lt;/script>
+      &lt;link rel="import" href="bower_components/three-canvas/dist/three-canvas.html">
+    &lt;/head>
+    &lt;body>
+      &lt;!-- Build declaratively -->
+      &lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+        &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+        &lt;three-box name="box" width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ff0000">&lt;/three-box>
+      &lt;/three-canvas>
+      &lt;!-- Use procedurally -->
+      &lt;button onclick="rotateBox()">Rotate a Box&lt;/button>
+      &lt;script>
+        function rotateBox() {
+          var canvas = document.getElementsByTagName('three-canvas')[0];
+          var threeJsMesh = canvas.scene.getObjectByName('box');
+          threeJsMesh.rotation.x += 0.1;
+        }
+      &lt;/script>
+    &lt;/body>
+  &lt;/html></code></pre>
+    </section>
+
+    <aside>
+      <section>
+        <h2>Examples</h2>
+
+        <ul>
+          <li><a href="basic.html">Basic</a></li>
+          <li><a href="controls.html">Controls</a></li>
+          <li><a href="geometries.html">Geometries</a></li>
+          <li><a href="fullscreen.html">Fullscreen</a></li>
+          <li><a href="shadow.html">Shadow</a></li>
+          <li><a href="merge.html">Merge Meshes</a></li>
+          <li><a href="loader.html">Loaders</a></li>
+          <li><a href="shader.html">Shader</a></li>
+          <li><a href="threejs.html">Access Three.js Objects</a></li>
+          <li><a href="events.html">Events</a></li>
+        </ul>
+      </section>
+    </aside>
 
     <a href="https://github.com/technohippy/three-canvas"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
   </body>
