@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="./webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="three-canvas.html">
+  </head>
+  <body>
+    <p>
+      <a href="index.html">Top</a>
+      <button onclick="window.open('view-source:' + window.location);">View Source</button>
+    </p>
+
+    <h2>Render Event</h2>
+
+    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+      <three-camera name="camera" position="0,0,8" lookAt="0,0,0"></three-camera>
+      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+    </three-canvas>
+    <script>
+      window.addEventListener('polymer-ready', function(e) {
+        var angle = 0;
+        var threeCanvasElement = document.getElementsByTagName('three-canvas')[0];
+        var threeCamera = threeCanvasElement.getObjectByName('camera');
+        threeCanvasElement.addEventListener('render', function() {
+          angle += 0.01;
+          threeCamera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
+          threeCamera.lookAt(new THREE.Vector3(0,0,0));
+        });
+      });
+    </script>
+  </body>
+</html>
