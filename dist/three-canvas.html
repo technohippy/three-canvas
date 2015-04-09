@@ -79,6 +79,9 @@
   };
   THREE.Element.Utils.replaceNodeName = function(oldElement, newElementName) {
     var newElement = document.createElement(newElementName);
+    oldElement['addEventListener'] = function(eventName, handelr) {
+      newElement.addEventListener(eventName, handelr);
+    };
     for (var i = 0; i < oldElement.attributes.length; i++) {
       var attr = oldElement.attributes[i];
       newElement.setAttribute(attr.name, attr.value);
@@ -183,11 +186,7 @@
         ((function animate() {
           requestAnimationFrame(animate.bind(this));
           this.render();
-          this.scene.children.forEach(function(child) {
-            if (typeof child.userData.element !== 'undefined') {
-              child.userData.element.fire('render');
-            }
-          });
+          this.fire('render');
           if (this.controls) this.controls.update(clock.getDelta());
         }).bind(this))();
       }
@@ -445,6 +444,9 @@
           this.$.scene.appendChild(ambientLight);
         }
         var threejs = this.shadowRoot.children[0];
+        this['addEventListener'] = function(eventName, handler) {
+          threejs.addEventListener(eventName, handler);
+        };
         threejs.setup();
         this.renderer = threejs.renderer;
         this.scene = threejs.scene;

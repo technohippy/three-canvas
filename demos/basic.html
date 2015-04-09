@@ -45,51 +45,6 @@
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
-    <!--
-    <h2>Animation</h2>
-
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera id="camera1" position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-light type="ambient" color="#333333"></three-light>
-      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
-    </three-canvas>
-    <script>
-      (function() {
-        var angle = 0;
-        var cameraElement = document.getElementById('camera1');
-        cameraElement.addEventListener('render', function() {
-          var x = 8 * Math.sin(angle);
-          var z = 8 * Math.cos(angle);
-          angle += 0.01;
-          this.setAttribute('position', '' + x + ',0,' + z); // TODO: Out of alignment
-          this.setAttribute('lookAt', '0,0,0,' + Math.random());
-        });
-      })();
-    </script>
-
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera id="camera2" position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-light type="ambient" color="#333333"></three-light>
-      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
-    </three-canvas>
-    <script>
-      (function() {
-        var angle = 0;
-        var cameraElement = document.getElementById('camera2');
-        cameraElement.addEventListener('render', function() {
-          angle += 0.01;
-          var camera = cameraElement.camera;
-          if (typeof camera !== 'undefined') {
-            camera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
-            camera.lookAt(new THREE.Vector3(0,0,0));
-          }
-        });
-      })();
-    </script>
-    -->
-
     <h2>Default Light</h2>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
