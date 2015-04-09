@@ -77,14 +77,16 @@
       return val;
     }
   };
-  THREE.Element.Utils.replaceNode = function(oldElement, newElementName) {
+  THREE.Element.Utils.replaceNodeName = function(oldElement, newElementName) {
     var newElement = document.createElement(newElementName);
     for (var i = 0; i < oldElement.attributes.length; i++) {
       var attr = oldElement.attributes[i];
       newElement.setAttribute(attr.name, attr.value);
     }
-    oldElement.parentNode.insertBefore(newElement, oldElement); 
-    oldElement.parentNode.removeChild(oldElement);
+    if (oldElement.parentNode) {
+      oldElement.parentNode.insertBefore(newElement, oldElement); 
+      oldElement.parentNode.removeChild(oldElement);
+    }
   };
 </script>
 
@@ -354,7 +356,20 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-camera" extends="three-object3d" attributes="lookAt,controls">
+<polymer-element name="three-camera" extends="three-object3d" attributes="type">
+  <script>
+    Polymer({
+      type: 'perspective',
+      ready: function() {
+        if (this.localName === 'three-camera') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-camera');
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-perspective-camera" extends="three-camera" attributes="lookAt,controls">
   <script>
     Polymer({
       setup: function(threejs) {
@@ -449,7 +464,9 @@
       type: 'directional',
       color: '#ffffff',
       ready: function() {
-        THREE.Element.Utils.replaceNode(this, 'three-' + this.type + '-light');
+        if (this.localName === 'three-light') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-light');
+        }
       },
       setup: function() {
         this.object = this.light;
@@ -585,9 +602,10 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-material" attributes="ref,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
+<polymer-element name="three-material" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
   <script>
     Polymer({
+      type: 'mesh-phong',
       side: THREE.FrontSide,
       opacity: 1,
       transparent: false,
@@ -603,8 +621,12 @@
       alphaTest: 0,
       overdraw: 0,
       visible: true,
-
       isSetup: false,
+      ready: function() {
+        if (!this.ref && this.localName === 'three-material') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-material');
+        }
+      },
       setup: function() {
         if (this.isSetup) return;
         var elm = document.getElementById(this.ref);
