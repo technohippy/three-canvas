@@ -46,12 +46,12 @@
         <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
         <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
         <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
-        <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/earth.jpg')"></three-shader-variable>
+        <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')"></three-shader-variable>
       </three-shader-uniforms>
     </three-shader-material>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="6,2,3" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
       <three-mesh>
         <!-- Use defined shader material -->
         <three-material ref="custom-shader-1"></three-material>
