@@ -9,6 +9,8 @@
   <body>
     <button style="z-index:1; position:absolute;" onclick="window.open('view-source:' + window.location);">View Source</button><br/>
 
+    <h2>Toon Shader</h2>
+
     <!-- Define shader material -->
     <!-- http://jsdo.it/edo_m18/gepr -->
     <three-shader-material id="custom-shader-1">
@@ -55,6 +57,53 @@
       <three-mesh>
         <!-- Use defined shader material -->
         <three-material ref="custom-shader-1"></three-material>
+        <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>
+      </three-mesh>
+    </three-canvas>
+
+    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <!-- Of course you can use a shader material directly in a three-mesh element if yo u prefer -->
+        <!-- http://jsdo.it/edo_m18/gepr -->
+        <three-shader-material>
+          <three-vertex-shader>
+            uniform bool edge;
+            varying vec3 vNormal;
+            void main(void) {
+              vec3 pos = position;
+              if (edge) {
+                pos += normal * 0.04;
+              }
+              vNormal = normal;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+          </three-vertex-shader>
+          <three-fragment-shader>
+            precision mediump float;
+            uniform vec3 lightDirection;
+            uniform sampler2D texture;
+            uniform vec4 edgeColor;
+            varying vec3 vNormal;
+            void main(void) {
+              if (edgeColor.a > 0.0) {
+                gl_FragColor = edgeColor;
+              }
+              else {
+                float diffuse = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
+                vec4 smpColor = texture2D(texture, vec2(diffuse, 0.0));
+                gl_FragColor = smpColor;
+              }
+            }
+          </three-fragment-shader>
+          <three-shader-uniforms>
+            <three-shader-variable name="uDirLightPos" type="v3" value="new THREE.Vector3()"></three-shader-variable>
+            <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
+            <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
+            <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
+            <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')"></three-shader-variable>
+          </three-shader-uniforms>
+        </three-shader-material>
         <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>
       </three-mesh>
     </three-canvas>
