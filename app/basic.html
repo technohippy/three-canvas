@@ -19,8 +19,8 @@
       <three-renderer antialias="true" clearColor="#000000"></three-renderer>
       <three-scene>
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-        <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-        <three-ambient-light color="#333333"></three-ambient-light>
+        <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+        <three-light type="ambient" color="#333333"></three-light>
         <three-mesh>
           <three-mesh-phong-material color="#ffffff" map="images/earth.jpg"></three-mesh-phong-material>
           <three-sphere-geometry radius="1"></three-sphere-geometry>
@@ -32,16 +32,16 @@
       <three-renderer antialias="true" clearColor="#000000"></three-renderer>
       <three-scene>
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-        <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-        <three-ambient-light color="#333333"></three-ambient-light>
+        <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+        <three-light type="ambient" color="#333333"></three-light>
         <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
       </three-scene>
     </three-engine>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-      <three-ambient-light color="#333333"></three-ambient-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
@@ -50,8 +50,8 @@
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <three-camera id="camera1" position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-ambient-light color="#333333"></three-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
     <script>
@@ -70,8 +70,8 @@
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <three-camera id="camera2" position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-ambient-light color="#333333"></three-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
     <script>

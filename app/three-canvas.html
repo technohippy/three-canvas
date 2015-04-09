@@ -77,6 +77,15 @@
       return val;
     }
   };
+  THREE.Element.Utils.replaceNode = function(oldElement, newElementName) {
+    var newElement = document.createElement(newElementName);
+    for (var i = 0; i < oldElement.attributes.length; i++) {
+      var attr = oldElement.attributes[i];
+      newElement.setAttribute(attr.name, attr.value);
+    }
+    oldElement.parentNode.insertBefore(newElement, oldElement); 
+    oldElement.parentNode.removeChild(oldElement);
+  };
 </script>
 
 <polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,shadowEnabled">
@@ -434,12 +443,13 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-light" extends="three-object3d" attributes="color">
+<polymer-element name="three-light" extends="three-object3d" attributes="type,color">
   <script>
     Polymer({
+      type: 'directional',
       color: '#ffffff',
       ready: function() {
-        this.setup();
+        THREE.Element.Utils.replaceNode(this, 'three-' + this.type + '-light');
       },
       setup: function() {
         this.object = this.light;
