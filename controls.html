@@ -20,8 +20,8 @@
       <three-scene>
         <!-- Add a controls attribute with 'orbit' value -->
         <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-        <three-ambient-light ambient color="#333333"></three-ambient-light>
+        <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+        <three-light type="ambient" color="#333333"></three-light>
         <three-mesh>
           <three-mesh-phong-material color="#ffffff" map="images/earth.jpg"></three-mesh-phong-material>
           <three-sphere-geometry radius="1"></three-sphere-geometry>
@@ -36,8 +36,8 @@
           <!-- Add a three-controls element as a child of a three-camera element -->
           <three-controls type="orbit" center="0,0,0"></three-controls>
         </three-camera>
-        <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-        <three-ambient-light color="#333333"></three-ambient-light>
+        <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+        <three-light type="ambient" color="#333333"></three-light>
         <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
       </three-scene>
     </three-engine>
@@ -47,8 +47,8 @@
         <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="orbit" center="0,0,0"></three-controls>
       </three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-      <three-ambient-light color="#333333"></three-ambient-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
@@ -57,8 +57,8 @@
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
       <!-- Add a controls attribute with 'fly' value -->
       <three-camera position="0,0,8" lookAt="0,0,0" controls="fly"></three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-      <three-ambient-light color="#333333"></three-ambient-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
@@ -67,8 +67,8 @@
         <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="fly"></three-controls>
       </three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-      <three-ambient-light color="#333333"></three-ambient-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
@@ -79,8 +79,8 @@
         <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="firstperson" movementSpeed="0.5" lookSpeed="0.07" lon="-85"></three-controls>
       </three-camera>
-      <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-directional-light>
-      <three-ambient-light color="#333333"></three-ambient-light>
+      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
   </body>
