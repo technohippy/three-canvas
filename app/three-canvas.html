@@ -82,10 +82,12 @@
     oldElement['addEventListener'] = function(eventName, handelr) {
       newElement.addEventListener(eventName, handelr);
     };
-    for (var i = 0; i < oldElement.attributes.length; i++) {
-      var attr = oldElement.attributes[i];
+    Array.apply(null, oldElement.attributes).forEach(function(attr) {
       newElement.setAttribute(attr.name, attr.value);
-    }
+    });
+    Array.apply(null, oldElement.children).forEach(function(child) {
+      newElement.appendChild(child);
+    });
     if (oldElement.parentNode) {
       oldElement.parentNode.insertBefore(newElement, oldElement); 
       oldElement.parentNode.removeChild(oldElement);
