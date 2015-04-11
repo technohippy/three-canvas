@@ -3,17 +3,87 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <script src="./webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="three-canvas.html">
+    <link rel="stylesheet" href="style.css" type="text/css">
   </head>
   <body>
-    <p>
+    <nav>
       <a href="index.html">Top</a>
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
-    </p>
+    </nav>
 
-    <h2>Basic</h2>
+    <section>
+      <h2>Basic</h2>
 
+      <p>
+        There are two root elements in &lt;three-canvas>: <code>three-engine</code> and <code>three-canvas</code>. <a href="#complex">The former</a> is a bit more complex than the latter but fully customizable. <a href="#simple">The latter</a> is easy but less customizable.
+      </p> 
+
+      <p>
+        Fully customizable manner is as follows:
+      </p>
+
+      <a name="complex"></a>
+      <pre class="prettyprint"><code>&lt;<strong>three-engine</strong> width="200" height="200">
+  &lt;three-renderer antialias="true" clearColor="#000000">&lt;/three-renderer>
+  &lt;three-scene>
+    &lt;three-camera position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
+    &lt;three-light position="0.577,0.577,0.577" color="#cccccc">&lt;/three-light>
+    &lt;three-light type="ambient" color="#333333">&lt;/three-light>
+    &lt;three-mesh>
+      &lt;three-material color="#ffffff" map="images/earth.jpg">&lt;/three-material>
+      &lt;three-sphere-geometry radius="1">&lt;/three-sphere-geometry>
+    &lt;/three-mesh>
+  &lt;/three-scene>
+&lt;<strong>/three-engine</strong>></code></pre>
+
+      <three-engine width="200" height="200">
+        <three-renderer antialias="true" clearColor="#000000"></three-renderer>
+        <three-scene>
+          <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
+          <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+          <three-light type="ambient" color="#333333"></three-light>
+          <three-mesh>
+            <three-material color="#ffffff" map="images/earth.jpg"></three-material>
+            <three-sphere-geometry radius="1"></three-sphere-geometry>
+          </three-mesh>
+        </three-scene>
+      </three-engine>
+
+      <p>
+        If you know well about three.js, this code must be very straight-forward for you because tag names and their structure correspond to three.js objects. If you don't know about three.js very well, please don't worry. There are some syntax sugars to make this more simple.
+
+      </p>
+
+      <ul>
+        <li><code>three-canvas</code> element is a substitution of <code>three-engine</code> element, which adds a <code>three-render</code> element and a <code>three-scene</code> element implicitly.</li>
+        <li><code>three-sphere</code> element is a substitution of <code>three-mesh</code> element, which adds a <code>three-material</code> element and a <code>three-sphere-geometry</code> element implicitly.</li>
+        <li>If a <code>defaultLight</code> attribute in a <code>three-engine</code> element or a <code>three-canvas</code> element is set to <code>"true"</code>, the element will have a default light without any <code>three-light</code> element.</li>
+      </ul>
+
+      <p>
+        By utilizing these all sugars, tags to show the earth become as follows:
+      </p>
+
+      <a name="simple"></a>
+      <pre class="prettyprint"><code>&lt;<strong>three-canvas</strong> width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
+  &lt;three-sphere radius="1" color="#ffffff" map="images/earth.jpg">&lt;/three-sphere>
+&lt;<strong>/three-canvas</strong>></code></pre>
+
+      <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+        <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
+        <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+      </three-canvas>
+
+      <p>
+        It's simple enough, isn't it?
+      </p>
+    </section>
+
+    <!--
     <canvas width="200" height="200"></canvas>
     <three-engine>
       <three-renderer antialias="true" clearColor="#000000"></three-renderer>
@@ -37,19 +107,7 @@
         <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
       </three-scene>
     </three-engine>
+    -->
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-light type="ambient" color="#333333"></three-light>
-      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
-    </three-canvas>
-
-    <h2>Default Light</h2>
-
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
-    </three-canvas>
   </body>
 </html>
