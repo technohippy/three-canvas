@@ -31,6 +31,12 @@ module.exports = function(grunt) {
         src: ['images/**', 'models/**'],
         dest: 'demos'
       },
+      'demos-styles': {
+        expand: true,
+        cwd: 'app',
+        src: ['*.css'],
+        dest: 'demos'
+      },
       'demos-vendors': {
         expand: true,
         cwd: 'app',
@@ -90,7 +96,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-release');
 
-  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'copy:demos-vendors', 'replace:demos-html']);
+  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'copy:demos-styles', 'copy:demos-vendors', 'replace:demos-html']);
   grunt.registerTask('build-dist',  ['copy:dist-bower', 'copy:dist-vendors', 'replace:dist-html']);
   grunt.registerTask('build',  ['build-demos', 'build-dist']);
   grunt.registerTask('deploy', ['gh-pages']);
