@@ -6,9 +6,7 @@
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <script src="./webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="three-canvas.html">
-    <style>
-      pre { border:1px solid gray; padding:10px; overflow-x:scroll; }
-    </style>
+    <style>pre { border:1px solid gray; padding:10px; overflow-x:scroll; }</style>
   </head>
   <body>
     <section>
@@ -18,7 +16,7 @@
       
       <p>Although three.js is a superb library which allows us to use WebGL very easier than itself, its way to use WebGL is procedural. IMHO the definition of a 3D scene should be declarative because we are not interested in how the scene is built but interested in what the scene is. By utilizing &lt;three-canvas> you can define a 3D scene in declarative way.</p>
 
-      <p>After building a 3D scene declaratively, you can handle the scene as you like by using three.js objects (<a href="./threejs.html">See this example</a>.) <strong>Build a scene declaratively, use objects procedurally</strong>; I believe this is the best way to handle a 3D scene.</p>
+      <p>After building a 3D scene declaratively, you can handle objects in the scene as you like by using three.js (<a href="./threejs.html">See this example</a>.) <strong>Build a scene declaratively, use objects procedurally</strong>; I believe this is the best way to handle a 3D scene.</p>
     </section>
 
     <section>
@@ -70,7 +68,7 @@
           <pre><code>$ bower install three-canvas</code></pre>
         </li>
         <li>
-          Add the following in the head section of your html file.
+          Add the following codes in the head section of your html file.
           <pre class="prettyprint"><code>&lt;script src="./webcomponentsjs/webcomponents.js">&lt;/script>
 &lt;link rel="import" href="./three-canvas/dist/three-canvas.html"></code></pre>
         </li>
