@@ -9,14 +9,29 @@
     <link rel="stylesheet" href="style.css" type="text/css">
   </head>
   <body>
-    <nav style="z-index:1; position:absolute; width:95%;">
-      <a href="index.html">Top</a>
-      <button onclick="window.open('view-source:' + window.location);">View Source</button>
-    </nav>
+    <div style="z-index:1; padding:5px; position:absolute; width:95%; background-color:rgba(255,255,255,0.5);">
+      <nav>
+        <a href="index.html">Top</a>
+        <button onclick="window.open('view-source:' + window.location);">View Source</button>
+      </nav>
+
+      <section>
+        <h2>Fullscreen</h2>
+
+        <p>
+        <code>three-engine</code> element and <code>three-canvas</code> element have a <code>fullscreen</code> attribute. If you set the attribute <code>"true"</code> the app is rendered in fullscreen.
+        </p>
+      </section>
+
+      <pre class="prettyprint"><code>&lt;three-canvas <strong>fullscreen="true"</strong> antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+  &lt;three-sphere radius="1" color="#ffffff" map="images/earth.jpg">&lt;/three-sphere>
+&lt;/three-canvas></code></pre>
+    </div>
 
     <!-- Set a fullscreen attribute true in a three-engine element -->
     <!--
-    <three-engine fullscreen>
+    <three-engine fullscreen="true">
       <three-renderer antialias="true" clearColor="#000000"></three-renderer>
       <three-scene>
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
@@ -28,10 +43,8 @@
     -->
 
     <!-- Set a fullscreen attribute true in a three-canvas element -->
-    <three-canvas fullscreen="true" antialias="true" clearColor="#000000">
+    <three-canvas fullscreen="true" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
-      <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
-      <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
   </body>
