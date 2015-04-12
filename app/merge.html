@@ -14,7 +14,25 @@
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
-    <h2>Merge Meshes</h2>
+    <section>
+      <h2>Merge Meshes</h2>
+
+      <p>
+        Meshes and geometries can be arranged in a hierarchical structure. This merged objects are handled as one object
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,20" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+  <strong>&lt;three-box width="1.5" height="1.5" depth="1.5" color="#ff0000"></strong>
+    <strong>&lt;three-sphere-geometry radius="1">&lt;/three-sphere-geometry></strong>
+    <strong>&lt;three-box  width="1" height="1" depth="1" position="1,1,0" rotation="0.2,0.2,0.2"></strong>
+      <strong>&lt;three-box  width="1" height="1" depth="1" position="0.5,0.5,0" rotation="0.2,0.2,0.2">&lt;/three-box></strong>
+    <strong>&lt;/three-box></strong>
+    <strong>&lt;three-sphere radius="1" position="-1,1,1">&lt;/three-sphere></strong>
+  <strong>&lt;/three-box></strong>
+&lt;/three-canvas></code></pre>
+    </section>
+
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,20" lookAt="0,0,0" controls="orbit"></three-camera>

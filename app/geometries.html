@@ -14,7 +14,41 @@
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
-    <h2>Box</h2>
+    <section>
+      <h2>Geometries</h2>
+
+      <p>
+        You can use the following geometries at the moment.
+
+        <ul>
+          <li>Box</li>
+          <li>Circle</li>
+          <li>Cylinder</li>
+          <li>Plane</li>
+          <li>Sphere</li>
+          <li>Torus</li>
+        </ul>
+      </p>
+
+      <p>
+        As described in <a href="basic.html">this example</a>, there are two ways to specify a geometry. One is fully customizable the other is easy but less customizable. For example, a box geometry is used in the following two ways.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+  &lt;three-mesh>
+    &lt;three-material color="#ffffff" map="images/earth.jpg">&lt;/three-material>
+    &lt;<strong>three-box-geometry</strong> width="1" height="1" depth="1">&lt;<strong>/three-box-geometry</strong>>
+  &lt;/three-mesh>
+&lt;/three-canvas></code></pre>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+  &lt;<strong>three-box</strong> width="1" height="1" depth="1" color="#ffffff" map="images/earth.jpg">&lt;<strong>/three-box</strong>>
+&lt;/three-canvas></code></pre>
+    </section>
+
+    <h3>Box</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
@@ -26,10 +60,10 @@
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
-      <three-box width="1" height="1" depth="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+      <three-box width="1" height="1" depth="1" color="#ffffff" map="images/earth.jpg"></three-box>
     </three-canvas>
 
-    <h2>Circle</h2>
+    <h3>Circle</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
@@ -44,7 +78,7 @@
       <three-circle radius="1" color="#ffffff" map="images/earth.jpg"></three-circle>
     </three-canvas>
 
-    <h2>Cylinder</h2>
+    <h3>Cylinder</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
@@ -59,7 +93,7 @@
       <three-cylinder radiusTop="0.5" radiusBottom="1" height="1.5" color="#ffffff" map="images/earth.jpg"></three-cylinder>
     </three-canvas>
 
-    <h2>Plane</h2>
+    <h3>Plane</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
@@ -74,7 +108,7 @@
       <three-plane width="1" height="1" color="#ffffff" map="images/earth.jpg"></three-plane>
     </three-canvas>
 
-    <h2>Sphere</h2>
+    <h3>Sphere</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
@@ -89,7 +123,7 @@
       <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
     </three-canvas>
 
-    <h2>Torus</h2>
+    <h3>Torus</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera id="camera1" position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>

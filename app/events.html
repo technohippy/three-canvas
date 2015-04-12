@@ -14,7 +14,28 @@
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
-    <h2>Render Event</h2>
+    <section>
+      <h2>Events</h2>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera name="camera" position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
+  &lt;three-sphere radius="1" color="#ffffff" map="images/earth.jpg">&lt;/three-sphere>
+&lt;/three-canvas>
+&lt;script>
+  window.addEventListener('polymer-ready', function(e) {
+    var angle = 0;
+    var threeCanvasElement = document.getElementsByTagName('three-canvas')[0];
+    var threeCamera = threeCanvasElement.getObjectByName('camera');
+    <strong>threeCanvasElement.addEventListener('render', function() {</strong>
+      angle += 0.01;
+      threeCamera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
+      threeCamera.lookAt(new THREE.Vector3());
+    <strong>});</strong>
+  });
+&lt;/script></code></pre>
+    </section>
+
+    <h3>Render Event</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera name="camera" position="0,0,8" lookAt="0,0,0"></three-camera>
@@ -28,7 +49,7 @@
         threeCanvasElement.addEventListener('render', function() {
           angle += 0.01;
           threeCamera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
-          threeCamera.lookAt(new THREE.Vector3(0,0,0));
+          threeCamera.lookAt(new THREE.Vector3());
         });
       });
     </script>

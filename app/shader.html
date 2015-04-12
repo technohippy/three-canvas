@@ -14,7 +14,68 @@
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
-    <h2>Toon Shader</h2>
+    <section>
+      <h2>Shaders</h2>
+
+      <p>
+        You can defined and use your custom shader by using <code>three-shader-material</code> element.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-shader-material id="custom-shader-1">
+  &lt;three-vertex-shader>
+    uniform bool edge;
+    varying vec3 vNormal;
+    void main(void) {
+      vec3 pos = position;
+      if (edge) {
+        pos += normal * 0.04;
+      }
+      vNormal = normal;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  &lt;/three-vertex-shader>
+  &lt;three-fragment-shader>
+    precision mediump float;
+    uniform vec3 lightDirection;
+    uniform sampler2D texture;
+    uniform vec4 edgeColor;
+    varying vec3 vNormal;
+    void main(void) {
+      if (edgeColor.a > 0.0) {
+        gl_FragColor = edgeColor;
+      }
+      else {
+        float diffuse = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
+        vec4 smpColor = texture2D(texture, vec2(diffuse, 0.0));
+        gl_FragColor = smpColor;
+      }
+    }
+  &lt;/three-fragment-shader>
+  &lt;three-shader-uniforms>
+    &lt;three-shader-variable name="uDirLightPos" type="v3" value="new THREE.Vector3()">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="edge" type="i" value="true">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')">&lt;/three-shader-variable>
+  &lt;/three-shader-uniforms>
+&lt;/three-shader-material></code></pre>
+
+      <p>
+      Although this material can be used in a <code>three-mesh</code> element as usual, I recomend you to use a <code>ref</code> attribute in a <code>three-material</code> element in order for readability. The <code>ref</code> attribute refers other <code>three-material</code> element and its material by ID.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+  &lt;three-mesh>
+    &lt;three-material <strong>ref="custom-shader-1"</strong>>&lt;/three-material>
+    &lt;three-torus-geometry radius="0.5" tube="0.3">&lt;/three-torus-geometry>
+  &lt;/three-mesh>
+&lt;/three-canvas></code></pre>
+    </section>
+
+    <!-- TODO: shader-materialを別のcustom elementとして切り出すこととか -->
+
+    <h3>Toon Shader</h3>
 
     <!-- Define shader material -->
     <!-- http://jsdo.it/edo_m18/gepr -->
