@@ -14,14 +14,34 @@
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
-    <h2>JSONLoader</h2>
+    <section>
+      <h2>Loaders</h2>
+
+      <p>
+        At the moment, two loaders are available:
+
+        <ul>
+          <li><code>THREE.JSONLoader</code></li>
+          <li><code>THREE.OBJLoader</code></li>
+        </ul>
+
+        To display a loaded object, use a <code>three-loader-mesh</code> element.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+  &lt;three-camera position="0,90,800" lookAt="0,90,0" controls="orbit">&lt;/three-camera>
+  &lt;<strong>three-loader-mesh</strong> <strong>type="obj"</strong> src="./vendors/three.js/examples/obj/male02/male02.obj">&lt;<strong>/three-loader-mesh</strong>>
+&lt;/three-canvas></code></pre>
+    </section>
+
+    <h3>JSONLoader</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,10" lookAt="0,0,0" controls="orbit"></three-camera>
       <three-loader-mesh type="json" src="./models/suzanne.js"></three-loader-mesh>
     </three-canvas>
 
-    <h2>OBJLoader</h2>
+    <h3>OBJLoader</h3>
 
     <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,90,800" lookAt="0,90,0" controls="orbit"></three-camera>

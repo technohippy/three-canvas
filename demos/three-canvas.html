@@ -196,7 +196,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-renderer" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,,sceneId,cameraId">
+<polymer-element name="three-renderer" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,,sceneId,cameraId" object="THREE.WebGLRenderer">
   <script>
     Polymer({
       precision: 'highp',
@@ -263,7 +263,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-scene" attributes="">
+<polymer-element name="three-scene" attributes="" object="THREE.Scene">
   <script>
     Polymer({
       isSetup: false,
@@ -308,7 +308,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-object3d" attributes="name,position,rotation,scale,castShadow,receiveShadow">
+<polymer-element name="three-object3d" attributes="name,position,rotation,scale,castShadow,receiveShadow" object="THREE.Object3D">
   <script>
     Polymer({
       isSetup: false,
@@ -357,7 +357,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-camera" extends="three-object3d" attributes="type">
+<polymer-element name="three-camera" extends="three-object3d" attributes="type" object="THREE.Camera">
   <script>
     Polymer({
       type: 'perspective',
@@ -370,7 +370,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-perspective-camera" extends="three-camera" attributes="lookAt,controls">
+<polymer-element name="three-perspective-camera" extends="three-camera" attributes="lookAt,controls" object="THREE.PerspectiveCamera">
   <script>
     Polymer({
       setup: function(threejs) {
@@ -462,7 +462,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-light" extends="three-object3d" attributes="type,color">
+<polymer-element name="three-light" extends="three-object3d" attributes="type,color" object="THREE.Light">
   <script>
     Polymer({
       type: 'directional',
@@ -480,7 +480,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-directional-light" extends="three-light" attributes="intensity,castShadow,onlyShadow,shadowCameraNear,shadowCameraFar,shadowCameraLeft,shadowCameraRight,shadowCameraTop,shadowCameraBottom,shadowCameraVisible,shadowBias,shadowDarkness,shadowMapWidth,shadowMapHeight">
+<polymer-element name="three-directional-light" extends="three-light" attributes="intensity,castShadow,onlyShadow,shadowCameraNear,shadowCameraFar,shadowCameraLeft,shadowCameraRight,shadowCameraTop,shadowCameraBottom,shadowCameraVisible,shadowBias,shadowDarkness,shadowMapWidth,shadowMapHeight" object="THREE.DirectionalLight">
   <script>
     Polymer({
       intensity: 1,
@@ -513,7 +513,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-ambient-light" extends="three-light" attributes="">
+<polymer-element name="three-ambient-light" extends="three-light" attributes="" object="THREE.AmbientLight">
   <script>
     Polymer({
       ready: function() {
@@ -529,7 +529,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-mesh" extends="three-object3d">
+<polymer-element name="three-mesh" extends="three-object3d" object="THREE.Mesh">
   <script>
     Polymer({
       isMesh: true,
@@ -577,7 +577,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-loader-mesh" extends="three-object3d" attributes="type,src">
+<polymer-element name="three-loader-mesh" extends="three-object3d" attributes="type,src" object="THREE.JSONLoader,THREE.OJBLoader">
   <script>
     Polymer({
       type: 'json',
@@ -606,7 +606,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-material" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible">
+<polymer-element name="three-material" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible" object="THREE.Material">
   <script>
     Polymer({
       type: 'mesh-phong',
@@ -669,7 +669,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-mesh-phong-material" extends="three-material" attributes="color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
+<polymer-element name="three-mesh-phong-material" extends="three-material" attributes="color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe" object="THREE.MeshPhongMaterial">
   <script>
     Polymer({
       color: '#ffffff',
@@ -712,7 +712,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-mesh-lambert-material" extends="three-material" attributes="color,ambient,emissive,wrapAround,wrapRGB,map,lightMap,specularMap,alphaMap,envMap,combine,reflectivity,refractionRatio,fog,shading,wireframe">
+<polymer-element name="three-mesh-lambert-material" extends="three-material" attributes="color,ambient,emissive,wrapAround,wrapRGB,map,lightMap,specularMap,alphaMap,envMap,combine,reflectivity,refractionRatio,fog,shading,wireframe" object="THREE.MeshLambertMaterial">
   <script>
     Polymer({
       color: '#ffffff',
@@ -884,14 +884,14 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-geomerty">
+<polymer-element name="three-geomerty" object="THREE.Geometry">
   <script>
     Polymer({
     });
   </script>
 </polymer-element>
 
-<polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
+<polymer-element name="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments" object="THREE.BoxGeometry">
   <script>
     Polymer({
       width: 1,
@@ -910,7 +910,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-circle-geometry" extends="three-geomerty" attributes="radius,segments,thetaStart,thetaLength">
+<polymer-element name="three-circle-geometry" extends="three-geomerty" attributes="radius,segments,thetaStart,thetaLength" object="THREE.CircleGeometry">
   <script>
     Polymer({
       radius: 50,
@@ -927,7 +927,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-cylinder-geometry" extends="three-geomerty" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength">
+<polymer-element name="three-cylinder-geometry" extends="three-geomerty" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength" object="THREE.CylinderGeometry">
   <script>
     Polymer({
       radiusTop: 20.0,
@@ -948,7 +948,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-plane-geometry" extends="three-geomerty" attributes="width,height,widthSegments,heightSegments">
+<polymer-element name="three-plane-geometry" extends="three-geomerty" attributes="width,height,widthSegments,heightSegments" object="THREE.PlaneGeometry">
   <script>
     Polymer({
       width: 1,
@@ -965,7 +965,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
+<polymer-element name="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength" object="THREE.SphereGeometry">
   <script>
     Polymer({
       radius: 50,
@@ -985,7 +985,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-torus-geometry" extends="three-geomerty" attributes="radius,tube,radialSegments,tubularSegments,arc">
+<polymer-element name="three-torus-geometry" extends="three-geomerty" attributes="radius,tube,radialSegments,tubularSegments,arc" object="THREE.TorusGeometry">
   <script>
     Polymer({
       radius: 100,
