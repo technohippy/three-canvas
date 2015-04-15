@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="./webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="three-canvas.html">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="../three-canvas.html">
+    <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
   <body>
     <nav>
-      <a href="index.html">Top</a>
+      <a href="../index.html">Top</a>
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
@@ -56,7 +56,7 @@
     &lt;three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)">&lt;/three-shader-variable>
     &lt;three-shader-variable name="edge" type="i" value="true">&lt;/three-shader-variable>
     &lt;three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)">&lt;/three-shader-variable>
-    &lt;three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')">&lt;/three-shader-variable>
   &lt;/three-shader-uniforms>
 &lt;/three-shader-material></code></pre>
 
@@ -114,7 +114,7 @@
         <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
         <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
         <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
-        <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')"></three-shader-variable>
+        <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')"></three-shader-variable>
       </three-shader-uniforms>
     </three-shader-material>
 
@@ -167,7 +167,7 @@
             <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
             <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
             <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
-            <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('images/toon.png')"></three-shader-variable>
+            <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')"></three-shader-variable>
           </three-shader-uniforms>
         </three-shader-material>
         <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>

@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="./webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="three-canvas.html">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="../three-canvas.html">
+    <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
   <body>
     <nav>
-      <a href="index.html">Top</a>
+      <a href="../index.html">Top</a>
       <button onclick="window.open('view-source:' + window.location);">View Source</button>
     </nav>
 
@@ -33,7 +33,7 @@
     &lt;three-light position="0.577,0.577,0.577" color="#cccccc">&lt;/three-light>
     &lt;three-light type="ambient" color="#333333">&lt;/three-light>
     &lt;three-mesh>
-      &lt;three-material color="#ffffff" map="images/earth.jpg">&lt;/three-material>
+      &lt;three-material color="#ffffff" map="../images/earth.jpg">&lt;/three-material>
       &lt;three-sphere-geometry radius="1">&lt;/three-sphere-geometry>
     &lt;/three-mesh>
   &lt;/three-scene>
@@ -46,7 +46,7 @@
           <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
           <three-light type="ambient" color="#333333"></three-light>
           <three-mesh>
-            <three-material color="#ffffff" map="images/earth.jpg"></three-material>
+            <three-material color="#ffffff" map="../images/earth.jpg"></three-material>
             <three-sphere-geometry radius="1"></three-sphere-geometry>
           </three-mesh>
         </three-scene>
@@ -70,12 +70,12 @@
       <a name="simple"></a>
       <pre class="prettyprint"><code>&lt;<strong>three-canvas</strong> width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
   &lt;three-camera position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
-  &lt;three-sphere radius="1" color="#ffffff" map="images/earth.jpg">&lt;/three-sphere>
+  &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;<strong>/three-canvas</strong>></code></pre>
 
       <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
-        <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+        <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
       </three-canvas>
 
       <p>
@@ -92,7 +92,7 @@
         <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
         <three-mesh>
-          <three-material color="#ffffff" map="images/earth.jpg"></three-material>
+          <three-material color="#ffffff" map="../images/earth.jpg"></three-material>
           <three-sphere-geometry radius="1"></three-sphere-geometry>
         </three-mesh>
       </three-scene>
@@ -104,7 +104,7 @@
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
         <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
-        <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+        <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
       </three-scene>
     </three-engine>
     -->
