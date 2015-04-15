@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="./webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="three-canvas.html">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="../three-canvas.html">
+    <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
   <body>
     <div style="z-index:1; padding:5px; position:absolute; width:95%; background-color:rgba(255,255,255,0.5);">
       <nav>
-        <a href="index.html">Top</a>
+        <a href="../index.html">Top</a>
         <button onclick="window.open('view-source:' + window.location);">View Source</button>
       </nav>
 
@@ -25,7 +25,7 @@
 
       <pre class="prettyprint"><code>&lt;three-canvas <strong>fullscreen="true"</strong> antialias="true" clearColor="#000000" defaultLight="true">
   &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
-  &lt;three-sphere radius="1" color="#ffffff" map="images/earth.jpg">&lt;/three-sphere>
+  &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;/three-canvas></code></pre>
     </div>
 
@@ -37,7 +37,7 @@
         <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
         <three-light direction="0.577,0.577,0.577" color="#cccccc"></three-light>
         <three-light ambient color="#333333"></three-light>
-        <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+        <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
       </three-scene>
     </three-engine>
     -->
@@ -45,7 +45,7 @@
     <!-- Set a fullscreen attribute true in a three-canvas element -->
     <three-canvas fullscreen="true" antialias="true" clearColor="#000000" defaultLight="true">
       <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
-      <three-sphere radius="1" color="#ffffff" map="images/earth.jpg"></three-sphere>
+      <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
     </three-canvas>
   </body>
 </html>

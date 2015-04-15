@@ -2,4 +2,5 @@ app/bower_components
 node_modules/
 .grunt/
 *.swp
+*.swo
 memo.txt

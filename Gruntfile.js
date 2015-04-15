@@ -68,16 +68,24 @@ module.exports = function(grunt) {
         src: ['app/*.html'],
         dest: 'demos/',
         replacements: [{
-          from: 'bower_components',
-          to: '.'
+          from: 'bower_components/',
+          to: ''
+        }]
+      },
+      'demos-tutorials-html': {
+        src: ['app/tutorials/*.html'],
+        dest: 'demos/tutorials/',
+        replacements: [{
+          from: 'bower_components/',
+          to: ''
         }]
       },
       'dist-html': {
         src: ['app/three-canvas.html'],
         dest: 'dist/',
         replacements: [{
-          from: 'bower_components',
-          to: '.'
+          from: 'bower_components/',
+          to: ''
         }]
       }
     },
@@ -96,7 +104,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-release');
 
-  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'copy:demos-styles', 'copy:demos-vendors', 'replace:demos-html']);
+  grunt.registerTask('build-demos',  ['copy:demos-bower', 'copy:demos-images', 'copy:demos-styles', 'copy:demos-vendors', 'replace:demos-html', 'replace:demos-tutorials-html']);
   grunt.registerTask('build-dist',  ['copy:dist-bower', 'copy:dist-vendors', 'replace:dist-html']);
   grunt.registerTask('build',  ['build-demos', 'build-dist']);
   grunt.registerTask('deploy', ['gh-pages']);
