@@ -34,7 +34,7 @@ module.exports = function(grunt) {
       'demos-styles': {
         expand: true,
         cwd: 'app',
-        src: ['*.css'],
+        src: ['styles/*.css'],
         dest: 'demos'
       },
       'demos-vendors': {
