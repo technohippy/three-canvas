@@ -11,8 +11,10 @@
 <script src="vendors/three.js/examples/js/loaders/OBJLoader.js"></script>
 
 <!-- postprocess -->
-<script src="vendors/three.js/examples/js/postprocessing/EffectComposer.js"></script>
 <script src="vendors/three.js/examples/js/shaders/CopyShader.js"></script>
+<script src="vendors/three.js/examples/js/shaders/DotScreenShader.js"></script>
+<script src="vendors/three.js/examples/js/shaders/RGBShiftShader.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/EffectComposer.js"></script>
 <script src="vendors/three.js/examples/js/postprocessing/MaskPass.js"></script>
 <script src="vendors/three.js/examples/js/postprocessing/RenderPass.js"></script>
 <script src="vendors/three.js/examples/js/postprocessing/ShaderPass.js"></script>
@@ -167,10 +169,39 @@
             this.controls = controlsElm.controls;
           }
         }
+
+        var shaderPassElm;
+        Array.apply(null, rendererElm.children).forEach(function(child) {
+          if (child.setup) child.setup(this);
+          if (child.localName === 'three-shader-pass') shaderPassElm = child;
+          // TODO: should be refactored
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(this);
+              if (contentChild.localName === 'three-shader-pass') shaderPassElm = contentChild;
+            }, this);
+          }
+        }, this);
+        if (shaderPassElm) {
+          shaderPassElm.setup(this);
+          if (shaderPassElm.shaderPass && 0 < shaderPassElm.shaderPass.length) {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+            shaderPassElm.shaderPass.forEach(function(effect) {
+              this.composer.addPass(effect);
+            }, this);
+          }
+        }
+
         this.isSetup = true;
       },
       render: function() {
-        this.renderer.render(this.scene, this.camera);
+        if (this.composer) {
+          this.composer.render();
+        }
+        else {
+          this.renderer.render(this.scene, this.camera);
+        }
       },
       getObjectByName: function(name) {
         return this.scene.getObjectByName(name);
@@ -414,7 +445,9 @@
 <polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight,shadowEnabled">
   <template>
     <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}" shadowEnabled={{shadowEnabled}}>
-      <three-renderer antialias={{antialias}} clearColor="{{clearColor}}"></three-renderer>
+      <three-renderer antialias={{antialias}} clearColor="{{clearColor}}">
+        <content select="three-shader-pass"></content>
+      </three-renderer>
       <three-scene id="scene" defaultLight={{defaultLight}}>
         <content></content>
       </three-scene>
@@ -799,6 +832,43 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-shader-pass">
+  <script>
+    Polymer({
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.shaderPass = [];
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(threejs);
+          if (child.effect) this.shaderPass.push(child.effect);
+        }, this);
+        this.object = this.shaderPass;
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-shader" attributes="type,renderToScreen">
+  <script>
+    Polymer({
+      isSetup: false,
+      renderToScreen: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.effect = new THREE.ShaderPass(eval(this.type)); // TODO
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(this.effect);
+        }, this);
+        this.effect.renderToScreen = this.renderToScreen;
+        this.object = this.effect;
+        this.isSetup = true;
+      }
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-vertex-shader">
   <template>
     <script type="x-shader/x-vertex">
@@ -833,7 +903,9 @@
   <script>
     Polymer({
       setup: function(shaderOptions) {
-        shaderOptions['uniforms'] = {};
+        if (typeof shaderOptions['uniforms'] === 'undefined') {
+          shaderOptions['uniforms'] = {};
+        }
         Array.apply(null, this.children).forEach(function(child) {
           if (child.setup) child.setup(shaderOptions['uniforms']);
           if (child.getDistributedNodes) {
@@ -851,7 +923,9 @@
   <script>
     Polymer({
       setup: function(shaderOptions) {
-        shaderOptions['attributes'] = {};
+        if (typeof shaderOptions['attributes'] === 'undefined') {
+          shaderOptions['attributes'] = {};
+        }
         Array.apply(null, this.children).forEach(function(child) {
           if (child.setup) child.setup(shaderOptions['attributes']);
           if (child.getDistributedNodes) {
@@ -877,7 +951,15 @@
   <script>
     Polymer({
       setup: function(variableOptions) {
-        variableOptions[this.name] = {type: this.type, value: eval(this.value)};
+        if (typeof variableOptions[this.name] === 'undefined') {
+          variableOptions[this.name] = {};
+        }
+        if (this.type) {
+          variableOptions[this.name].type = this.type;
+        }
+        if (this.value) {
+          variableOptions[this.name].value = eval(this.value);
+        }
         return this.textContent;
       }
     });
