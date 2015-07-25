@@ -1,14 +1,15 @@
 {
   "name": "three-canvas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     "Ando Yasushi <andyjpn@gmail.com>"
   ],
   "description": "A Custom Element to Use WebGL Easily by Utilizing Three.js",
   "main": "dist/three-canvas.html",
   "keywords": [
-    "WebGL",
     "Polymer",
+    "WebGL",
+    "Three.js",
     "web-components",
     "web-component"
   ],
@@ -26,10 +27,8 @@
     "webcomponentsjs": "*"
   },
   "devDependencies": {
-    "polymer": "Polymer/polymer#~0.5.5",
+    "polymer": "Polymer/polymer#^1.0.0",
     "threejs": "*",
-    "three.js-controls": "~0.0.67",
-    "core-elements": "polymer/core-elements#~0.5.5",
-    "paper-elements": "polymer/paper-elements#~0.5.5"
+    "three.js-controls": "~0.0.67"
   }
 }

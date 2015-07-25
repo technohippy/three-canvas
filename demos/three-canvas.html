@@ -97,7 +97,39 @@
   };
 </script>
 
-<polymer-element name="three-engine" attributes="canvas,width,height,fullscreen,shadowEnabled">
+<polymer-element name="three-object">
+  <script>
+    Polymer({
+      threeChildren: null,
+      attached: function() {
+        var added = false;
+        var parent = this.parentNode;;
+        while (parent !== null) {
+          if (parent.nodeName.match(/^THREE-/)) {
+            if (!parent.threeChildren) {
+              parent.threeChildren = [];
+            }
+            if (!added) {
+              console.log(parent.nodeName + ' gets ' + this.nodeName);
+              parent.threeChildren.push(this);
+              added = true;
+            }
+          }
+          if (!parent.nodeName.match(/^#/)) {
+            break;
+          }
+          parent = parent.parentNode;
+        }
+if (parent !== null) {
+  console.log('nodeName: ' + parent.nodeName);
+  console.dir(parent.threeChildren);
+}
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-engine" extends="three-object" attributes="canvas,width,height,fullscreen,shadowEnabled">
   <script>
     Polymer({
       fullscreen: false,
@@ -227,7 +259,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-renderer" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,sceneId,cameraId" object="THREE.WebGLRenderer">
+<polymer-element name="three-renderer" extends="three-object" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,sceneId,cameraId" object="THREE.WebGLRenderer">
   <script>
     Polymer({
       precision: 'highp',
@@ -294,7 +326,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-scene" attributes="" object="THREE.Scene">
+<polymer-element name="three-scene" extends="three-object" object="THREE.Scene">
   <script>
     Polymer({
       isSetup: false,
@@ -339,7 +371,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-object3d" attributes="name,position,rotation,scale,castShadow,receiveShadow" object="THREE.Object3D">
+<polymer-element name="three-object3d" extends="three-object" attributes="name,position,rotation,scale,castShadow,receiveShadow" object="THREE.Object3D">
   <script>
     Polymer({
       isSetup: false,
@@ -442,7 +474,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-canvas" attributes="width,height,antialias,clearColor,fullscreen,defaultLight,shadowEnabled">
+<polymer-element name="three-canvas" extends="three-object" attributes="width,height,antialias,clearColor,fullscreen,defaultLight,shadowEnabled">
   <template>
     <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}" shadowEnabled={{shadowEnabled}}>
       <three-renderer antialias={{antialias}} clearColor="{{clearColor}}">
@@ -639,7 +671,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-material" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible" object="THREE.Material">
+<polymer-element name="three-material" extends="three-object" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible" object="THREE.Material">
   <script>
     Polymer({
       type: 'mesh-phong',
@@ -832,7 +864,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-shader-pass">
+<polymer-element name="three-shader-pass" extends="three-object">
   <script>
     Polymer({
       isSetup: false,
@@ -850,7 +882,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-shader" attributes="type,renderToScreen">
+<polymer-element name="three-shader" extends="three-object" attributes="type,renderToScreen">
   <script>
     Polymer({
       isSetup: false,
@@ -869,7 +901,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-vertex-shader">
+<polymer-element name="three-vertex-shader" extends="three-object">
   <template>
     <script type="x-shader/x-vertex">
       <content></content>
@@ -884,7 +916,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-fragment-shader">
+<polymer-element name="three-fragment-shader" extends="three-object">
   <template>
     <script type="x-shader/x-fragment">
       <content></content>
@@ -899,7 +931,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-shader-uniforms">
+<polymer-element name="three-shader-uniforms" extends="three-object">
   <script>
     Polymer({
       setup: function(shaderOptions) {
@@ -919,7 +951,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-shader-attributes">
+<polymer-element name="three-shader-attributes" extends="three-object">
   <script>
     Polymer({
       setup: function(shaderOptions) {
@@ -939,7 +971,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-shader-variable" attributes="name,type,value">
+<polymer-element name="three-shader-variable" extends="three-object" attributes="name,type,value">
   <template>
     <style>
       #container {display:none}
@@ -966,7 +998,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-geomerty" object="THREE.Geometry">
+<polymer-element name="three-geomerty" extends="three-object" object="THREE.Geometry">
   <script>
     Polymer({
     });
@@ -1463,7 +1495,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-controls" attributes="type,center,movementSpeed,rollSpeed,lookSpeed,lon,noFly">
+<polymer-element name="three-controls" extends="three-object" attributes="type,center,movementSpeed,rollSpeed,lookSpeed,lon,noFly">
   <script>
     Polymer({
       setup: function(camera, canvas) {
