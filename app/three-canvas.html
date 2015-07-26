@@ -122,8 +122,7 @@
   ThreeObject3dBehavior = {
     properties: {
       name: {
-        type: String,
-        readOnly: true
+        type: String
       },
       position: {
         type: String,
@@ -787,8 +786,10 @@
       _createMesh: function() {
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.copy(this._vector3(this.position));
-        this.mesh.rotation.copy(this._vector3(this.rotation));
+        this.mesh.rotation.copy(this._euler(this.rotation));
         this.mesh.scale.copy(this._vector3(this.scale));
+console.log(this.name);
+        if (this.name) this.mesh.name = this.name;
 
         var sceneElement = this.getParentThreeNode('three-scene');
         sceneElement.getScene().add(this.mesh);
@@ -951,6 +952,50 @@
   </script>
 </dom-module>
 
+<dom-module id="three-box-geometry">
+  <script>
+    Polymer({
+      is: 'three-box-geometry',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      properties: {
+        width: {
+          type: Number,
+          value: 1 
+        },
+        height: {
+          type: Number,
+          value: 1 
+        },
+        depth: {
+          type: Number,
+          value: 1 
+        },
+        widthSegments: {
+          type: Number,
+          value: 1 
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        },
+        depthSegments: {
+          type: Number,
+          value: 1
+        }
+      },
+      attached: function() {
+        this.geometry = new THREE.BoxGeometry(this.width, this.height, this.depth, this.widthSegments, this.heightSegments, this.depthSegments);
+
+        var meshElement = this.getParentThreeNode('three-mesh');
+        meshElement.geometryElement = this;
+      },
+      getGeometry: function() {
+        return this.geometry;
+      }
+    });
+  </script>
+</dom-module>
+
 <dom-module id="three-canvas">
   <template>
     <three-engine fullscreen="{{fullscreen}}" width$="{{width}}" height$="{{height}}" shadow-enabled="{{shadowEnabled}}">
@@ -1062,6 +1107,57 @@
   <script>
     Polymer({
       is: 'three-sphere',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-box">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blend-src="{{blendSrc}}"
+        blend-dst="{{blendDst}}"
+        blend-equation="{{blendEquation}}"
+        depth-test="{{depthTest}}"
+        depth-write="{{depthWrite}}"
+        polygon-offset="{{polygonOffset}}"
+        polygon-offset-factor="{{polygonOffsetFactor}}"
+        polygon-offset-units="{{polygonOffsetUnits}}"
+        alpha-test="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bump-map="{{bumpMap}}"
+        bump-scale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <three-box-geometry
+        width="{{width}}"
+        height="{{height}}"
+        depth="{{depth}}"
+        width-segments="{{widthSegments}}"
+        height-segments="{{heightSegments}}"
+        depth-segments="{{depthSegments}}">
+      </three-box-geometry>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: 'three-box',
       behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
     });
   </script>
