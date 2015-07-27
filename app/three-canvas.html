@@ -117,6 +117,12 @@
         cursor = cursor.parentNode;
       }
       return null;
+    },
+    _vector3: function(val) {
+      return THREE.Element.Utils.vector3(val);
+    },
+    _euler: function(val) {
+      return THREE.Element.Utils.euler(val);
     }
   };
   ThreeObject3dBehavior = {
@@ -170,13 +176,7 @@
       if (typeof this.object !== 'undefined') {
         this.object.scale.copy(this.scale);
       }
-    },
-    _vector3: function(val) {
-      return THREE.Element.Utils.vector3(val);
-    },
-    _euler: function(val) {
-      return THREE.Element.Utils.euler(val);
-    },
+    }
   };
   ThreeLightBehavior = {
     properties: {
@@ -413,6 +413,7 @@
         renderer: Object,
         scene: Object,
         camera: Object,
+        controls: Object,
         rendererElement: {
           type: Object,
           observer: '_rendererElementChanged'
@@ -424,6 +425,10 @@
         cameraElement: {
           type: Object,
           observer: '_cameraElementChanged'
+        },
+        controlsElement: {
+          type: Object,
+          observer: '_controlsElementChanged'
         }
       },
       render: function() {
@@ -464,6 +469,9 @@
             console.log(e);
           }
         }).bind(this))();
+        if (!this.controls && this.controlsElement) {
+          this.controls = this.controlsElement.getControls(this.camera, this.canvasElement);
+        }
       },
       _setupCanvas: function() {
         if (this.canvas) {
@@ -513,6 +521,11 @@
         this.camera = this.cameraElement.getCamera();
 
         if (this.rendererElement && this.sceneElement) this.start();
+      },
+      _controlsElementChanged: function(newValue, oldValue) {
+        if (!this.controls && this.camera && this.canvasElement) {
+          this.controls = this.controlsElement.getControls(this.camera, this.canvasElement);
+        }
       }
     });
   </script>
@@ -788,7 +801,6 @@
         this.mesh.position.copy(this._vector3(this.position));
         this.mesh.rotation.copy(this._euler(this.rotation));
         this.mesh.scale.copy(this._vector3(this.scale));
-console.log(this.name);
         if (this.name) this.mesh.name = this.name;
 
         var sceneElement = this.getParentThreeNode('three-scene');
@@ -1159,6 +1171,72 @@ console.log(this.name);
     Polymer({
       is: 'three-box',
       behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-controls">
+  <script>
+    Polymer({
+      is: 'three-controls',
+      behaviors: [ThreeObjectBehavior],
+      properties: {
+        type: {
+          type: String,
+          value: 'orbit'
+        },
+        controls: Object,
+        center: {
+          type: String,
+          value: '0,0,0'
+        },
+        movementSpeed: {
+          type: Number,
+          value: 1.0
+        },
+        rollSpeed: {
+          type: Number,
+          value: 0.005
+        },
+        lookSpeed: {
+          type: Number,
+          value: 0.005
+        },
+        lon: {
+          type: Number,
+          value: 0
+        },
+        noFly: {
+          type: Boolean,
+          value: false
+        }
+      },
+      attached: function() {
+        var engineElement = this.getParentThreeNode('three-engine');
+        engineElement.controlsElement = this;
+      },
+      getControls: function(camera, canvas) {
+        if (this.type === 'orbit') {
+          this.controls = new THREE.OrbitControls(camera, canvas);
+          this.controls.target.copy(this._vector3(this.center));
+        }
+        else if (this.type === 'fly') {
+          this.controls = new THREE.FlyControls(camera, canvas);
+          this.controls.movementSpeed = this.movementSpeed;
+          this.controls.rollSpeed = this.rollSpeed;
+        }
+        else if (this.type === 'firstperson') {
+          this.controls = new THREE.FirstPersonControls(camera, canvas);
+          this.controls.movementSpeed = this.movementSpeed;
+          this.controls.lookSpeed = this.lookSpeed;
+          this.controls.lon = this.lon;
+          this.controls.noFly = this.noFly;
+        }
+        else {
+          throw 'Unknown controls type: ' + this.type;
+        }
+        return this.controls;
+      }
     });
   </script>
 </dom-module>
