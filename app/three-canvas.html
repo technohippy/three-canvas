@@ -387,6 +387,171 @@
 */
     }
   };
+  ThreeSphereGeometryBehavior = {
+    properties: {
+      radius: {
+        type: Number,
+        value: 50
+      },
+      widthSegments: {
+        type: Number,
+        value: 32
+      },
+      heightSegments: {
+        type: Number,
+        value: 16
+      },
+      phiStart: {
+        type: Number,
+        value: 0
+      },
+      phiLength: {
+        type: Number,
+        value: Math.PI * 2
+      },
+      thetaStart: {
+        type: Number,
+        value: 0
+      },
+      thetaLength: {
+        type: Number,
+        value: Math.PI
+      }
+    },
+  };
+
+  ThreeBoxGeometryBehavior = {
+    properties: {
+      width: {
+        type: Number,
+        value: 1 
+      },
+      height: {
+        type: Number,
+        value: 1 
+      },
+      depth: {
+        type: Number,
+        value: 1 
+      },
+      widthSegments: {
+        type: Number,
+        value: 1 
+      },
+      heightSegments: {
+        type: Number,
+        value: 1
+      },
+      depthSegments: {
+        type: Number,
+        value: 1
+      }
+    }
+  };
+
+  ThreeCircleGeometryBehavior = {
+    properties: {
+      radius: {
+        type: Number,
+        value: 50
+      },
+      segments: {
+        type: Number,
+        value: 32
+      },
+      thetaStart: {
+        type: Number,
+        value: 0
+      },
+      thetaLength: {
+        type: Number,
+        value: Math.PI * 2
+      }
+    }
+  };
+
+  ThreeCylinderGeometryBehavior = {
+    properties: {
+      radiusTop: {
+        type: Number,
+        value: 20.0
+      },
+      radiusBottom: {
+        type: Number,
+        value: 20.0
+      },
+      height: {
+        type: Number,
+        value: 100.0
+      },
+      radialSegments: {
+        type: Number,
+        value: 32
+      },
+      heightSegments: {
+        type: Number,
+        value: 1
+      },
+      openEnded: {
+        type: Boolean,
+        value: false
+      },
+      thetaStart: {
+        type: Number,
+        value: 0
+      },
+      thetaLength: {
+        type: Number,
+        value: 2 * Math.PI
+      }
+    }
+  };
+
+  ThreePlaneGeometryBehavior = {
+    properties: {
+      width: {
+        type: Number,
+        value: 1
+      },
+      height: {
+        type: Number,
+        value: 1
+      },
+      widthSegments: {
+        type: Number,
+        value: 1
+      },
+      heightSegments: {
+        type: Number,
+        value: 1
+      }
+    }
+  };
+
+  ThreeTorusGeometryBehavior = {
+    properties: {
+      radius: {
+        type: Number,
+        value: 100
+      },
+      tube: {
+        type: Number,
+        value: 40
+      },
+      radialSegments: {
+        type: Number,
+        value: 16
+      },
+      tubularSegments: {
+        type: Number,
+        value: 32
+      },
+      arc: {
+        type: Number,
+        value: Math.PI * 2
+      }
+    }
+  };
 </script>
 
 <!-- components -->
@@ -920,37 +1085,7 @@
   <script>
     Polymer({
       is: 'three-sphere-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 50
-        },
-        widthSegments: {
-          type: Number,
-          value: 32
-        },
-        heightSegments: {
-          type: Number,
-          value: 16
-        },
-        phiStart: {
-          type: Number,
-          value: 0
-        },
-        phiLength: {
-          type: Number,
-          value: Math.PI * 2
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: Math.PI
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeSphereGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.SphereGeometry(this.radius, this.widthSegments, this.heightSegments, this.phiStart, this.phiLength, this.thetaStart, this.thetaLength);
 
@@ -968,33 +1103,7 @@
   <script>
     Polymer({
       is: 'three-box-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        width: {
-          type: Number,
-          value: 1 
-        },
-        height: {
-          type: Number,
-          value: 1 
-        },
-        depth: {
-          type: Number,
-          value: 1 
-        },
-        widthSegments: {
-          type: Number,
-          value: 1 
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        },
-        depthSegments: {
-          type: Number,
-          value: 1
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeBoxGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.BoxGeometry(this.width, this.height, this.depth, this.widthSegments, this.heightSegments, this.depthSegments);
 
@@ -1012,25 +1121,7 @@
   <script>
     Polymer({
       is: 'three-circle-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 50
-        },
-        segments: {
-          type: Number,
-          value: 32
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: Math.PI * 2
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeCircleGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.CircleGeometry(this.radius, this.segments, this.thetaStart, this.thetaLength);
 
@@ -1048,41 +1139,7 @@
   <script>
     Polymer({
       is: 'three-cylinder-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        radiusTop: {
-          type: Number,
-          value: 20.0
-        },
-        radiusBottom: {
-          type: Number,
-          value: 20.0
-        },
-        height: {
-          type: Number,
-          value: 100.0
-        },
-        radialSegments: {
-          type: Number,
-          value: 32
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        },
-        openEnded: {
-          type: Boolean,
-          value: false
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: 2 * Math.PI
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeCylinderGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radialSegments, this.heightSegments, this.openEnded, this.thetaStart, this.thetaLength);
 
@@ -1100,25 +1157,7 @@
   <script>
     Polymer({
       is: 'three-plane-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        width: {
-          type: Number,
-          value: 1
-        },
-        height: {
-          type: Number,
-          value: 1
-        },
-        widthSegments: {
-          type: Number,
-          value: 1
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreePlaneGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
 
@@ -1136,29 +1175,7 @@
   <script>
     Polymer({
       is: 'three-torus-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 100
-        },
-        tube: {
-          type: Number,
-          value: 40
-        },
-        radialSegments: {
-          type: Number,
-          value: 16
-        },
-        tubularSegments: {
-          type: Number,
-          value: 32
-        },
-        arc: {
-          type: Number,
-          value: Math.PI * 2
-        }
-      },
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeTorusGeometryBehavior],
       attached: function() {
         this.geometry = new THREE.TorusGeometry(this.radius, this.tube, this.radialSegments, this.tubularSegments, this.arc);
 
@@ -1283,37 +1300,7 @@
   <script>
     Polymer({
       is: 'three-sphere',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 50
-        },
-        widthSegments: {
-          type: Number,
-          value: 32
-        },
-        heightSegments: {
-          type: Number,
-          value: 16
-        },
-        phiStart: {
-          type: Number,
-          value: 0
-        },
-        phiLength: {
-          type: Number,
-          value: Math.PI * 2
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: Math.PI
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeSphereGeometryBehavior],
     });
   </script>
 </dom-module>
@@ -1364,33 +1351,7 @@
   <script>
     Polymer({
       is: 'three-box',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        width: {
-          type: Number,
-          value: 1 
-        },
-        height: {
-          type: Number,
-          value: 1 
-        },
-        depth: {
-          type: Number,
-          value: 1 
-        },
-        widthSegments: {
-          type: Number,
-          value: 1 
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        },
-        depthSegments: {
-          type: Number,
-          value: 1
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeBoxGeometryBehavior],
     });
   </script>
 </dom-module>
@@ -1439,25 +1400,7 @@
   <script>
     Polymer({
       is: 'three-circle',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 50
-        },
-        segments: {
-          type: Number,
-          value: 32
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: Math.PI * 2
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeCircleGeometryBehavior]
     });
   </script>
 </dom-module>
@@ -1510,41 +1453,7 @@
   <script>
     Polymer({
       is: 'three-cylinder',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        radiusTop: {
-          type: Number,
-          value: 20.0
-        },
-        radiusBottom: {
-          type: Number,
-          value: 20.0
-        },
-        height: {
-          type: Number,
-          value: 100.0
-        },
-        radialSegments: {
-          type: Number,
-          value: 32
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        },
-        openEnded: {
-          type: Boolean,
-          value: false
-        },
-        thetaStart: {
-          type: Number,
-          value: 0
-        },
-        thetaLength: {
-          type: Number,
-          value: 2 * Math.PI
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeCylinderGeometryBehavior],
     });
   </script>
 </dom-module>
@@ -1593,25 +1502,7 @@
   <script>
     Polymer({
       is: 'three-plane',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        width: {
-          type: Number,
-          value: 1
-        },
-        height: {
-          type: Number,
-          value: 1
-        },
-        widthSegments: {
-          type: Number,
-          value: 1
-        },
-        heightSegments: {
-          type: Number,
-          value: 1
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreePlaneGeometryBehavior]
     });
   </script>
 </dom-module>
@@ -1661,29 +1552,7 @@
   <script>
     Polymer({
       is: 'three-torus',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
-      properties: {
-        radius: {
-          type: Number,
-          value: 100
-        },
-        tube: {
-          type: Number,
-          value: 40
-        },
-        radialSegments: {
-          type: Number,
-          value: 16
-        },
-        tubularSegments: {
-          type: Number,
-          value: 32
-        },
-        arc: {
-          type: Number,
-          value: Math.PI * 2
-        }
-      }
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeTorusGeometryBehavior]
     });
   </script>
 </dom-module>
