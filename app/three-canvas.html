@@ -1283,7 +1283,37 @@
   <script>
     Polymer({
       is: 'three-sphere',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        radius: {
+          type: Number,
+          value: 50
+        },
+        widthSegments: {
+          type: Number,
+          value: 32
+        },
+        heightSegments: {
+          type: Number,
+          value: 16
+        },
+        phiStart: {
+          type: Number,
+          value: 0
+        },
+        phiLength: {
+          type: Number,
+          value: Math.PI * 2
+        },
+        thetaStart: {
+          type: Number,
+          value: 0
+        },
+        thetaLength: {
+          type: Number,
+          value: Math.PI
+        }
+      }
     });
   </script>
 </dom-module>
@@ -1334,7 +1364,33 @@
   <script>
     Polymer({
       is: 'three-box',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        width: {
+          type: Number,
+          value: 1 
+        },
+        height: {
+          type: Number,
+          value: 1 
+        },
+        depth: {
+          type: Number,
+          value: 1 
+        },
+        widthSegments: {
+          type: Number,
+          value: 1 
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        },
+        depthSegments: {
+          type: Number,
+          value: 1
+        }
+      }
     });
   </script>
 </dom-module>
@@ -1383,7 +1439,25 @@
   <script>
     Polymer({
       is: 'three-circle',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        radius: {
+          type: Number,
+          value: 50
+        },
+        segments: {
+          type: Number,
+          value: 32
+        },
+        thetaStart: {
+          type: Number,
+          value: 0
+        },
+        thetaLength: {
+          type: Number,
+          value: Math.PI * 2
+        }
+      }
     });
   </script>
 </dom-module>
@@ -1436,7 +1510,41 @@
   <script>
     Polymer({
       is: 'three-cylinder',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        radiusTop: {
+          type: Number,
+          value: 20.0
+        },
+        radiusBottom: {
+          type: Number,
+          value: 20.0
+        },
+        height: {
+          type: Number,
+          value: 100.0
+        },
+        radialSegments: {
+          type: Number,
+          value: 32
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        },
+        openEnded: {
+          type: Boolean,
+          value: false
+        },
+        thetaStart: {
+          type: Number,
+          value: 0
+        },
+        thetaLength: {
+          type: Number,
+          value: 2 * Math.PI
+        }
+      }
     });
   </script>
 </dom-module>
@@ -1485,7 +1593,25 @@
   <script>
     Polymer({
       is: 'three-plane',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        width: {
+          type: Number,
+          value: 1
+        },
+        height: {
+          type: Number,
+          value: 1
+        },
+        widthSegments: {
+          type: Number,
+          value: 1
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        }
+      }
     });
   </script>
 </dom-module>
@@ -1535,7 +1661,29 @@
   <script>
     Polymer({
       is: 'three-torus',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior],
+      properties: {
+        radius: {
+          type: Number,
+          value: 100
+        },
+        tube: {
+          type: Number,
+          value: 40
+        },
+        radialSegments: {
+          type: Number,
+          value: 16
+        },
+        tubularSegments: {
+          type: Number,
+          value: 32
+        },
+        arc: {
+          type: Number,
+          value: Math.PI * 2
+        }
+      }
     });
   </script>
 </dom-module>
