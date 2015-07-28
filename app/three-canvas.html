@@ -1008,6 +1008,170 @@
   </script>
 </dom-module>
 
+<dom-module id="three-circle-geometry">
+  <script>
+    Polymer({
+      is: 'three-circle-geometry',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      properties: {
+        radius: {
+          type: Number,
+          value: 50
+        },
+        segments: {
+          type: Number,
+          value: 32
+        },
+        thetaStart: {
+          type: Number,
+          value: 0
+        },
+        thetaLength: {
+          type: Number,
+          value: Math.PI * 2
+        }
+      },
+      attached: function() {
+        this.geometry = new THREE.CircleGeometry(this.radius, this.segments, this.thetaStart, this.thetaLength);
+
+        var meshElement = this.getParentThreeNode('three-mesh');
+        meshElement.geometryElement = this;
+      },
+      getGeometry: function() {
+        return this.geometry;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-cylinder-geometry">
+  <script>
+    Polymer({
+      is: 'three-cylinder-geometry',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      properties: {
+        radiusTop: {
+          type: Number,
+          value: 20.0
+        },
+        radiusBottom: {
+          type: Number,
+          value: 20.0
+        },
+        height: {
+          type: Number,
+          value: 100.0
+        },
+        radialSegments: {
+          type: Number,
+          value: 32
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        },
+        openEnded: {
+          type: Boolean,
+          value: false
+        },
+        thetaStart: {
+          type: Number,
+          value: 0
+        },
+        thetaLength: {
+          type: Number,
+          value: 2 * Math.PI
+        }
+      },
+      attached: function() {
+        this.geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radialSegments, this.heightSegments, this.openEnded, this.thetaStart, this.thetaLength);
+
+        var meshElement = this.getParentThreeNode('three-mesh');
+        meshElement.geometryElement = this;
+      },
+      getGeometry: function() {
+        return this.geometry;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-plane-geometry">
+  <script>
+    Polymer({
+      is: 'three-plane-geometry',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      properties: {
+        width: {
+          type: Number,
+          value: 1
+        },
+        height: {
+          type: Number,
+          value: 1
+        },
+        widthSegments: {
+          type: Number,
+          value: 1
+        },
+        heightSegments: {
+          type: Number,
+          value: 1
+        }
+      },
+      attached: function() {
+        this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
+
+        var meshElement = this.getParentThreeNode('three-mesh');
+        meshElement.geometryElement = this;
+      },
+      getGeometry: function() {
+        return this.geometry;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-torus-geometry">
+  <script>
+    Polymer({
+      is: 'three-torus-geometry',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      properties: {
+        radius: {
+          type: Number,
+          value: 100
+        },
+        tube: {
+          type: Number,
+          value: 40
+        },
+        radialSegments: {
+          type: Number,
+          value: 16
+        },
+        tubularSegments: {
+          type: Number,
+          value: 32
+        },
+        arc: {
+          type: Number,
+          value: Math.PI * 2
+        }
+      },
+      attached: function() {
+        this.geometry = new THREE.TorusGeometry(this.radius, this.tube, this.radialSegments, this.tubularSegments, this.arc);
+
+        var meshElement = this.getParentThreeNode('three-mesh');
+        meshElement.geometryElement = this;
+      },
+      getGeometry: function() {
+        return this.geometry;
+      }
+    });
+  </script>
+</dom-module>
+
 <dom-module id="three-canvas">
   <template>
     <three-engine fullscreen="{{fullscreen}}" width$="{{width}}" height$="{{height}}" shadow-enabled="{{shadowEnabled}}">
@@ -1170,6 +1334,207 @@
   <script>
     Polymer({
       is: 'three-box',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-circle">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blend-src="{{blendSrc}}"
+        blend-dst="{{blendDst}}"
+        blend-equation="{{blendEquation}}"
+        depth-test="{{depthTest}}"
+        depth-write="{{depthWrite}}"
+        polygon-offset="{{polygonOffset}}"
+        polygon-offset-factor="{{polygonOffsetFactor}}"
+        polygon-offset-units="{{polygonOffsetUnits}}"
+        alpha-test="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bump-map="{{bumpMap}}"
+        bump-scale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <three-circle-geometry
+        radius="{{radius}}"
+        segments="{{segments}}"
+        theta-start="{{thetaStart}}"
+        theta-length="{{thetaLength}}">
+      </three-circle-geometry>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: 'three-circle',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-cylinder">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blend-src="{{blendSrc}}"
+        blend-dst="{{blendDst}}"
+        blend-equation="{{blendEquation}}"
+        depth-test="{{depthTest}}"
+        depth-write="{{depthWrite}}"
+        polygon-offset="{{polygonOffset}}"
+        polygon-offset-factor="{{polygonOffsetFactor}}"
+        polygon-offset-units="{{polygonOffsetUnits}}"
+        alpha-test="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bump-map="{{bumpMap}}"
+        bump-scale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <three-cylinder-geometry
+        radius-top="{{radiusTop}}"
+        radius-bottom="{{radiusBottom}}"
+        height="{{height}}"
+        radial-segments="{{radialSegments}}"
+        height-segments="{{heightSegments}}"
+        open-ended="{{openEnded}}"
+        theta-start="{{thetaStart}}"
+        theta-length="{{thetaLength}}">
+      </three-cylinder-geometry>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: 'three-cylinder',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-plane">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blend-src="{{blendSrc}}"
+        blend-dst="{{blendDst}}"
+        blend-equation="{{blendEquation}}"
+        depth-test="{{depthTest}}"
+        depth-write="{{depthWrite}}"
+        polygon-offset="{{polygonOffset}}"
+        polygon-offset-factor="{{polygonOffsetFactor}}"
+        polygon-offset-units="{{polygonOffsetUnits}}"
+        alpha-test="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bump-map="{{bumpMap}}"
+        bump-scale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <three-plane-geometry
+        width="{{width}}"
+        height="{{height}}"
+        width-segments="{{widthSegments}}"
+        height-segments="{{heightSegments}}">
+      </three-plane-geometry>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: 'three-plane',
+      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-torus">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blend-src="{{blendSrc}}"
+        blend-dst="{{blendDst}}"
+        blend-equation="{{blendEquation}}"
+        depth-test="{{depthTest}}"
+        depth-write="{{depthWrite}}"
+        polygon-offset="{{polygonOffset}}"
+        polygon-offset-factor="{{polygonOffsetFactor}}"
+        polygon-offset-units="{{polygonOffsetUnits}}"
+        alpha-test="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bump-map="{{bumpMap}}"
+        bump-scale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <three-torus-geometry
+        radius="{{radius}}"
+        tube="{{tube}}"
+        radial-segments="{{radialSegments}}"
+        tubular-segments="{{tubularSegments}}"
+        arc="{{arc}}">
+      </three-torus-geometry>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: 'three-torus',
       behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior]
     });
   </script>
