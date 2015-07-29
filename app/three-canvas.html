@@ -150,13 +150,11 @@
       },
       castShadow: {
         type: Boolean,
-        value: false,
-        readOnly: true
+        value: false
       },
       receiveShadow: {
         type: Boolean,
-        value: false,
-        readOnly: true
+        value: false
       }
     },
     _positionChanged: function(newVal, oldVal) {
@@ -559,7 +557,9 @@
   <script>
     Polymer({
       is: 'three-engine',
-      behaviors: [ThreeObjectBehavior],
+      behaviors: [
+        ThreeObjectBehavior
+      ],
       properties: {
         fullscreen: {
           type: Boolean,
@@ -594,6 +594,10 @@
         controlsElement: {
           type: Object,
           observer: '_controlsElementChanged'
+        },
+        shadowEnabled: {
+          type: Boolean,
+          value: false
         }
       },
       render: function() {
@@ -700,7 +704,107 @@
   <script>
     Polymer({
       is: 'three-renderer',
-      behaviors: [ThreeObjectBehavior],
+      behaviors: [
+        ThreeObjectBehavior
+      ],
+      properties: {
+        precision: {
+          type: String,
+          value: 'highp'
+        },
+        alpha: {
+          type: Boolean,
+          value: false
+        },
+        depth: {
+          type: Boolean,
+          value: true
+        },
+        stencil: {
+          type: Boolean,
+          value: true
+        },
+        antialias: {
+          type: Boolean,
+          value: false
+        },
+        premultipliedAlpha: {
+          type: Boolean,
+          value: true
+        },
+        preserveDrawingBuffer: {
+          type: Boolean,
+          value: false
+        },
+        logarithmicDepthBuffer: {
+          type: Boolean,
+          value: false
+        },
+        clearColor: {
+          type: String,
+          value: '#000000'
+        },
+        autoClear: {
+          type: Boolean,
+          value: true
+        },
+        autoClearColor: {
+          type: Boolean,
+          value: true
+        },
+        autoClearDepth: {
+          type: Boolean,
+          value: true
+        },
+        autoClearStencil: {
+          type: Boolean,
+          value: true
+        },
+        sortObjects: {
+          type: Boolean,
+          value: true
+        },
+        gammaInput: {
+          type: Boolean,
+          value: false
+        },
+        gammaOutput: {
+          type: Boolean,
+          value: false
+        },
+        shadowMapEnabled: {
+          type: Boolean,
+          value: false
+        },
+        shadowMapType: {
+          type: Number,
+          value: THREE.PCFShadowMap
+        },
+        shadowMapCullFace: {
+          type: Number,
+          value: THREE.CullFaceFront
+        },
+        shadowMapDebug: {
+          type: Boolean,
+          value: false
+        },
+        shadowMapCascade: {
+          type: Boolean,
+          value: false
+        },
+        maxMorphTargets: {
+          type: Number,
+          value: 8
+        },
+        maxMorphNormals: {
+          type: Number,
+          value: 4
+        },
+        autoScaleCubemaps: {
+          type: Boolean,
+          value: true
+        }
+      },
       attached: function() {
         var engineElement = this.getParentThreeNode('three-engine');
         if (engineElement) {
@@ -711,8 +815,32 @@
         if (this.renderer) return this.renderer;
 
         this.renderer = new THREE.WebGLRenderer({
-          canvas: engineElement.getCanvas()
+          canvas: engineElement.getCanvas(),
+          precision:this.precision,
+          alpha:this.alpha,
+          depth:this.depth,
+          stencil:this.stencil,
+          antialias:this.antialias,
+          premultipliedAlpha:this.premultipliedAlpha,
+          preserveDrawingBuffer:this.preserveDrawingBuffer,
+          logarithmicDepthBuffer:this.logarithmicDepthBuffer
         });
+        this.renderer.setClearColor(new THREE.Color(this.clearColor), 1);
+        this.renderer.autoClear = this.autoClear;
+        this.renderer.autoClearColor = this.autoClearColor;
+        this.renderer.autoClearDepth = this.autoClearDepth;
+        this.renderer.autoClearStencil = this.autoClearStencil;
+        this.renderer.sortObjects = this.sortObjects;
+        this.renderer.gammaInput = this.gammaInput;
+        this.renderer.gammaOutput = this.gammaOutput;
+        this.renderer.shadowMapEnabled = this.shadowMapEnabled || engineElement.shadowEnabled;
+        this.renderer.shadowMapType = this.shadowMapType;
+        this.renderer.shadowMapCullFace = this.shadowMapCullFace;
+        this.renderer.shadowMapDebug = this.shadowMapDebug;
+        this.renderer.shadowMapCascade = this.shadowMapCascade;
+        this.renderer.maxMorphTargets = this.maxMorphTargets;
+        this.renderer.maxMorphNormals = this.maxMorphNormals;
+        this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
         return this.renderer;
       }
     });
@@ -723,7 +851,10 @@
   <script>
     Polymer({
       is: 'three-scene',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior
+      ],
       properties: {
         scene: Object
       },
@@ -854,10 +985,12 @@
           type: Number,
           value: 1
         },
+        /*
         castShadow: {
           type: Boolean,
           value: false
         },
+        */
         onlyShadow: {
           type: Boolean,
           value: false
@@ -912,6 +1045,7 @@
         this.light.position.copy(this._vector3(this.position));
         this.light.shadowMapWidth = this.shadowMapWidth;
         this.light.shadowMapHeight = this.shadowMapHeight;
+        this.light.castShadow = this.castShadow;
 
         var sceneElement = this.getParentThreeNode('three-scene');
         sceneElement.getScene().add(this.light);
@@ -966,6 +1100,8 @@
         this.mesh.position.copy(this._vector3(this.position));
         this.mesh.rotation.copy(this._euler(this.rotation));
         this.mesh.scale.copy(this._vector3(this.scale));
+        this.mesh.castShadow = this.castShadow;
+        this.mesh.receiveShadow = this.receiveShadow;
         if (this.name) this.mesh.name = this.name;
 
         var sceneElement = this.getParentThreeNode('three-scene');
@@ -1240,6 +1376,9 @@
           //directionalLight.setAttribute('position', '0.577,0.577,0.577');
           directionalLight.setAttribute('position', '100,100,100');
           directionalLight.setAttribute('color', '#cccccc');
+          if (this.shadowEnabled) {
+            directionalLight.setAttribute('cast-shadow', true);
+          }
           this.$.scene.appendChild(directionalLight);
           var ambientLight = document.createElement('three-ambient-light');
           ambientLight.setAttribute('color', '#333333');
@@ -1255,7 +1394,13 @@
 
 <dom-module id="three-sphere">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1300,14 +1445,35 @@
   <script>
     Polymer({
       is: 'three-sphere',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeSphereGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreeSphereGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
 
 <dom-module id="three-box">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1351,14 +1517,35 @@
   <script>
     Polymer({
       is: 'three-box',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeBoxGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreeBoxGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
 
 <dom-module id="three-circle">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1400,14 +1587,35 @@
   <script>
     Polymer({
       is: 'three-circle',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeCircleGeometryBehavior]
+      behaviors: [
+        ThreeObjectBehavior, 
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreeCircleGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
 
 <dom-module id="three-cylinder">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1453,14 +1661,35 @@
   <script>
     Polymer({
       is: 'three-cylinder',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeCylinderGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreeCylinderGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
 
 <dom-module id="three-plane">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1502,14 +1731,35 @@
   <script>
     Polymer({
       is: 'three-plane',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreePlaneGeometryBehavior]
+      behaviors: [
+        ThreeObjectBehavior, 
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreePlaneGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
 
 <dom-module id="three-torus">
   <template>
-    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+    <three-mesh
+      name="{{name}}"
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      cast-shadow="{{castShadow}}"
+      receive-shadow="{{receiveShadow}}">
       <three-mesh-phong-material
         side="{{side}}"
         opacity="{{opacity}}"
@@ -1552,7 +1802,22 @@
   <script>
     Polymer({
       is: 'three-torus',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeMeshPhongMaterializedMeshBehavior, ThreeTorusGeometryBehavior]
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeMeshPhongMaterializedMeshBehavior,
+        ThreeTorusGeometryBehavior
+      ],
+      properties: {
+        castShadow: {
+          type: Boolean,
+          value: true
+        },
+        receiveShadow: {
+          type: Boolean,
+          value: true
+        }
+      }
     });
   </script>
 </dom-module>
