@@ -109,11 +109,15 @@
         readOnly: true
       }
     },
-    getParentThreeNode: function(localName) {
-      localName = localName || 'three-engine';
+    getParentThreeNode: function(localNames) {
+      if (typeof localNames === 'undefined') localNames = ['three-engine'];
+      if (typeof localNames === 'string') localNames = [localNames];
       var cursor = this.parentNode;
       while (cursor.localName !== 'body') {
-        if (cursor.localName === localName) return cursor;
+        for (var i = 0; i < localNames.length; i++) {
+          var localName = localNames[i];
+          if (cursor.localName === localName) return cursor;
+        }
         cursor = cursor.parentNode;
       }
       return null;
@@ -635,7 +639,7 @@
             requestAnimationFrame(animate.bind(this));
           }
           catch (e) {
-            console.log(e);
+            console.log('animate error:' + e);
           }
         }).bind(this))();
         if (!this.controls && this.controlsElement) {
@@ -1083,19 +1087,63 @@
           type: Object,
           observer: '_geometryElementChanged'
         },
+        geometryElements: {
+          type: Array,
+          value: function() {return [];}
+        },
+        childMeshElements: {
+          type: Array,
+          value: function() {return [];}
+        },
         material: Object,
         geometry: Object,
         mesh: Object
       },
       _materialElementChanged: function(newVal, oldVal) {
         this.material = this.materialElement.getMaterial();
-        if (this.geometry) this._createMesh();
+        if (this._needCreateMesh()) this.createMesh();
       },
       _geometryElementChanged: function(newVal, oldVal) {
         this.geometry = this.geometryElement.getGeometry();
-        if (this.material) this._createMesh();
+        if (this._needCreateMesh()) this.createMesh();
       },
-      _createMesh: function() {
+      _needCreateMesh: function() {
+        if (this.geometry) {
+          if (this.material || this.getParentThreeNode('three-mesh')) return true;
+        }
+        return false;
+      },
+      addGeometryElement: function(element) {
+        this.geometryElements.push(element);
+        var geometry = element.getGeometry();
+        if (!this.geometry) {
+          this.geometry = geometry;
+          if (this._needCreateMesh()) this.createMesh();
+        }
+        else {
+          this.geometry.merge(geometry);
+        }
+      },
+      addChildMeshElement: function(element) {
+        this.childMeshElements.push(element);
+        this.createMesh();
+      },
+      removeMeshElement: function(element) {
+        this.childMeshElements.splice(this.childMeshElements.indexOf(element), 1);
+      },
+      createMesh: function(fromParent) {
+        var oldMesh = this.mesh;
+
+        this.geometry = new THREE.Geometry();
+        for (var i = 0; i < this.geometryElements.length; i++) {
+          this.geometry.merge(this.geometryElements[i].getGeometry());
+        }
+        for (i = 0; i < this.childMeshElements.length; i++) {
+          var childMesh = this.childMeshElements[i].createMesh(true);
+          childMesh.updateMatrix();
+          this.geometry.merge(childMesh.geometry, childMesh.matrix);
+        }
+
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.copy(this._vector3(this.position));
         this.mesh.rotation.copy(this._euler(this.rotation));
@@ -1104,8 +1152,20 @@
         this.mesh.receiveShadow = this.receiveShadow;
         if (this.name) this.mesh.name = this.name;
 
-        var sceneElement = this.getParentThreeNode('three-scene');
-        sceneElement.getScene().add(this.mesh);
+        if (!fromParent) {
+          var element = this.getParentThreeNode(['three-mesh', 'three-scene']);
+          if (oldMesh && element.localName === 'three-scene') {
+            element.getScene().remove(oldMesh);
+          }
+          if (element.localName === 'three-scene') {
+            element.getScene().add(this.mesh);
+          }
+          else if (element.localName === 'three-mesh') {
+            element.addChildMeshElement(this);
+          }
+        }
+
+        return this.mesh;
       }
     });
   </script>
@@ -1221,12 +1281,16 @@
   <script>
     Polymer({
       is: 'three-sphere-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeSphereGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeSphereGeometryBehavior
+      ],
       attached: function() {
         this.geometry = new THREE.SphereGeometry(this.radius, this.widthSegments, this.heightSegments, this.phiStart, this.phiLength, this.thetaStart, this.thetaLength);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
@@ -1239,12 +1303,16 @@
   <script>
     Polymer({
       is: 'three-box-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeBoxGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeBoxGeometryBehavior
+      ],
       attached: function() {
         this.geometry = new THREE.BoxGeometry(this.width, this.height, this.depth, this.widthSegments, this.heightSegments, this.depthSegments);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
@@ -1257,12 +1325,16 @@
   <script>
     Polymer({
       is: 'three-circle-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeCircleGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeCircleGeometryBehavior
+      ],
       attached: function() {
         this.geometry = new THREE.CircleGeometry(this.radius, this.segments, this.thetaStart, this.thetaLength);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
@@ -1275,12 +1347,16 @@
   <script>
     Polymer({
       is: 'three-cylinder-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeCylinderGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeCylinderGeometryBehavior
+      ],
       attached: function() {
         this.geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radialSegments, this.heightSegments, this.openEnded, this.thetaStart, this.thetaLength);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
@@ -1293,12 +1369,18 @@
   <script>
     Polymer({
       is: 'three-plane-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreePlaneGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreePlaneGeometryBehavior
+      ],
       attached: function() {
-        this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
+        // PlaneBufferGeometry breaks three-mesh#createMesh
+        //this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
+        this.geometry = new THREE.PlaneGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
@@ -1311,12 +1393,16 @@
   <script>
     Polymer({
       is: 'three-torus-geometry',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeTorusGeometryBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeTorusGeometryBehavior
+      ],
       attached: function() {
         this.geometry = new THREE.TorusGeometry(this.radius, this.tube, this.radialSegments, this.tubularSegments, this.arc);
 
         var meshElement = this.getParentThreeNode('three-mesh');
-        meshElement.geometryElement = this;
+        meshElement.addGeometryElement(this);
       },
       getGeometry: function() {
         return this.geometry;
