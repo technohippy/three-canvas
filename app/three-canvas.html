@@ -1973,3 +1973,45 @@
     });
   </script>
 </dom-module>
+
+<dom-module id="three-loader-mesh">
+  <script>
+    Polymer({
+      is: 'three-loader-mesh',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObjectBehavior
+      ],
+      properties: {
+        type: {
+          type: String,
+          value: 'json'
+        },
+        src: String,
+        mesh: Object
+      },
+      attached: function() {
+        this.mesh = new THREE.Mesh();
+        if (this.type === 'json') {
+          var loader = new THREE.JSONLoader(); 
+          loader.load(this.src, function(geometry, materials) {
+            this.mesh.geometry = geometry;
+            this.mesh.material = materials[0];
+            this.mesh.material.ambient = this.mesh.material.color;
+          }.bind(this));
+        }
+        else if (this.type === 'obj') {
+          var loader = new THREE.OBJLoader();
+          loader.load(this.src, function(object) {
+            object.children.forEach(function(child) {
+              this.mesh.children.push(child);
+            }.bind(this));
+          }.bind(this));
+        }
+
+        var sceneElement = this.getParentThreeNode('three-scene');
+        sceneElement.getScene().add(this.mesh);
+      }
+    });
+  </script>
+</dom-module>
