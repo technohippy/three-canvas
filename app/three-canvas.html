@@ -554,6 +554,27 @@
       }
     }
   };
+
+  ThreeShaderVariableContainerBehavior = {
+    properties: {
+      variableOptions: {
+        type: Object,
+        value: function() { return {}; }
+      }
+    },
+    addVariable: function(name, definition, content) {
+      // TODO: content
+      this.variableOptions[name] = definition;
+      var materialElement = this.getParentThreeNode('three-shader-material');
+      materialElement._resetMaterial(); // TODO
+    }
+  };
+
+  ThreeShaderBehavior = {
+    getShader: function() {
+      return this.textContent;
+    }
+  };
 </script>
 
 <!-- components -->
@@ -1180,11 +1201,25 @@
         type: {
           type: String,
           value: 'mesh-phong'
-        }
+        },
+        ref: String
       },
       ready: function() {
-        THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-material');
+        if (!this.ref) {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-material');
+        }
       },
+      attached: function() {
+        if (this.ref) {
+          this.material = document.getElementById(this.ref).getMaterial();
+
+          var meshElement = this.getParentThreeNode('three-mesh');
+          meshElement.materialElement = this;
+        }
+      },
+      getMaterial: function() {
+        return this.material;
+      }
     });
   </script>
 </dom-module>
@@ -1980,7 +2015,7 @@
       is: 'three-loader-mesh',
       behaviors: [
         ThreeObjectBehavior,
-        ThreeObjectBehavior
+        ThreeObject3dBehavior
       ],
       properties: {
         type: {
@@ -2011,6 +2046,218 @@
 
         var sceneElement = this.getParentThreeNode('three-scene');
         sceneElement.getScene().add(this.mesh);
+      }
+    });
+  </script>
+</dom-module>
+
+<!-- for shader -->
+<dom-module id="three-shader-material">
+  <script>
+    Polymer({
+      is: 'three-shader-material',
+      behaviors: [
+        ThreeObjectBehavior
+      ],
+      properties: {
+        shading: {
+          type: Number,
+          value: THREE.SmoothShading
+        },
+        linewidth: {
+          type: Number,
+          value: 1
+        },
+        wireframe: {
+          type: Boolean,
+          value: false
+        },
+        wireframeLinewidth: {
+          type: Number,
+          value: 1
+        },
+        fog: {
+          type: Boolean,
+          value: false
+        },
+        lights: {
+          type: Boolean,
+          value: false
+        },
+        vertexColors: {
+          type: Number,
+          value: THREE.NoColors
+        },
+        skinning: {
+          type: Boolean,
+          value: false
+        },
+        material: Object,
+        vertexShaderElement: {
+          type: Object,
+          observer: '_vertexShaderElementChanged'
+        },
+        fragmentShaderElement: {
+          type: Object,
+          observer: '_fragmentShaderElementChanged'
+        },
+        uniformsElements: {
+          type: Array,
+          value: function() { return []; }
+        },
+        attributesElements: {
+          type: Array,
+          value: function() { return []; }
+        }
+      },
+      attached: function() {
+        var meshElement = this.getParentThreeNode('three-mesh');
+        if (meshElement) meshElement.materialElement = this;
+      },
+      getMaterial: function() {
+        var shaderOptions = {};
+        this.uniformsElements.forEach(function(uniformsElement) {
+          uniformOptions = {};
+          for(var name in uniformsElement.variableOptions) {
+            uniformOptions[name] = uniformsElement.variableOptions[name];
+          }
+          shaderOptions['uniforms'] = uniformOptions;
+        });
+        this.attributesElements.forEach(function(attributesElement) {
+          attributeOptions = {};
+          for(name in attributeOptions.variableOptions) {
+            attributeOptions[name] = attributeOptions.variableOptions[name];
+          }
+          shaderOptions['attributes'] = attributeOptions;
+        });
+        if (this.vertexShaderElement) {
+          shaderOptions['vertexShader'] = this.vertexShaderElement.vertexShader;
+        }
+        if (this.fragmentShaderElement) {
+          shaderOptions['fragmentShader'] = this.fragmentShaderElement.fragmentShader;
+        }
+        this.material = new THREE.ShaderMaterial(shaderOptions);
+        return this.material;
+      },
+      addUniformsElement: function(element) {
+        this.uniformsElements.push(element);
+        this._resetMaterial();
+      },
+      addAttributesElement: function(element) {
+        this.attributesElements.push(element);
+        this._resetMaterial();
+      },
+      _vertexShaderElementChanged: function(newVal, oldVal) {
+        this._resetMaterial();
+      },
+      _fragmentShaderElementChanged: function(newVal, oldVal) {
+        this._resetMaterial();
+      },
+      _resetMaterial: function() {
+        var meshElement = this.getParentThreeNode('three-mesh');
+        if (!meshElement) return;
+        meshElement.materialElement = this;
+        meshElement.createMesh();
+
+        if (!meshElement.mesh) return;
+        meshElement.mesh.material.dispose();
+        meshElement.mesh.material = this.getMaterial();
+        meshElement.mesh.material.needsUpdate = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-vertex-shader">
+  <script>
+    Polymer({
+      is: 'three-vertex-shader',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeShaderBehavior
+      ],
+      properties: {
+        vertexShader: String
+      },
+      attached: function() {
+        this.vertexShader = this.textContent;
+        this.textContent = '';
+        var materialElement = this.getParentThreeNode('three-shader-material');
+        materialElement.vertexShaderElement = this;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-fragment-shader">
+  <script>
+    Polymer({
+      is: 'three-fragment-shader',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeShaderBehavior
+      ],
+      properties: {
+        fragmentShader: String
+      },
+      attached: function() {
+        this.fragmentShader = this.textContent;
+        this.textContent = '';
+        var materialElement = this.getParentThreeNode('three-shader-material');
+        materialElement.fragmentShaderElement = this;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-attributes">
+  <script>
+    Polymer({
+      is: 'three-shader-attributes',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeShaderVariableContainerBehavior
+      ],
+      attached: function() {
+        var materialElement = this.getParentThreeNode('three-shader-material');
+        materialElement.addAttributesElement(this);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-uniforms">
+  <script>
+    Polymer({
+      is: 'three-shader-uniforms',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeShaderVariableContainerBehavior
+      ],
+      attached: function() {
+        var materialElement = this.getParentThreeNode('three-shader-material');
+        materialElement.addUniformsElement(this);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-variable">
+  <template></template>
+  <script>
+    Polymer({
+      is: 'three-shader-variable',
+      behaviors: [
+        ThreeObjectBehavior
+      ],
+      properties: {
+        name: String,
+        type: String,
+        value: String
+      },
+      attached: function() {
+        var containerElement = this.getParentThreeNode(['three-shader-uniforms', 'three-shader-attributes']);
+        containerElement.addVariable(this.name, {type:this.type, value:eval(this.value)}, this.textContent);
       }
     });
   </script>
