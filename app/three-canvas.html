@@ -563,10 +563,12 @@
       }
     },
     addVariable: function(name, definition, content) {
-      // TODO: content
+      // TODO: ignoring content for the time being
       this.variableOptions[name] = definition;
       var materialElement = this.getParentThreeNode('three-shader-material');
-      materialElement._resetMaterial(); // TODO
+      if (materialElement) {
+        materialElement.resetMaterial();
+      }
     }
   };
 
@@ -903,7 +905,10 @@
   <script>
     Polymer({
       is: 'three-camera',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior
+      ],
       properties: {
         type: {
           type: String,
@@ -938,6 +943,7 @@
         this.camera.userData['element'] = this;
         this.camera.position.copy(this._vector3(this.position));
         this.camera.lookAt(this._vector3(this.lookAt));
+        if (this.name) this.camera.name = this.name;
         this.object = this.camera;
 
         if (this.controls === 'orbit') {
@@ -1000,7 +1006,11 @@
   <script>
     Polymer({
       is: 'three-directional-light',
-      behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeLightBehavior],
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeObject3dBehavior,
+        ThreeLightBehavior
+      ],
       properties: {
         type: {
           type: String,
@@ -1010,12 +1020,6 @@
           type: Number,
           value: 1
         },
-        /*
-        castShadow: {
-          type: Boolean,
-          value: false
-        },
-        */
         onlyShadow: {
           type: Boolean,
           value: false
@@ -1071,6 +1075,7 @@
         this.light.shadowMapWidth = this.shadowMapWidth;
         this.light.shadowMapHeight = this.shadowMapHeight;
         this.light.castShadow = this.castShadow;
+        if (this.name) this.light.name = this.name;
 
         var sceneElement = this.getParentThreeNode('three-scene');
         sceneElement.getScene().add(this.light);
@@ -1086,6 +1091,7 @@
       behaviors: [ThreeObjectBehavior, ThreeObject3dBehavior, ThreeLightBehavior],
       attached: function() {
         this.light = new THREE.AmbientLight(new THREE.Color(this.color));
+        if (this.name) this.light.name = this.name;
 
         var sceneElement = this.getParentThreeNode('three-scene');
         sceneElement.getScene().add(this.light);
@@ -2141,19 +2147,13 @@
       },
       addUniformsElement: function(element) {
         this.uniformsElements.push(element);
-        this._resetMaterial();
+        this.resetMaterial();
       },
       addAttributesElement: function(element) {
         this.attributesElements.push(element);
-        this._resetMaterial();
+        this.resetMaterial();
       },
-      _vertexShaderElementChanged: function(newVal, oldVal) {
-        this._resetMaterial();
-      },
-      _fragmentShaderElementChanged: function(newVal, oldVal) {
-        this._resetMaterial();
-      },
-      _resetMaterial: function() {
+      resetMaterial: function() {
         var meshElement = this.getParentThreeNode('three-mesh');
         if (!meshElement) return;
         meshElement.materialElement = this;
@@ -2163,6 +2163,12 @@
         meshElement.mesh.material.dispose();
         meshElement.mesh.material = this.getMaterial();
         meshElement.mesh.material.needsUpdate = true;
+      },
+      _vertexShaderElementChanged: function(newVal, oldVal) {
+        this.resetMaterial();
+      },
+      _fragmentShaderElementChanged: function(newVal, oldVal) {
+        this.resetMaterial();
       }
     });
   </script>
@@ -2236,7 +2242,9 @@
       ],
       attached: function() {
         var materialElement = this.getParentThreeNode('three-shader-material');
-        materialElement.addUniformsElement(this);
+        if (materialElement) {
+          materialElement.addUniformsElement(this);
+        }
       }
     });
   </script>
