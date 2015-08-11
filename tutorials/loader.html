@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -28,23 +28,23 @@
         To display a loaded object, use a <code>three-loader-mesh</code> element.
       </p>
 
-      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-  &lt;three-camera position="0,90,800" lookAt="0,90,0" controls="orbit">&lt;/three-camera>
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,90,800" look-at="0,90,0" controls="orbit">&lt;/three-camera>
   &lt;<strong>three-loader-mesh</strong> <strong>type="obj"</strong> src="./vendors/three.js/examples/obj/male02/male02.obj">&lt;<strong>/three-loader-mesh</strong>>
 &lt;/three-canvas></code></pre>
     </section>
 
     <h3>JSONLoader</h3>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,0,10" lookAt="0,0,0" controls="orbit"></three-camera>
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,10" look-at="0,0,0" controls="orbit"></three-camera>
       <three-loader-mesh type="json" src="../models/suzanne.js"></three-loader-mesh>
     </three-canvas>
 
     <h3>OBJLoader</h3>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,90,800" lookAt="0,90,0" controls="orbit"></three-camera>
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,90,800" look-at="0,90,0" controls="orbit"></three-camera>
       <three-loader-mesh type="obj" src="../vendors/three.js/examples/obj/male02/male02.obj"></three-loader-mesh>
     </three-canvas>
   </body>
