@@ -7,9 +7,9 @@
   "description": "A Custom Element to Use WebGL Easily by Utilizing Three.js",
   "main": "dist/three-canvas.html",
   "keywords": [
-    "Polymer",
     "WebGL",
     "Three.js",
+    "Polymer",
     "web-components",
     "web-component"
   ],
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "threejs": "*",
+    "threejs": "r71",
     "three.js-controls": "~0.0.67"
   }
 }

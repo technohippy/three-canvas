@@ -1,0 +1,15 @@
+{
+  "name": "three.js-controls",
+  "version": "0.0.67",
+  "homepage": "https://github.com/noseglid/three.js-controls",
+  "authors": [
+    "Alexander Olsson <noseglid@gmail.com>"
+  ],
+  "description": "threejs-controls distributed via bower",
+  "keywords": [
+    "threejs",
+    "three.js",
+    "controls"
+  ],
+  "license": "MIT"
+}

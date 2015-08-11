@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../three-canvas.html">
+    <link rel="stylesheet" href="../styles/style.css" type="text/css">
+  </head>
+  <body>
+    <nav>
+      <a href="../index.html">Top</a>
+      <button onclick="window.open('view-source:' + window.location);">View Source</button>
+    </nav>
+
+    <section>
+      <h2>Shaders</h2>
+
+      <p>
+        You can defined and use your custom shader by using <code>three-shader-material</code> element.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-shader-material id="custom-shader-1">
+  &lt;three-vertex-shader>
+    uniform bool edge;
+    varying vec3 vNormal;
+    void main(void) {
+      vec3 pos = position;
+      if (edge) {
+        pos += normal * 0.04;
+      }
+      vNormal = normal;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  &lt;/three-vertex-shader>
+  &lt;three-fragment-shader>
+    precision mediump float;
+    uniform vec3 lightDirection;
+    uniform sampler2D texture;
+    uniform vec4 edgeColor;
+    varying vec3 vNormal;
+    void main(void) {
+      if (edgeColor.a > 0.0) {
+        gl_FragColor = edgeColor;
+      }
+      else {
+        float diffuse = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
+        vec4 smpColor = texture2D(texture, vec2(diffuse, 0.0));
+        gl_FragColor = smpColor;
+      }
+    }
+  &lt;/three-fragment-shader>
+  &lt;three-shader-uniforms>
+    &lt;three-shader-variable name="uDirLightPos" type="v3" value="new THREE.Vector3()">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="edge" type="i" value="true">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)">&lt;/three-shader-variable>
+    &lt;three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')">&lt;/three-shader-variable>
+  &lt;/three-shader-uniforms>
+&lt;/three-shader-material></code></pre>
+
+      <p>
+      Although this material can be used in a <code>three-mesh</code> element as usual, I recomend you to use a <code>ref</code> attribute in a <code>three-material</code> element in order for readability. The <code>ref</code> attribute refers other <code>three-material</code> element and its material by ID.
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,8" look-at="0,0,0" controls="orbit">&lt;/three-camera>
+  &lt;three-mesh>
+    &lt;three-material <strong>ref="custom-shader-1"</strong>>&lt;/three-material>
+    &lt;three-torus-geometry radius="0.5" tube="0.3">&lt;/three-torus-geometry>
+  &lt;/three-mesh>
+&lt;/three-canvas></code></pre>
+    </section>
+
+    <!-- TODO: shader-materialを別のcustom elementとして切り出すこととか -->
+
+    <h3>Toon Shader</h3>
+
+    <!-- Define shader material -->
+    <!-- http://jsdo.it/edo_m18/gepr -->
+    <three-shader-material id="custom-shader-1">
+      <three-vertex-shader>
+        uniform bool edge;
+        varying vec3 vNormal;
+        void main(void) {
+          vec3 pos = position;
+          if (edge) {
+            pos += normal * 0.04;
+          }
+          vNormal = normal;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+        }
+      </three-vertex-shader>
+      <three-fragment-shader>
+        precision mediump float;
+        uniform vec3 lightDirection;
+        uniform sampler2D texture;
+        uniform vec4 edgeColor;
+        varying vec3 vNormal;
+        void main(void) {
+          if (edgeColor.a > 0.0) {
+            gl_FragColor = edgeColor;
+          }
+          else {
+            float diffuse = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
+            vec4 smpColor = texture2D(texture, vec2(diffuse, 0.0));
+            gl_FragColor = smpColor;
+          }
+        }
+      </three-fragment-shader>
+      <three-shader-uniforms>
+        <three-shader-variable name="uDirLightPos" type="v3" value="new THREE.Vector3()"></three-shader-variable>
+        <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
+        <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
+        <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
+        <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')"></three-shader-variable>
+      </three-shader-uniforms>
+    </three-shader-material>
+
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <!-- Use defined shader material -->
+        <three-material ref="custom-shader-1"></three-material>
+        <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>
+      </three-mesh>
+    </three-canvas>
+
+    <!-- Of course you can use a shader material directly in a three-mesh element if you prefer -->
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <!-- http://jsdo.it/edo_m18/gepr -->
+        <three-shader-material>
+          <three-vertex-shader>
+            uniform bool edge;
+            varying vec3 vNormal;
+            void main(void) {
+              vec3 pos = position;
+              if (edge) {
+                pos += normal * 0.04;
+              }
+              vNormal = normal;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+          </three-vertex-shader>
+          <three-fragment-shader>
+            precision mediump float;
+            uniform vec3 lightDirection;
+            uniform sampler2D texture;
+            uniform vec4 edgeColor;
+            varying vec3 vNormal;
+            void main(void) {
+              if (edgeColor.a > 0.0) {
+                gl_FragColor = edgeColor;
+              }
+              else {
+                float diffuse = clamp(dot(vNormal, lightDirection), 0.0, 1.0);
+                vec4 smpColor = texture2D(texture, vec2(diffuse, 0.0));
+                gl_FragColor = smpColor;
+              }
+            }
+          </three-fragment-shader>
+          <three-shader-uniforms>
+            <three-shader-variable name="uDirLightPos" type="v3" value="new THREE.Vector3()"></three-shader-variable>
+            <three-shader-variable name="edgeColor" type="v4" value="new THREE.Vector4(0, 0, 0, 0)"></three-shader-variable>
+            <three-shader-variable name="edge" type="i" value="true"></three-shader-variable>
+            <three-shader-variable name="lightDirection" type="v3" value="new THREE.Vector3(0.577,0.577,0.577)"></three-shader-variable>
+            <three-shader-variable name="texture" type="t" value="THREE.ImageUtils.loadTexture('../images/toon.png')"></three-shader-variable>
+          </three-shader-uniforms>
+        </three-shader-material>
+        <three-torus-geometry radius="0.5" tube="0.3"></three-torus-geometry>
+      </three-mesh>
+    </three-canvas>
+  </body>
+</html>

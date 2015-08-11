@@ -1,0 +1,1575 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+
+<script src="bower_components/threejs/build/three.js"></script>
+
+<!-- controls -->
+<script src="bower_components/three.js-controls/src/FirstPersonControls.js"></script>
+<script src="bower_components/three.js-controls/src/FlyControls.js"></script>
+<script src="bower_components/three.js-controls/src/OrbitControls.js"></script>
+
+<!-- loaders -->
+<script src="vendors/three.js/examples/js/loaders/OBJLoader.js"></script>
+
+<!-- postprocess -->
+<script src="vendors/three.js/examples/js/shaders/CopyShader.js"></script>
+<script src="vendors/three.js/examples/js/shaders/DotScreenShader.js"></script>
+<script src="vendors/three.js/examples/js/shaders/RGBShiftShader.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/MaskPass.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/RenderPass.js"></script>
+<script src="vendors/three.js/examples/js/postprocessing/ShaderPass.js"></script>
+
+<script>
+  THREE.Element = THREE.Element || {Utils:{}};
+  THREE.Element.Utils.vector3 = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Vector3();
+    }
+    else if (val instanceof THREE.Vector3) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Vector3(vals[0], vals[1], vals[2]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+  THREE.Element.Utils.euler = function(val) {
+    if (typeof val === 'undefined') {
+      return new THREE.Euler();
+    }
+    else if (val instanceof THREE.Euler) {
+      return val;
+    }
+    else if (typeof val === 'string') { // ex) 1,2,3
+      try {
+        var vals = eval('[' + val + ']');
+        return new THREE.Euler(vals[0], vals[1], vals[2], vals[3]);
+      }
+      catch (e) {
+        console.log('invalid args: ' + val);
+        throw e;
+      }
+    }
+    else {
+      console.log('invalid argument: ', val);
+      throw 'invalid argument: ' + val;
+    }
+  };
+  THREE.Element.Utils.constant = function(val) {
+    if (typeof val === 'string' && /^THREE\./.test(val)) {
+      var parts = val.split('.');
+      parts.shift();
+      var value = THREE;
+      while (parts.length !== 0) {
+        value = value[parts.shift()];
+      }
+      return value;
+    }
+    else {
+      return val;
+    }
+  };
+  THREE.Element.Utils.replaceNodeName = function(oldElement, newElementName) {
+    var newElement = document.createElement(newElementName);
+    oldElement['addEventListener'] = function(eventName, handelr) {
+      newElement.addEventListener(eventName, handelr);
+    };
+    Array.apply(null, oldElement.attributes).forEach(function(attr) {
+      newElement.setAttribute(attr.name, attr.value);
+    });
+    Array.apply(null, oldElement.children).forEach(function(child) {
+      newElement.appendChild(child);
+    });
+    if (oldElement.parentNode) {
+      oldElement.parentNode.insertBefore(newElement, oldElement); 
+      oldElement.parentNode.removeChild(oldElement);
+    }
+  };
+</script>
+
+<dom-module id="three-object">
+  <script>
+    Polymer({
+      is: "three-object",
+      threeChildren: null,
+      attached: function() {
+        var added = false;
+        var parent = this.parentNode;;
+        while (parent !== null) {
+          if (parent.nodeName.match(/^THREE-/)) {
+            if (!parent.threeChildren) {
+              parent.threeChildren = [];
+            }
+            if (!added) {
+              console.log(parent.nodeName + ' gets ' + this.nodeName);
+              parent.threeChildren.push(this);
+              added = true;
+            }
+          }
+          if (!parent.nodeName.match(/^#/)) {
+            break;
+          }
+          parent = parent.parentNode;
+        }
+if (parent !== null) {
+  console.log('nodeName: ' + parent.nodeName);
+  console.dir(parent.threeChildren);
+}
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-engine" extends="three-object" attributes="canvas,width,height,fullscreen,shadowEnabled">
+  <script>
+    Polymer({
+      is: "three-engine",
+      fullscreen: false,
+      shadowEnabled: false,
+      isSetup: false,
+      domReady: function() {
+        if (typeof this.parentNode.tagName === 'undefined') return; // #shadowroot
+        this.setup();
+        this.start();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var isFullscreen = this.fullscreen || this.fullscreen === '';
+        if (this.canvas) {
+          this.canvas = document.getElementById(this.canvas);
+        }
+        else if (this.previousElementSibling && this.previousElementSibling.tagName === 'CANVAS') {
+          this.canvas = this.previousElementSibling;
+        }
+        else {
+          if (typeof this.width === 'undefined' || typeof this.height === 'undefined') {
+            if (isFullscreen) {
+              this.width = window.innerWidth;
+              this.height = window.innerHeight;
+            }
+            else {
+              throw 'no canvas';
+            }
+          }
+          this.canvas = document.createElement('canvas');
+          this.canvas.width = this.width;
+          this.canvas.height = this.height;
+          if (isFullscreen) {
+            this.canvas.style.margin = 0;
+            this.canvas.style.padding = 0;
+            this.canvas.style.position = 'absolute';
+            this.canvas.style.top = 0;
+            this.canvas.style.left = 0;
+          }
+          this.parentNode.insertBefore(this.canvas, this);
+        }
+
+        var rendererElm = this.querySelector('three-renderer');
+        rendererElm.setup(this);
+        this.renderer = rendererElm.renderer;
+
+        var sceneElm = this.querySelector('three-scene');
+        sceneElm.setup(this);
+        this.scene = sceneElm.scene;
+
+        if (typeof rendererElm.cameraId === 'undefined') {
+          this.scene.children.forEach(function(child) {
+            if (child instanceof THREE.Camera) {
+              this.camera = child;
+            }
+          }.bind(this));
+        }
+        else {
+          var cameraId = rendererElm.cameraId;
+          var cameraElm = sceneElm.querySelector('#' + cameraId);
+          cameraElm.setup(this);
+          this.camera = cameraElm.camera;
+        }
+        if (typeof this.camera === 'undefined') throw 'no camera';
+        if (typeof this.camera.userData['element'] !== 'undefined') {
+          var controlsElm = this.camera.userData['element'].querySelector('three-controls');
+          if (controlsElm) {
+            controlsElm.setup(this.camera, this.canvas);
+            this.controls = controlsElm.controls;
+          }
+        }
+
+        var shaderPassElm;
+        Array.apply(null, rendererElm.children).forEach(function(child) {
+          if (child.setup) child.setup(this);
+          if (child.localName === 'three-shader-pass') shaderPassElm = child;
+          // TODO: should be refactored
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(this);
+              if (contentChild.localName === 'three-shader-pass') shaderPassElm = contentChild;
+            }, this);
+          }
+        }, this);
+        if (shaderPassElm) {
+          shaderPassElm.setup(this);
+          if (shaderPassElm.shaderPass && 0 < shaderPassElm.shaderPass.length) {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+            shaderPassElm.shaderPass.forEach(function(effect) {
+              this.composer.addPass(effect);
+            }, this);
+          }
+        }
+
+        this.isSetup = true;
+      },
+      render: function() {
+        if (this.composer) {
+          this.composer.render();
+        }
+        else {
+          this.renderer.render(this.scene, this.camera);
+        }
+      },
+      getObjectByName: function(name) {
+        return this.scene.getObjectByName(name);
+      },
+      start: function() {
+        if (this.fullscreen || this.fullscreen === '') {
+          window.addEventListener('resize', function() {
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+          }.bind(this), false);
+        }
+
+        var clock = new THREE.Clock();
+        ((function animate() {
+          requestAnimationFrame(animate.bind(this));
+          this.render();
+          this.fire('render');
+          if (this.controls) this.controls.update(clock.getDelta());
+        }).bind(this))();
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-renderer" extends="three-object" attributes="precision,alpha,depth,stencil,antialias,premultipliedAlpha,preserveDrawingBuffer,logarithmicDepthBuffer,clearColor,autoClear,autoClearColor,autoClearDepth,autoClearStencil,sortObjects,gammaInput,gammaOutput,shadowMapEnabled,shadowMapType,shadowMapCullFace,shadowMapDebug,shadowMapCascade,maxMorphTargets,maxMorphNormals,autoScaleCubemaps,sceneId,cameraId" object="THREE.WebGLRenderer">
+  <script>
+    Polymer({
+      is: "three-renderer",
+      precision: 'highp',
+      alpha: false,
+      depth: true,
+      stencil: true,
+      antialias: false,
+      premultipliedAlpha: true,
+      preserveDrawingBuffer: false,
+      logarithmicDepthBuffer: false,
+      clearColor: '#000000',
+      autoClear: true,
+      autoClearColor: true,
+      autoClearDepth: true,
+      autoClearStencil: true,
+      sortObjects: true,
+      gammaInput: false,
+      gammaOutput: false,
+      shadowMapEnabled: false,
+      shadowMapType: THREE.PCFShadowMap,
+      shadowMapCullFace: THREE.CullFaceFront,
+      shadowMapDebug: false,
+      shadowMapCascade: false,
+      maxMorphTargets: 8,
+      maxMorphNormals: 4,
+      autoScaleCubemaps: true,
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.canvas = threejs.canvas;
+        this.renderer = new THREE.WebGLRenderer({
+          canvas:this.canvas,
+          precision:this.precision,
+          alpha:this.alpha,
+          depth:this.depth,
+          stencil:this.stencil,
+          antialias:this.antialias,
+          premultipliedAlpha:this.premultipliedAlpha,
+          preserveDrawingBuffer:this.preserveDrawingBuffer,
+          logarithmicDepthBuffer:this.logarithmicDepthBuffer
+        });
+        this.renderer.setClearColor(new THREE.Color(this.clearColor), 1);
+        this.renderer.autoClear = this.autoClear;
+        this.renderer.autoClearColor = this.autoClearColor;
+        this.renderer.autoClearDepth = this.autoClearDepth;
+        this.renderer.autoClearStencil = this.autoClearStencil;
+        this.renderer.sortObjects = this.sortObjects;
+        this.renderer.gammaInput = this.gammaInput;
+        this.renderer.gammaOutput = this.gammaOutput;
+        this.renderer.shadowMapEnabled = this.shadowMapEnabled;
+        this.renderer.shadowMapType = this.shadowMapType;
+        this.renderer.shadowMapCullFace = this.shadowMapCullFace;
+        this.renderer.shadowMapDebug = this.shadowMapDebug;
+        this.renderer.shadowMapCascade = this.shadowMapCascade;
+        this.renderer.maxMorphTargets = this.maxMorphTargets;
+        this.renderer.maxMorphNormals = this.maxMorphNormals;
+        this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
+        if (threejs.shadowEnabled) {
+          this.renderer.shadowMapEnabled = true;
+        }
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-scene" extends="three-object" object="THREE.Scene">
+  <script>
+    Polymer({
+      is: "three-scene",
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+
+        this.scene = new THREE.Scene();
+
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(threejs);
+          if (child.object) this.scene.add(child.object);
+          // TODO: should be refactored
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(threejs);
+              if (contentChild.object) this.scene.add(contentChild.object);
+            }, this);
+          }
+        }, this);
+
+        // TODO: should be refactored
+        if (threejs.shadowEnabled) {
+          this.scene.children.forEach(function(object3d) {
+            if (object3d.type === 'DirectionalLight') {
+              object3d.castShadow = true;
+            }
+            else if (object3d.type === 'Mesh') {
+              if (object3d.geometry.type === 'PlaneBufferGeometry' 
+                  || object3d.geometry.type === 'PlaneGeometry') {
+                object3d.receiveShadow = true;
+              }
+              else {
+                object3d.castShadow = true;
+              }
+            }
+          }, this);
+        }
+
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-object3d" extends="three-object" attributes="name,position,rotation,scale,castShadow,receiveShadow" object="THREE.Object3D">
+  <script>
+    Polymer({
+      is: "three-object3d",
+      isSetup: false,
+      castShadow: false,
+      receiveShadow: false,
+      scale: '1,1,1',
+      setup: function() {
+        if (typeof this.object !== 'undefined') {
+          this.object.castShadow = this.castShadow;
+          this.object.receiveShadow = this.receiveShadow;
+          if (typeof this.name !== 'undefined') {
+            this.object.name = this.name;
+          }
+        }
+      },
+      ready: function() {
+        this.position = this.vector3(this.position);
+        this.rotation = this.euler(this.rotation);
+        this.scale = this.vector3(this.scale);
+      },
+      vector3: function(val) {
+        return THREE.Element.Utils.vector3(val);
+      },
+      euler: function(val) {
+        return THREE.Element.Utils.euler(val);
+      },
+      positionChanged: function(oldVal, newVal) {
+        this.position = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.position.copy(this.position);
+        }
+      },
+      rotationChanged: function(oldVal, newVal) {
+        this.rotation = this.euler(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.rotation.copy(this.rotation);
+        }
+      },
+      scaleChanged: function(oldVal, newVal) {
+        this.scale = this.vector3(newVal);
+        if (typeof this.object !== 'undefined') {
+          this.object.scale.copy(this.scale);
+        }
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-camera" extends="three-object3d" attributes="type" object="THREE.Camera">
+  <script>
+    Polymer({
+      is: "three-camera",
+      type: 'perspective',
+      ready: function() {
+        if (this.localName === 'three-camera') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-camera');
+        }
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-perspective-camera" extends="three-camera" attributes="lookAt,controls" object="THREE.PerspectiveCamera">
+  <script>
+    Polymer({
+      is: "three-perspective-camera",
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        var aspect = threejs.canvas.width / threejs.canvas.height;
+        this.camera = new THREE.PerspectiveCamera(15, aspect);
+        this.camera.userData['element'] = this;
+        this.camera.position.copy(this.vector3(this.position));
+        this.camera.lookAt(this.vector3(this.lookAt));
+        this.object = this.camera;
+        this.isSetup = true;
+
+        if (this.controls === 'orbit') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'orbit');
+          controlsElm.setAttribute('center', this.lookAt);
+          this.appendChild(controlsElm);
+        }
+        else if (this.controls === 'fly') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'fly');
+          this.appendChild(controlsElm);
+        }
+        else if (this.controls === 'firstperson') {
+          var controlsElm = document.createElement('three-controls');
+          controlsElm.setAttribute('type', 'firstperson');
+          this.appendChild(controlsElm);
+        }
+
+        this.super();
+      },
+      lookAtChanged: function(oldVal, newVal) {
+        if (typeof this.camera !== 'undefined') {
+          this.camera.lookAt(this.vector3(newVal));
+        }
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-canvas" extends="three-object" attributes="width,height,antialias,clearColor,fullscreen,defaultLight,shadowEnabled">
+  <template>
+    <three-engine fullscreen={{fullscreen}} width="{{width}}" height="{{height}}" shadowEnabled={{shadowEnabled}}>
+      <three-renderer antialias={{antialias}} clearColor="{{clearColor}}">
+        <content select="three-shader-pass"></content>
+      </three-renderer>
+      <three-scene id="scene" defaultLight={{defaultLight}}>
+        <content></content>
+      </three-scene>
+    </three-engine>
+  </template>
+  <script>
+    Polymer({
+      is: "three-canvas",
+      defaultLight: false,
+      shadowEnabled: false,
+      needDefaultLight: false,
+      domReady: function() {
+        if (this.defaultLight) {
+          /*
+          <template if={{needDefaultLight}}>
+            <three-directional-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+            <three-ambient-light color="#333333"></three-light>
+          </template>
+          this.needDefaultLight = true;
+          */
+          var directionalLight = document.createElement('three-directional-light');
+          //directionalLight.setAttribute('position', '0.577,0.577,0.577');
+          directionalLight.setAttribute('position', '100,100,100');
+          directionalLight.setAttribute('color', '#cccccc');
+          directionalLight.isSetup = false;
+          this.$.scene.appendChild(directionalLight);
+          var ambientLight = document.createElement('three-ambient-light');
+          ambientLight.setAttribute('color', '#333333');
+          ambientLight.isSetup = false;
+          this.$.scene.appendChild(ambientLight);
+        }
+        var threejs = this.shadowRoot.children[0];
+        this['addEventListener'] = function(eventName, handler) {
+          threejs.addEventListener(eventName, handler);
+        };
+        threejs.setup();
+        this.renderer = threejs.renderer;
+        this.scene = threejs.scene;
+        this.camera = threejs.camera;
+        threejs.start();
+      },
+      getObjectByName: function(name) {
+        return this.scene.getObjectByName(name);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-light" extends="three-object3d" attributes="type,color" object="THREE.Light">
+  <script>
+    Polymer({
+      is: "three-light",
+      type: 'directional',
+      color: '#ffffff',
+      ready: function() {
+        if (this.localName === 'three-light') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-light');
+        }
+      },
+      setup: function() {
+        this.object = this.light;
+        this.super();
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-directional-light" extends="three-light" attributes="intensity,castShadow,onlyShadow,shadowCameraNear,shadowCameraFar,shadowCameraLeft,shadowCameraRight,shadowCameraTop,shadowCameraBottom,shadowCameraVisible,shadowBias,shadowDarkness,shadowMapWidth,shadowMapHeight" object="THREE.DirectionalLight">
+  <script>
+    Polymer({
+      is: "three-directional-light",
+      intensity: 1,
+      castShadow: false,
+      onlyShadow: false,
+      shadowCameraNear: 50,
+      shadowCameraFar: 5000,
+      shadowCameraLeft: -500,
+      shadowCameraRight: 500,
+      shadowCameraTop: 500,
+      shadowCameraBottom: -500,
+      shadowCameraVisible: false,
+      shadowBias: 0,
+      shadowDarkness: 0.5,
+      shadowMapWidth: 512,
+      shadowMapHeight: 512,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        this.light = new THREE.DirectionalLight(new THREE.Color(this.color));
+        this.light.position.copy(THREE.Element.Utils.vector3(this.position));
+        this.light.shadowMapWidth = this.shadowMapWidth;
+        this.light.shadowMapHeight = this.shadowMapHeight;
+        this.super();
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-ambient-light" extends="three-light" attributes="" object="THREE.AmbientLight">
+  <script>
+    Polymer({
+      is: "three-ambient-light",
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        this.light = new THREE.AmbientLight(new THREE.Color(this.color));
+        this.super();
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-mesh" extends="three-object3d" object="THREE.Mesh">
+  <script>
+    Polymer({
+      is: "three-mesh",
+      isMesh: true,
+      setup: function() {
+        var material;
+        var geometries = [];
+        var meshes = [];
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup();
+          if (child.material) material = child.material;
+          if (child.geometry) geometries.push(child.geometry);
+          if (child.isMesh) {
+            meshes.push(child.mesh);
+          }
+          // TODO: should be refactored
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup();
+              if (contentChild.material) material = contentChild.material;
+              if (contentChild.geometry) geometries.push(contentChild.geometry);
+              if (contentChild.isMesh) {
+                meshes.push(contentChild.mesh);
+              }
+            }, this);
+          }
+        });
+        var geometry = geometries.shift();
+        while (0 < geometries.length) {
+          geometry.merge(geometries.shift());
+        }
+        while (0 < meshes.length) {
+          var mesh = meshes.shift();
+          mesh.updateMatrix();
+          geometry.merge(mesh.geometry, mesh.matrix);
+        }
+        this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.userData['element'] = this;
+        this.mesh.position.copy(this.position);
+        this.mesh.rotation.copy(this.rotation);
+        this.mesh.scale.copy(this.scale);
+        this.object = this.mesh;
+        this.super();
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-loader-mesh" extends="three-object3d" attributes="type,src" object="THREE.JSONLoader,THREE.OJBLoader">
+  <script>
+    Polymer({
+      is: "three-loader-mesh",
+      type: 'json',
+      setup: function() {
+        this.mesh = new THREE.Mesh();
+        if (this.type === 'json') {
+          var loader = new THREE.JSONLoader(); 
+          loader.load(this.src, function(geometry, materials) {
+            this.mesh.geometry = geometry;
+            this.mesh.material = materials[0];
+            this.mesh.material.ambient = this.mesh.material.color;
+          }.bind(this));
+        }
+        else if (this.type === 'obj') {
+          var loader = new THREE.OBJLoader();
+          loader.load(this.src, function(object) {
+            object.children.forEach(function(child) {
+              this.mesh.children.push(child);
+            }.bind(this));
+          }.bind(this));
+        }
+        this.object = this.mesh;
+        this.super();
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-material" extends="three-object" attributes="ref,type,side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible" object="THREE.Material">
+  <script>
+    Polymer({
+      is: "three-material",
+      type: 'mesh-phong',
+      side: THREE.FrontSide,
+      opacity: 1,
+      transparent: false,
+      blending: THREE.NormalBlending,
+      blendSrc: THREE.SrcAlphaFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
+      blendEquation: THREE.AddEquation,
+      depthTest: true,
+      depthWrite: true,
+      polygonOffset: false,
+      polygonOffsetFactor: 0,
+      polygonOffsetUnits: 0,
+      alphaTest: 0,
+      overdraw: 0,
+      visible: true,
+      isSetup: false,
+      ready: function() {
+        if (!this.ref && this.localName === 'three-material') {
+          THREE.Element.Utils.replaceNodeName(this, 'three-' + this.type + '-material');
+        }
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var elm = document.getElementById(this.ref);
+        if (elm === null) {
+          throw 'Element Not Found: #' + this.ref;
+        }
+        elm.setup();
+        this.material = elm.material;
+        this.isSetup = true;
+      },
+      getOptions: function() {
+        if (this.opacity < 1) this.transparent = true;
+        return {
+          side: this.side,
+          opacity: this.opacity,
+          transparent: this.transparent,
+          blending: this.blending,
+          blendSrc: this.blendSrc,
+          blendDst: this.blendDst,
+          blendEquation: this.blendEquation,
+          depthTest: this.depthTest,
+          depthWrite: this.depthWrite,
+          polygonOffset: this.polygonOffset,
+          polygonOffsetFactor: this.polygonOffsetFactor,
+          polygonOffsetUnits: this.polygonOffsetUnits,
+          alphaTest: this.alphaTest,
+          overdraw: this.overdraw,
+          visible: this.visible
+        };
+      },
+      opacityChanged: function(oldVal, newVal) {
+        if (newVal < 1) this.material.transparent = true;
+        this.material.opacity = newVal;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-mesh-phong-material" extends="three-material" attributes="color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe" object="THREE.MeshPhongMaterial">
+  <script>
+    Polymer({
+      is: "three-mesh-phong-material",
+      color: '#ffffff',
+      ambient: '#ffffff',
+      emissive: '#000000',
+      specular: '#000000',
+      shininess: 30,
+      metal: false,
+      bumpScale: 1,
+      fog: true,
+      shading: THREE.SmoothShading,
+      wireframe: false,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.material = new THREE.MeshPhongMaterial(this.getOptions());
+        if (typeof this.map !== 'undefined') {
+          this.material.map = THREE.ImageUtils.loadTexture(this.map);
+        }
+        if (typeof this.bumpMap !== 'undefined') {
+          this.material.bumpMap = THREE.ImageUtils.loadTexture(this.bumpMap);
+        }
+      },
+      getOptions: function() {
+        var opts = this.super();
+        opts['color'] = new THREE.Color(this.color);
+        opts['ambient'] = new THREE.Color(this.ambient);
+        opts['emissive'] = new THREE.Color(this.emissive);
+        opts['specular'] = new THREE.Color(this.specular);
+        opts['shininess'] = this.shininess;
+        opts['metal'] = this.metal;
+        opts['bumpScale'] = this.bumpScale;
+        opts['fog'] = this.fog;
+        opts['shading'] = this.shading;
+        opts['wireframe'] = this.wireframe;
+        return opts;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-mesh-lambert-material" extends="three-material" attributes="color,ambient,emissive,wrapAround,wrapRGB,map,lightMap,specularMap,alphaMap,envMap,combine,reflectivity,refractionRatio,fog,shading,wireframe" object="THREE.MeshLambertMaterial">
+  <script>
+    Polymer({
+      is: "three-mesh-lambert-material",
+      color: '#ffffff',
+      ambient: '#ffffff',
+      emissive: '#000000',
+      wrapAround: false,
+      wrapRGB: '1,1,1',
+      combine: THREE.MultiplyOperation,
+      reflectivity: 1,
+      refractionRatio: 0.98,
+      fog: true,
+      shading: THREE.SmoothShading,
+      wireframe: false,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.material = new THREE.MeshPhongMaterial(this.getOptions());
+        if (typeof this.map !== 'undefined') {
+          this.material.map = THREE.ImageUtils.loadTexture(this.map);
+        }
+        if (typeof this.lightMap !== 'undefined') {
+          this.material.lightMap = THREE.ImageUtils.loadTexture(this.lightMap);
+        }
+        if (typeof this.specularMap !== 'undefined') {
+          this.material.specularMap = THREE.ImageUtils.loadTexture(this.specularMap);
+        }
+        if (typeof this.alphaMap !== 'undefined') {
+          this.material.alphaMap = THREE.ImageUtils.loadTexture(this.alphaMap);
+        }
+        if (typeof this.envMap !== 'undefined') {
+          this.material.envMap = THREE.ImageUtils.loadTexture(this.envMap);
+        }
+      },
+      getOptions: function() {
+        var opts = this.super();
+        opts['color'] = new THREE.Color(this.color);
+        opts['ambient'] = new THREE.Color(this.ambient);
+        opts['emissive'] = new THREE.Color(this.emissive);
+        opts['wrapAround'] = this.wrapAround;
+        opts['wrapRGB'] = THREE.Element.Utils.vector3(this.wrapRGB);
+        opts['combine'] = this.combine;
+        opts['reflectivity'] = this.reflectivity;
+        opts['refractionRatio'] = this.refractionRatio;
+        opts['fog'] = this.fog;
+        opts['shading'] = this.shading;
+        opts['wireframe'] = this.wireframe;
+        return opts;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-material" extends="three-material" attributes="shading,linewidth,wireframe,wireframeLinewidth,fog,lights,vertexColors,skinning">
+  <script>
+    Polymer({
+      is: "three-shader-material",
+      shading: THREE.SmoothShading,
+      linewidth: 1,
+      wireframe: false,
+      wireframeLinewidth: 1,
+      fog: false,
+      lights: false,
+      vertexColors: THREE.NoColors,
+      skinning: false,
+      isSetup: false,
+      domReady: function() {
+        this.setup();
+      },
+      setup: function() {
+        if (this.isSetup) return;
+        var shaderOptions = {};
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions);
+            }, this);
+          }
+        }, this);
+        this.material = new THREE.ShaderMaterial(shaderOptions);
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-pass" extends="three-object">
+  <script>
+    Polymer({
+      is: "three-shader-pass",
+      isSetup: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.shaderPass = [];
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(threejs);
+          if (child.effect) this.shaderPass.push(child.effect);
+        }, this);
+        this.object = this.shaderPass;
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader" extends="three-object" attributes="type,renderToScreen">
+  <script>
+    Polymer({
+      is: "three-shader",
+      isSetup: false,
+      renderToScreen: false,
+      setup: function(threejs) {
+        if (this.isSetup) return;
+        this.effect = new THREE.ShaderPass(eval(this.type)); // TODO
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(this.effect);
+        }, this);
+        this.effect.renderToScreen = this.renderToScreen;
+        this.object = this.effect;
+        this.isSetup = true;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-vertex-shader" extends="three-object">
+  <template>
+    <script type="x-shader/x-vertex">
+      <content></content>
+    </script>
+  </template>
+  <script>
+    Polymer({
+      is: "three-vertex-shader",
+      setup: function(shaderOptions) {
+        shaderOptions['vertexShader'] = this.textContent;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-fragment-shader" extends="three-object">
+  <template>
+    <script type="x-shader/x-fragment">
+      <content></content>
+    </script>
+  </template>
+  <script>
+    Polymer({
+      is: "three-fragment-shader",
+      setup: function(shaderOptions) {
+        shaderOptions['fragmentShader'] = this.textContent;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-uniforms" extends="three-object">
+  <script>
+    Polymer({
+      is: "three-shader-uniforms",
+      setup: function(shaderOptions) {
+        if (typeof shaderOptions['uniforms'] === 'undefined') {
+          shaderOptions['uniforms'] = {};
+        }
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions['uniforms']);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions['uniforms']);
+            }, this);
+          }
+        }, this);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-attributes" extends="three-object">
+  <script>
+    Polymer({
+      is: "three-shader-attributes",
+      setup: function(shaderOptions) {
+        if (typeof shaderOptions['attributes'] === 'undefined') {
+          shaderOptions['attributes'] = {};
+        }
+        Array.apply(null, this.children).forEach(function(child) {
+          if (child.setup) child.setup(shaderOptions['attributes']);
+          if (child.getDistributedNodes) {
+            Array.apply(null, child.getDistributedNodes()).forEach(function(contentChild) {
+              if (contentChild.setup) contentChild.setup(shaderOptions['attributes']);
+            }, this);
+          }
+        }, this);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader-variable" extends="three-object" attributes="name,type,value">
+  <template>
+    <style>
+      #container {display:none}
+    </style>
+    <div id="container">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "three-shader-variable",
+      setup: function(variableOptions) {
+        if (typeof variableOptions[this.name] === 'undefined') {
+          variableOptions[this.name] = {};
+        }
+        if (this.type) {
+          variableOptions[this.name].type = this.type;
+        }
+        if (this.value) {
+          variableOptions[this.name].value = eval(this.value);
+        }
+        return this.textContent;
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-geomerty" extends="three-object" object="THREE.Geometry">
+  <script>
+    Polymer({
+      is: "three-geomerty",
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-box-geometry" extends="three-geomerty" attributes="width,height,depth,widthSegments,heightSegments,depthSegments" object="THREE.BoxGeometry">
+  <script>
+    Polymer({
+      is: "three-box-geometry",
+      width: 1,
+      height: 1,
+      depth: 1,
+      widthSegments: 1,
+      heightSegments: 1,
+      depthSegments: 1,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.BoxGeometry(this.width, this.height, this.depth, Math.floor(this.widthSegments), Math.floor(this.heightSegments), Math.floor(this.depthSegments));
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-circle-geometry" extends="three-geomerty" attributes="radius,segments,thetaStart,thetaLength" object="THREE.CircleGeometry">
+  <script>
+    Polymer({
+      is: "three-circle-geometry",
+      radius: 50,
+      segments: 32,
+      thetaStart: 0,
+      thetaLength: Math.PI * 2,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.CircleGeometry(this.radius, this.segments, this.thetaStart, this.thetaLength);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-cylinder-geometry" extends="three-geomerty" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength" object="THREE.CylinderGeometry">
+  <script>
+    Polymer({
+      is: "three-cylinder-geometry",
+      radiusTop: 20.0,
+      radiusBottom: 20.0,
+      height: 100.0,
+      radialSegments: 32,
+      heightSegments: 1,
+      openEnded: false,
+      thetaStart: 0,
+      thetaLength: 2 * Math.PI,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radialSegments, this.heightSegments, this.openEnded, this.thetaStart, this.thetaLength);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-plane-geometry" extends="three-geomerty" attributes="width,height,widthSegments,heightSegments" object="THREE.PlaneGeometry">
+  <script>
+    Polymer({
+      is: "three-plane-geometry",
+      width: 1,
+      height: 1,
+      widthSegments: 1,
+      heightSegments: 1,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.PlaneBufferGeometry(this.width, this.height, this.widthSegments, this.heightSegments);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-sphere-geometry" extends="three-geomerty" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength" object="THREE.SphereGeometry">
+  <script>
+    Polymer({
+      is: "three-sphere-geometry",
+      radius: 50,
+      widthSegments: 32,
+      heightSegments: 16,
+      phiStart: 0,
+      phiLength: Math.PI * 2,
+      thetaStart: 0,
+      thetaLength: Math.PI,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.SphereGeometry(this.radius, this.widthSegments, this.heightSegments, this.phiStart, this.phiLength, this.thetaStart, this.thetaLength);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-torus-geometry" extends="three-geomerty" attributes="radius,tube,radialSegments,tubularSegments,arc" object="THREE.TorusGeometry">
+  <script>
+    Polymer({
+      is: "three-torus-geometry",
+      radius: 100,
+      tube: 40,
+      radialSegments: 16,
+      tubularSegments: 32,
+      arc: Math.PI * 2,
+      ready: function() {
+        this.setup();
+      },
+      setup: function() {
+        this.geometry = new THREE.TorusGeometry(this.radius, this.tube, this.radialSegments, this.tubularSegments, this.arc);
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-mesh-phong-materialized-mesh" extends="three-object3d" attributes="side,opacity,transparent,blending,blendSrc,blendDst,blendEquation,depthTest,depthWrite,polygonOffset,polygonOffsetFactor,polygonOffsetUnits,alphaTest,overdraw,visible,color,ambient,emissive,specular,shininess,metal,map,bumpMap,bumpScale,fog,shading,wireframe">
+  <template>
+    <three-mesh name="{{name}}" position="{{position}}" rotation="{{rotation}}" scale="{{scale}}">
+      <three-mesh-phong-material
+        side="{{side}}"
+        opacity="{{opacity}}"
+        transparent="{{transparent}}"
+        blending="{{blending}}"
+        blendSrc="{{blendSrc}}"
+        blendDst="{{blendDst}}"
+        blendEquation="{{blendEquation}}"
+        depthTest="{{depthTest}}"
+        depthWrite="{{depthWrite}}"
+        polygonOffset="{{polygonOffset}}"
+        polygonOffsetFactor="{{polygonOffsetFactor}}"
+        polygonOffsetUnits="{{polygonOffsetUnits}}"
+        alphaTest="{{alphaTest}}"
+        overdraw="{{overdraw}}"
+        visible="{{visible}}"
+        color="{{color}}"
+        ambient="{{ambient}}"
+        emissive="{{emissive}}"
+        specular="{{specular}}"
+        shininess="{{shininess}}"
+        metal="{{metal}}"
+        map="{{map}}"
+        bumpMap="{{bumpMap}}"
+        bumpScale="{{bumpScale}}"
+        fog="{{fog}}"
+        shading="{{shading}}"
+        wireframe="{{wireframe}}">
+      </three-mesh-phong-material>
+      <content></content>
+    </three-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-mesh-phong-materialized-mesh",
+      isMesh: true,
+      setup: function(threejs) {
+        var child = this.shadowRoot.children[0].shadowRoot.children[0];
+        child.setup(threejs);
+        this.object = child.object
+        this.mesh = this.object;
+        this.mesh.userData['element'] = this;
+        this.super();
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-box" extends="three-mesh-phong-materialized-mesh" attributes="width,height,depth,widthSegments,heightSegments,depthSegments">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      jransparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-box-geometry
+        width="{{width}}"
+        height="{{height}}"
+        depth="{{depth}}"
+        widthSegments="{{widthSegments}}"
+        heightSegments="{{heightSegments}}"
+        depthSegments="{{depthSegments}}">
+      </three-box-geometry>
+      <content></content>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-box",
+      width: 1,
+      height: 1,
+      depth: 1,
+      widthSegments: 1,
+      heightSegments: 1,
+      depthSegments: 1
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-circle" extends="three-mesh-phong-materialized-mesh" attributes="radius,segments,thetaStart,thetaLength">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-circle-geometry
+        radius="{{radius}}"
+        segments="{{segments}}"
+        thetaStart="{{thetaStart}}"
+        thetaLength="{{thetaLength}}">
+      </three-circle-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-circle",
+      radius: 50,
+      segments: 32,
+      thetaStart: 0,
+      thetaLength: Math.PI * 2
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-cylinder" extends="three-mesh-phong-materialized-mesh" attributes="radiusTop,radiusBottom,height,radialSegments,heightSegments,openEnded,thetaStart,thetaLength">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-cylinder-geometry
+        radiusTop="{{radiusTop}}"
+        radiusBottom="{{radiusBottom}}"
+        height="{{height}}"
+        radialSegments="{{radialSegments}}"
+        heightSegments="{{heightSegments}}"
+        openEnded="{{openEnded}}"
+        thetaStart="{{thetaStart}}"
+        thetaLength="{{thetaLength}}">
+      </three-cylinder-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-cylinder",
+      radiusTop: 20.0,
+      radiusBottom: 20.0,
+      height: 100.0,
+      radialSegments: 32,
+      heightSegments: 1,
+      openEnded: false,
+      thetaStart: 0,
+      thetaLength: 2 * Math.PI
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-plane" extends="three-mesh-phong-materialized-mesh" attributes="width,height,widthSegments,heightSegments">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-plane-geometry
+        width="{{width}}"
+        height="{{height}}"
+        widthSegments="{{widthSegments}}"
+        heightSegments="{{heightSegments}}">
+      </three-plane-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-plane",
+      width: 1,
+      height: 1,
+      widthSegments: 1,
+      heightSegments: 1
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-sphere" extends="three-mesh-phong-materialized-mesh" attributes="radius,widthSegments,heightSegments,phiStart,phiLength,thetaStart,thetaLength">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-sphere-geometry
+        radius="{{radius}}"
+        widthSegments="{{widthSegments}}"
+        heightSegments="{{heightSegments}}"
+        phiStart="{{phiStart}}"
+        phiLength="{{phiLength}}"
+        thetaStart="{{thetaStart}}"
+        thetaLength="{{thetaLength}}">
+      </three-sphere-geometry>
+      <content></content>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-sphere",
+      radius: 50,
+      widthSegments: 32,
+      heightSegments: 16,
+      phiStart: 0,
+      phiLength: Math.PI * 2,
+      thetaStart: 0,
+      thetaLength: Math.PI
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-torus" extends="three-mesh-phong-materialized-mesh" attributes="radius,tube,radialSegments,tubularSegments,arc">
+  <template>
+    <three-mesh-phong-materialized-mesh
+      position="{{position}}"
+      rotation="{{rotation}}"
+      scale="{{scale}}"
+      side="{{side}}"
+      opacity="{{opacity}}"
+      transparent="{{transparent}}"
+      blending="{{blending}}"
+      blendSrc="{{blendSrc}}"
+      blendDst="{{blendDst}}"
+      blendEquation="{{blendEquation}}"
+      depthTest="{{depthTest}}"
+      depthWrite="{{depthWrite}}"
+      polygonOffset="{{polygonOffset}}"
+      polygonOffsetFactor="{{polygonOffsetFactor}}"
+      polygonOffsetUnits="{{polygonOffsetUnits}}"
+      alphaTest="{{alphaTest}}"
+      overdraw="{{overdraw}}"
+      visible="{{visible}}"
+      color="{{color}}"
+      ambient="{{ambient}}"
+      emissive="{{emissive}}"
+      specular="{{specular}}"
+      shininess="{{shininess}}"
+      metal="{{metal}}"
+      map="{{map}}"
+      bumpMap="{{bumpMap}}"
+      bumpScale="{{bumpScale}}"
+      fog="{{fog}}"
+      shading="{{shading}}"
+      wireframe="{{wireframe}}">
+      <three-torus-geometry
+        radius="{{radius}}"
+        tube="{{tube}}"
+        radialSegments="{{radialSegments}}"
+        tubularSegments="{{tubularSegments}}"
+        arc="{{arc}}">
+      </three-torus-geometry>
+    </three-mesh-phong-materialized-mesh>
+  </template>
+  <script>
+    Polymer({
+      is: "three-torus",
+      radius: 100,
+      tube: 40,
+      radialSegments: 16,
+      tubularSegments: 32,
+      arc: Math.PI * 2
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-controls" extends="three-object" attributes="type,center,movementSpeed,rollSpeed,lookSpeed,lon,noFly">
+  <script>
+    Polymer({
+      is: "three-controls",
+      setup: function(camera, canvas) {
+        if (this.type === 'orbit') {
+          this.controls = new THREE.OrbitControls(camera, canvas);
+          this.controls.target.copy(THREE.Element.Utils.vector3(this.center));
+        }
+        else if (this.type === 'fly') {
+          this.controls = new THREE.FlyControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.rollSpeed !== 'undefined') {
+            this.controls.rollSpeed = parseFloat(this.rollSpeed);
+          }
+        }
+        else if (this.type === 'firstperson') {
+          this.controls = new THREE.FirstPersonControls(camera, canvas);
+          if (typeof this.movementSpeed !== 'undefined') {
+            this.controls.movementSpeed = parseFloat(this.movementSpeed);
+          }
+          if (typeof this.lookSpeed !== 'undefined') {
+            this.controls.lookSpeed = parseFloat(this.lookSpeed);
+          }
+          if (typeof this.lon !== 'undefined') {
+            this.controls.lon = parseFloat(this.lon);
+          }
+          if (typeof this.noFly !== 'undefined') {
+            this.controls.noFly = this.noFly === 'true';
+          }
+        }
+        else {
+          throw 'Unknown type: ' + this.type;
+        }
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../three-canvas.html">
+    <link rel="stylesheet" href="../styles/style.css" type="text/css">
+  </head>
+  <body>
+    <nav>
+      <a href="../index.html">Top</a>
+      <button onclick="window.open('view-source:' + window.location);">View Source</button>
+    </nav>
+
+    <section>
+      <h2>Merge Meshes</h2>
+
+      <p>
+        Meshes and geometries can be arranged in a hierarchical structure. This merged objects are handled as one object
+      </p>
+
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,20" look-at="0,0,0" controls="orbit">&lt;/three-camera>
+  <strong>&lt;three-box width="1.5" height="1.5" depth="1.5" color="#ff0000"></strong>
+    <strong>&lt;three-sphere-geometry radius="1">&lt;/three-sphere-geometry></strong>
+    <strong>&lt;three-box width="1" height="1" depth="1" position="1,1,0" rotation="0.2,0.2,0.2"></strong>
+      <strong>&lt;three-box width="1" height="1" depth="1" position="0.5,0.5,0" rotation="0.2,0.2,0.2">&lt;/three-box></strong>
+    <strong>&lt;/three-box></strong>
+    <strong>&lt;three-sphere radius="1" position="-1,1,1">&lt;/three-sphere></strong>
+  <strong>&lt;/three-box></strong>
+&lt;/three-canvas></code></pre>
+    </section>
+
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,20" look-at="0,0,0" controls="orbit"></three-camera>
+      <three-mesh>
+        <three-material color="#ff0000"></three-material>
+        <three-box-geometry width="1.5" height="1.5" depth="1.5"></three-box-geometry>
+        <three-sphere-geometry radius="1"></three-sphere-geometry>
+        <three-mesh position="1,1,0" rotation="0.2,0.2,0.2">
+          <three-box-geometry width="1" height="1" depth="1"></three-box-geometry>
+          <three-mesh position="0.5,0.5,0" rotation="0.2,0.2,0.2">
+            <three-box-geometry width="1" height="1" depth="1"></three-box-geometry>
+          </three-mesh>
+        </three-mesh>
+        <three-mesh position="-1,1,1">
+          <three-sphere-geometry radius="0.5"></three-sphere-geometry>
+        </three-mesh>
+        <three-sphere radius="1" position="-1,1,1"></three-sphere>
+      </three-mesh>
+    </three-canvas>
+
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,20" look-at="0,0,0" controls="orbit"></three-camera>
+      <three-box width="1.5" height="1.5" depth="1.5" color="#ff0000">
+        <three-sphere-geometry radius="1"></three-sphere-geometry>
+        <three-box width="1" height="1" depth="1" position="1,1,0" rotation="0.2,0.2,0.2">
+          <three-box width="1" height="1" depth="1" position="0.5,0.5,0" rotation="0.2,0.2,0.2"></three-box>
+        </three-box>
+        <three-sphere radius="1" position="-1,1,1"></three-sphere>
+      </three-box>
+    </three-canvas>
+  </body>
+</html>
