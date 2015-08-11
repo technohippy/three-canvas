@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     'connect': {
       demo: {
         options: {
-          port: 8123,
+          port: 8124,
           base: 'app',
           open: true,
           keepalive: true

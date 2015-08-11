@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -22,45 +22,45 @@
       </p>
     </section>
 
-    <!-- set shadowEnabled attribute true in three-canvas element -->
-    <three-canvas width="200" height="200" antialias="true" clearColor="#ffffff" shadowEnabled="true" defaultLight="true">
-      <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
+    <!-- set shadow-enabled attribute true in three-canvas element -->
+    <three-canvas width="200" height="200" antialias="true" clear-color="#ffffff" shadow-enabled="true" default-light="true">
+      <three-camera position="0,0,1000" look-at="0,0,0" controls="orbit"></three-camera>
       <three-box width="50" height="50" depth="50" color="#ff0000" rotation="0.2,0.2,0.2"></three-box>
       <three-plane width="1000" height="1000" color="#dddddd" position="0,0,-100"></three-plane>
     </three-canvas>
 
-    <!-- use shadowMapEnabled, castShadow and receiveShadow attributes in each elements in an appropriate manner -->
+    <!-- use shadow-map-enabled, cast-shadow and receive-shadow attributes in each elements in an appropriate manner -->
     <three-engine width="200" height="200">
-      <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
+      <three-renderer antialias="true" clear-color="#ffffff" shadow-map-enabled="true"></three-renderer>
       <three-scene>
-        <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-light position="100,100,100" color="#cccccc" castShadow="true"></three-light>
+        <three-camera position="0,0,1000" look-at="0,0,0" controls="orbit"></three-camera>
+        <three-light position="100,100,100" color="#cccccc" cast-shadow="true"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
-        <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
+        <three-mesh rotation="0.2,0.2,0.2" cast-shadow="true">
           <three-material color="#ff0000"></three-material>
           <three-box-geometry width="50" height="50" depth="50"></three-box-geometry>
         </three-mesh>
-        <three-mesh position="0,0,-100" receiveShadow="true">
+        <three-mesh position="0,0,-100" receive-shadow="true">
           <three-material color="#dddddd"></three-material>
-          <three-plane-geometry width="1000" height="1000" widthSegments="10" heightSegments="10"></three-plane>
+          <three-plane-geometry width="1000" height="1000" width-segments="10" height-segments="10"></three-plane>
         </three-mesh>
       </three-scene>
     </three-engine>
 
-    <!-- Note that you should set shadowMapWidth/shadowMapHeight for small objects -->
+    <!-- Note that you should set shadow-map-width/shadow-map-height for small objects -->
     <three-engine width="200" height="200">
-      <three-renderer antialias="true" clearColor="#ffffff" shadowMapEnabled="true"></three-renderer>
+      <three-renderer antialias="true" clear-color="#ffffff" shadow-map-enabled="true"></three-renderer>
       <three-scene>
-        <three-camera position="0,0,20" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-light position="100,100,100" color="#cccccc" castShadow="true" shadowMapWidth="4096" shadowMapHeight="4096"></three-light>
+        <three-camera position="0,0,20" look-at="0,0,0" controls="orbit"></three-camera>
+        <three-light position="100,100,100" color="#cccccc" cast-shadow="true" shadow-map-width="4096" shadow-map-height="4096"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
-        <three-mesh rotation="0.2,0.2,0.2" castShadow="true">
+        <three-mesh rotation="0.2,0.2,0.2" cast-shadow="true">
           <three-material color="#ff0000"></three-material>
           <three-box-geometry width="1" height="1" depth="1"></three-box-geometry>
         </three-mesh>
-        <three-mesh position="0,0,-2" receiveShadow="true">
+        <three-mesh position="0,0,-2" receive-shadow="true">
           <three-material color="#dddddd"></three-material>
-          <three-plane-geometry width="100" height="100" widthSegments="10" heightSegments="10"></three-plane>
+          <three-plane-geometry width="100" height="100" width-segments="10" height-segments="10"></three-plane>
         </three-mesh>
       </three-scene>
     </three-engine>

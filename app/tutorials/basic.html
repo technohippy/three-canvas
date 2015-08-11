@@ -27,9 +27,9 @@
 
       <a name="complex"></a>
       <pre class="prettyprint"><code>&lt;<strong>three-engine</strong> width="200" height="200">
-  &lt;three-renderer antialias="true" clearColor="#000000">&lt;/three-renderer>
+  &lt;three-renderer antialias="true" clear-color="#000000">&lt;/three-renderer>
   &lt;three-scene>
-    &lt;three-camera position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
+    &lt;three-camera position="0,0,8" look-at="0,0,0">&lt;/three-camera>
     &lt;three-light position="0.577,0.577,0.577" color="#cccccc">&lt;/three-light>
     &lt;three-light type="ambient" color="#333333">&lt;/three-light>
     &lt;three-mesh>
@@ -40,9 +40,9 @@
 &lt;<strong>/three-engine</strong>></code></pre>
 
       <three-engine width="200" height="200">
-        <three-renderer antialias="true" clearColor="#000000"></three-renderer>
+        <three-renderer antialias="true" clear-color="#000000"></three-renderer>
         <three-scene>
-          <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
+          <three-camera position="0,0,8" look-at="0,0,0"></three-camera>
           <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
           <three-light type="ambient" color="#333333"></three-light>
           <three-mesh>
@@ -68,13 +68,13 @@
       </p>
 
       <a name="simple"></a>
-      <pre class="prettyprint"><code>&lt;<strong>three-canvas</strong> width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-  &lt;three-camera position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
+      <pre class="prettyprint"><code>&lt;<strong>three-canvas</strong> width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,8" look-at="0,0,0">&lt;/three-camera>
   &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;<strong>/three-canvas</strong>></code></pre>
 
-      <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-        <three-camera position="0,0,8" lookAt="0,0,0"></three-camera>
+      <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+        <three-camera position="0,0,8" look-at="0,0,0"></three-camera>
         <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
       </three-canvas>
 

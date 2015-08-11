@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -64,8 +64,8 @@
       Although this material can be used in a <code>three-mesh</code> element as usual, I recomend you to use a <code>ref</code> attribute in a <code>three-material</code> element in order for readability. The <code>ref</code> attribute refers other <code>three-material</code> element and its material by ID.
       </p>
 
-      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-  &lt;three-camera position="0,0,8" lookAt="0,0,0" controls="orbit">&lt;/three-camera>
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,8" look-at="0,0,0" controls="orbit">&lt;/three-camera>
   &lt;three-mesh>
     &lt;three-material <strong>ref="custom-shader-1"</strong>>&lt;/three-material>
     &lt;three-torus-geometry radius="0.5" tube="0.3">&lt;/three-torus-geometry>
@@ -118,8 +118,8 @@
       </three-shader-uniforms>
     </three-shader-material>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
       <three-mesh>
         <!-- Use defined shader material -->
         <three-material ref="custom-shader-1"></three-material>
@@ -128,8 +128,8 @@
     </three-canvas>
 
     <!-- Of course you can use a shader material directly in a three-mesh element if you prefer -->
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-      <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+      <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
       <three-mesh>
         <!-- http://jsdo.it/edo_m18/gepr -->
         <three-shader-material>
@@ -175,4 +175,3 @@
     </three-canvas>
   </body>
 </html>
-

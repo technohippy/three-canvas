@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
     <script>
       function sunset() {
-        var canvas = document.getElementsByTagName('three-canvas')[0];
+        var threeCanvas = document.getElementsByTagName('three-canvas')[0];
 
         // Retrieve three.js objects by name from a three-canvas element
-        var threeCamera = canvas.getObjectByName('camera');
-        var threeLight1 = canvas.getObjectByName('light1');
+        var threeCamera = threeCanvas.getObjectByName('camera');
+        var threeLight1 = threeCanvas.getObjectByName('light1');
 
         threeCamera.position.set(0, 0, 8);
         threeCamera.lookAt(new THREE.Vector3());
@@ -35,18 +35,18 @@
       </p>
 
       <pre class="prettyprint"><code>&lt;button onclick="javascript:sunset()">Sunset&lt;/button>&lt;br/>
-&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-  &lt;three-camera <strong>name="camera"</strong> position="0,8,8" lookAt="0,0,0">&lt;/three-camera>
+&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000">
+  &lt;three-camera <strong>name="camera"</strong> position="0,8,8" look-at="0,0,0">&lt;/three-camera>
   &lt;three-light <strong>name="light1"</strong> position="0.577,0.577,0.577" color="#cccccc">&lt;/three-light>
   &lt;three-light <strong>name="light2"</strong> type="ambient" color="#333333">&lt;/three-light>
   &lt;three-box <strong>name="box"</strong> width="1" height="1" depth="1" rotation="0.2,0.2,0" color="#ffffff">&lt;/three-box>
 &lt;/three-canvas>
 &lt;script>
   function sunset() {
-    var canvas = document.getElementsByTagName('three-canvas')[0];
-    var threeScene = <strong>canvas.scene</strong>;
-    var threeCamera = <strong>canvas.getObjectByName('camera')</strong>; // or threeScene.getObjectByName('camera')
-    var threeLight1 = <strong>canvas.getObjectByName('light1')</strong>; // or threeScene.getObjectByName('light1')
+    var threeCanvas = document.getElementsByTagName('three-canvas')[0];
+    var threeScene = <strong>threeCanvas.scene</strong>;
+    var threeCamera = <strong>threeCanvas.getObjectByName('camera')</strong>; // or threeScene.getObjectByName('camera')
+    var threeLight1 = <strong>threeCanvas.getObjectByName('light1')</strong>; // or threeScene.getObjectByName('light1')
     threeCamera.position.set(0, 0, 8);
     threeCamera.lookAt(new THREE.Vector3());
     threeLight1.color = new THREE.Color('#ff0000');
@@ -56,9 +56,9 @@
 
     <button onclick="javascript:sunset()">Sunset</button><br/>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000">
       <!-- Add a name attribute to use a corresponding three.js object later -->
-      <three-camera name="camera" position="0,8,8" lookAt="0,0,0"></three-camera>
+      <three-camera name="camera" position="0,8,8" look-at="0,0,0"></three-camera>
       <three-light name="light1" position="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light name="light2" type="ambient" color="#333333"></three-light>
 

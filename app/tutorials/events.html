@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -17,16 +17,16 @@
     <section>
       <h2>Events</h2>
 
-      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
   &lt;three-camera name="camera" position="0,0,8" lookAt="0,0,0">&lt;/three-camera>
   &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;/three-canvas>
 &lt;script>
-  window.addEventListener('polymer-ready', function(e) {
+  window.addEventListener('WebComponentsReady', function(e) {
     var angle = 0;
-    var threeCanvasElement = document.getElementsByTagName('three-canvas')[0];
-    var threeCamera = threeCanvasElement.getObjectByName('camera');
-    <strong>threeCanvasElement.addEventListener('render', function() {</strong>
+    var threeCanvas = document.getElementsByTagName('three-canvas')[0];
+    var threeCamera = threeCanvas.getObjectByName('camera');
+    <strong>threeCanvas.addEventListener('render', function() {</strong>
       angle += 0.01;
       threeCamera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
       threeCamera.lookAt(new THREE.Vector3());
@@ -37,16 +37,16 @@
 
     <h3>Render Event</h3>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
       <three-camera name="camera" position="0,0,8" lookAt="0,0,0"></three-camera>
       <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
     </three-canvas>
     <script>
-      window.addEventListener('polymer-ready', function(e) {
+      window.addEventListener('WebComponentsReady', function(e) {
         var angle = 0;
-        var threeCanvasElement = document.getElementsByTagName('three-canvas')[0];
-        var threeCamera = threeCanvasElement.getObjectByName('camera');
-        threeCanvasElement.addEventListener('render', function() {
+        var threeCanvas = document.getElementsByTagName('three-canvas')[0];
+        var threeCamera = threeCanvas.getObjectByName('camera');
+        threeCanvas.addEventListener('render', function() {
           angle += 0.01;
           threeCamera.position.set(8 * Math.sin(angle), 0, 8 * Math.cos(angle));
           threeCamera.lookAt(new THREE.Vector3());

@@ -1,6 +1,6 @@
 {
   "name": "three-canvas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     "Ando Yasushi <andyjpn@gmail.com>"
   ],
@@ -8,6 +8,7 @@
   "main": "dist/three-canvas.html",
   "keywords": [
     "WebGL",
+    "Three.js",
     "Polymer",
     "web-components",
     "web-component"
@@ -26,10 +27,8 @@
     "webcomponentsjs": "*"
   },
   "devDependencies": {
-    "polymer": "Polymer/polymer#~0.5.5",
-    "threejs": "*",
-    "three.js-controls": "~0.0.67",
-    "core-elements": "polymer/core-elements#~0.5.5",
-    "paper-elements": "polymer/paper-elements#~0.5.5"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "threejs": "r71",
+    "three.js-controls": "~0.0.67"
   }
 }

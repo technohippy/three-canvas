@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../webcomponentsjs/webcomponents.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -17,33 +17,34 @@
     <!--
     http://mrdoob.github.io/three.js/examples/webgl_postprocessing.html
     -->
-    <three-canvas width="200" height="200" antialias="true" clearColor="#ffffff" shadowEnabled="true" defaultLight="true">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#ffffff" shadow-enabled="true" default-light="true">
       <three-shader-pass>
         <three-shader type="THREE.DotScreenShader">
           <three-shader-uniforms>
-            <three-shader-variable name="scale" value="4"></three-shader-variable>
+            <three-shader-variable name="scale" type="f" value="4.0"></three-shader-variable>
           </three-shader-uniforms>
         </three-shader>
-        <three-shader type="THREE.RGBShiftShader" renderToScreen="true">
+        <three-shader type="THREE.RGBShiftShader" render-to-screen="true">
           <three-shader-uniforms>
-            <three-shader-variable name="amount" value="0.0015"></three-shader-variable>
+            <three-shader-variable name="amount" type="f" value="0.0015"></three-shader-variable>
           </three-shader-uniforms>
         </three-shader>
       </three-shader-pass>
-      <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-camera position="0,0,1000" look-at="0,0,0" controls="orbit"></three-camera>
       <three-box width="50" height="50" depth="50" color="#ff0000" rotation="0.2,0.2,0.2"></three-box>
       <three-plane width="1000" height="1000" color="#dddddd" position="0,0,-100"></three-plane>
     </three-canvas>
 
-    <three-engine width="200" height="200" shadowEnabled="true">
-      <three-renderer antialias="true" clearColor="#ffffff">
+    <!--
+    <three-engine width="200" height="200" shadow-enabled="true">
+      <three-renderer antialias="true" clear-color="#ffffff">
         <three-shader-pass>
           <three-shader type="THREE.DotScreenShader">
             <three-shader-uniforms>
               <three-shader-variable name="scale" value="4"></three-shader-variable>
             </three-shader-uniforms>
           </three-shader>
-          <three-shader type="THREE.RGBShiftShader" renderToScreen="true">
+          <three-shader type="THREE.RGBShiftShader" render-to-screen="true">
             <three-shader-uniforms>
               <three-shader-variable name="amount" value="0.0015"></three-shader-variable>
             </three-shader-uniforms>
@@ -51,12 +52,13 @@
         </three-shader-pass>
       </three-renderer>
       <three-scene>
-        <three-camera position="0,0,1000" lookAt="0,0,0" controls="orbit"></three-camera>
-        <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
+        <three-camera position="0,0,1000" look-at="0,0,0" controls="orbit"></three-camera>
+        <three-light position="0.577,0.577,0.577" color="#cccccc" cast-shadow="true"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
         <three-box width="50" height="50" depth="50" color="#ff0000" rotation="0.2,0.2,0.2"></three-box>
         <three-plane width="1000" height="1000" color="#dddddd" position="0,0,-100"></three-plane>
       </three-scene>
     </three-engine>
+    -->
   </body>
 </html>

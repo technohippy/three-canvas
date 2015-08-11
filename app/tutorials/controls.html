@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../three-canvas.html">
     <link rel="stylesheet" href="../styles/style.css" type="text/css">
   </head>
@@ -25,15 +25,15 @@
        There are two ways to use controls. To use a <code>three-controls</code> element directly, it should be located in a <code>three-camera</code> element.
       </p>
 
-      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-  &lt;three-camera position="0,0,8" lookAt="0,0,0">
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,8" look-at="0,0,0">
     &lt;<strong>three-controls</strong> type="orbit" center="0,0,0">&lt;/<strong>three-controls</strong>>
   &lt;/three-camera>
   &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;/three-canvas></code></pre>
 
-      <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-        <three-camera position="0,0,8" lookAt="0,0,0">
+      <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+        <three-camera position="0,0,8" look-at="0,0,0">
           <three-controls type="orbit" center="0,0,0"></three-controls>
         </three-camera>
         <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
@@ -43,13 +43,13 @@
         Adding a <code>controls</code> attribute to a <code>three-camera</code> element is another way to use controls.
       </p>
 
-      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-  &lt;three-camera position="0,0,8" lookAt="0,0,0" <strong>controls="orbit"</strong>>&lt;/three-camera>
+      <pre class="prettyprint"><code>&lt;three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+  &lt;three-camera position="0,0,8" look-at="0,0,0" <strong>controls="orbit"</strong>>&lt;/three-camera>
   &lt;three-sphere radius="1" color="#ffffff" map="../images/earth.jpg">&lt;/three-sphere>
 &lt;/three-canvas></code></pre>
 
-      <three-canvas width="200" height="200" antialias="true" clearColor="#000000" defaultLight="true">
-        <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+      <three-canvas width="200" height="200" antialias="true" clear-color="#000000" default-light="true">
+        <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
         <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
       </three-canvas>
     </section>
@@ -58,10 +58,10 @@
 
     <canvas width="200" height="200"></canvas>
     <three-engine>
-      <three-renderer antialias="true" clearColor="#000000"></three-renderer>
+      <three-renderer antialias="true" clear-color="#000000"></three-renderer>
       <three-scene>
         <!-- Add a controls attribute with 'orbit' value -->
-        <three-camera position="0,0,8" lookAt="0,0,0" controls="orbit"></three-camera>
+        <three-camera position="0,0,8" look-at="0,0,0" controls="orbit"></three-camera>
         <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
         <three-light type="ambient" color="#333333"></three-light>
         <three-mesh>
@@ -72,9 +72,9 @@
     </three-engine>
 
     <three-engine width="200" height="200">
-      <three-renderer antialias="true" clearColor="#000000"></three-renderer>
+      <three-renderer antialias="true" clear-color="#000000"></three-renderer>
       <three-scene>
-        <three-camera position="0,0,8" lookAt="0,0,0">
+        <three-camera position="0,0,8" look-at="0,0,0">
           <!-- Add a three-controls element as a child of a three-camera element -->
           <three-controls type="orbit" center="0,0,0"></three-controls>
         </three-camera>
@@ -84,8 +84,8 @@
       </three-scene>
     </three-engine>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera position="0,0,8" lookAt="0,0,0">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000">
+      <three-camera position="0,0,8" look-at="0,0,0">
         <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="orbit" center="0,0,0"></three-controls>
       </three-camera>
@@ -96,16 +96,16 @@
 
     <h3>Fly Controls</h3>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000">
       <!-- Add a controls attribute with 'fly' value -->
-      <three-camera position="0,0,8" lookAt="0,0,0" controls="fly"></three-camera>
+      <three-camera position="0,0,8" look-at="0,0,0" controls="fly"></three-camera>
       <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light type="ambient" color="#333333"></three-light>
       <three-sphere radius="1" color="#ffffff" map="../images/earth.jpg"></three-sphere>
     </three-canvas>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera position="0,0,8" lookAt="0,0,0">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000">
+      <three-camera position="0,0,8" look-at="0,0,0">
         <!-- Add a three-controls element as a child of a three-camera element -->
         <three-controls type="fly"></three-controls>
       </three-camera>
@@ -116,10 +116,10 @@
 
     <h3>First Person Controls</h3>
 
-    <three-canvas width="200" height="200" antialias="true" clearColor="#000000">
-      <three-camera position="0,0,8" lookAt="0,0,0">
+    <three-canvas width="200" height="200" antialias="true" clear-color="#000000">
+      <three-camera position="0,0,8" look-at="0,0,0">
         <!-- Add a three-controls element as a child of a three-camera element -->
-        <three-controls type="firstperson" movementSpeed="0.5" lookSpeed="0.07" lon="-85"></three-controls>
+        <three-controls type="firstperson" movement-speed="0.5" look-speed="0.07" lon="-85"></three-controls>
       </three-camera>
       <three-light position="0.577,0.577,0.577" color="#cccccc"></three-light>
       <three-light type="ambient" color="#333333"></three-light>
