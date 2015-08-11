@@ -572,6 +572,37 @@
     }
   };
 
+  ThreeShaderVariablesContainerBehavior = {
+    properties: {
+      uniformsElements: {
+        type: Array,
+        value: function() { return []; }
+      },
+      attributesElements: {
+        type: Array,
+        value: function() { return []; }
+      },
+    },
+    getShaderOptions: function() {
+      var shaderOptions = {};
+      this.uniformsElements.forEach(function(uniformsElement) {
+        uniformOptions = {};
+        for(var name in uniformsElement.variableOptions) {
+          uniformOptions[name] = uniformsElement.variableOptions[name];
+        }
+        shaderOptions['uniforms'] = uniformOptions;
+      });
+      this.attributesElements.forEach(function(attributesElement) {
+        attributeOptions = {};
+        for(name in attributeOptions.variableOptions) {
+          attributeOptions[name] = attributeOptions.variableOptions[name];
+        }
+        shaderOptions['attributes'] = attributeOptions;
+      });
+      return shaderOptions;
+    }
+  };
+
   ThreeShaderBehavior = {
     getShader: function() {
       return this.textContent;
@@ -636,6 +667,9 @@
           if (!this.scene) throw 'no scene';
           if (!this.camera) throw 'no camera';
           this.renderer.render(this.scene, this.camera);
+          if (this.rendererElement.shaderPassElement) {
+            this.composer = this.rendererElement.getComposer(this);
+          }
         }
       },
       start: function() {
@@ -653,7 +687,6 @@
           }.bind(this), false);
         }
 
-console.log(this.fire);
         var clock = new THREE.Clock();
         ((function animate() {
           try {
@@ -669,6 +702,13 @@ console.log(this.fire);
         if (!this.controls && this.controlsElement) {
           this.controls = this.controlsElement.getControls(this.camera, this.canvasElement);
         }
+/*
+window.addEventListener('WebComponentsReady', function() {
+  if (this.rendererElement.shaderPassElement) {
+    this.composer = this.rendererElement.getComposer(this);
+  }
+}.bind(this));
+*/
       },
       _setupCanvas: function() {
         if (this.canvas) {
@@ -706,6 +746,9 @@ console.log(this.fire);
       },
       _rendererElementChanged: function(newValue, oldValue) {
         this.renderer = this.rendererElement.getRenderer(this);
+        if (this.rendererElement.composer) {
+          this.composer = this.rendererElement.composer;
+        }
 
         if (this.sceneElement && this.cameraElement) this.start();
       },
@@ -831,7 +874,9 @@ console.log(this.fire);
         autoScaleCubemaps: {
           type: Boolean,
           value: true
-        }
+        },
+        shaderPassElement: Object,
+        composer: Object
       },
       attached: function() {
         var engineElement = this.getParentThreeNode('three-engine');
@@ -869,7 +914,17 @@ console.log(this.fire);
         this.renderer.maxMorphTargets = this.maxMorphTargets;
         this.renderer.maxMorphNormals = this.maxMorphNormals;
         this.renderer.autoScaleCubemaps = this.autoScaleCubemaps;
+
+        if (this.shaderPassElement) this.getComposer(engineElement);
         return this.renderer;
+      },
+      getComposer: function(engineElement) {
+        this.composer = new THREE.EffectComposer(this.renderer);
+        this.composer.addPass(new THREE.RenderPass(engineElement.scene, engineElement.camera));
+        this.shaderPassElement.getShaderPass().forEach(function(effect) {
+          this.composer.addPass(effect);
+        }.bind(this));
+        return this.composer;
       }
     });
   </script>
@@ -2064,7 +2119,8 @@ console.log(this.fire);
     Polymer({
       is: 'three-shader-material',
       behaviors: [
-        ThreeObjectBehavior
+        ThreeObjectBehavior,
+        ThreeShaderVariablesContainerBehavior
       ],
       properties: {
         shading: {
@@ -2107,14 +2163,6 @@ console.log(this.fire);
         fragmentShaderElement: {
           type: Object,
           observer: '_fragmentShaderElementChanged'
-        },
-        uniformsElements: {
-          type: Array,
-          value: function() { return []; }
-        },
-        attributesElements: {
-          type: Array,
-          value: function() { return []; }
         }
       },
       attached: function() {
@@ -2122,21 +2170,7 @@ console.log(this.fire);
         if (meshElement) meshElement.materialElement = this;
       },
       getMaterial: function() {
-        var shaderOptions = {};
-        this.uniformsElements.forEach(function(uniformsElement) {
-          uniformOptions = {};
-          for(var name in uniformsElement.variableOptions) {
-            uniformOptions[name] = uniformsElement.variableOptions[name];
-          }
-          shaderOptions['uniforms'] = uniformOptions;
-        });
-        this.attributesElements.forEach(function(attributesElement) {
-          attributeOptions = {};
-          for(name in attributeOptions.variableOptions) {
-            attributeOptions[name] = attributeOptions.variableOptions[name];
-          }
-          shaderOptions['attributes'] = attributeOptions;
-        });
+        var shaderOptions = this.getShaderOptions();
         if (this.vertexShaderElement) {
           shaderOptions['vertexShader'] = this.vertexShaderElement.vertexShader;
         }
@@ -2226,8 +2260,10 @@ console.log(this.fire);
         ThreeShaderVariableContainerBehavior
       ],
       attached: function() {
-        var materialElement = this.getParentThreeNode('three-shader-material');
-        materialElement.addAttributesElement(this);
+        var containerElement = this.getParentThreeNode(['three-shader', 'three-shader-material']);
+        if (containerElement) {
+          containerElement.addAttributesElement(this);
+        }
       }
     });
   </script>
@@ -2242,9 +2278,9 @@ console.log(this.fire);
         ThreeShaderVariableContainerBehavior
       ],
       attached: function() {
-        var materialElement = this.getParentThreeNode('three-shader-material');
-        if (materialElement) {
-          materialElement.addUniformsElement(this);
+        var containerElement = this.getParentThreeNode(['three-shader', 'three-shader-material']);
+        if (containerElement) {
+          containerElement.addUniformsElement(this);
         }
       }
     });
@@ -2267,6 +2303,81 @@ console.log(this.fire);
       attached: function() {
         var containerElement = this.getParentThreeNode(['three-shader-uniforms', 'three-shader-attributes']);
         containerElement.addVariable(this.name, {type:this.type, value:eval(this.value)}, this.textContent);
+      }
+    });
+  </script>
+</dom-module>
+
+<!-- for shader pass -->
+<dom-module id="three-shader-pass">
+  <script>
+    Polymer({
+      is: 'three-shader-pass',
+      behaviors: [
+        ThreeObjectBehavior
+      ],
+      properties: {
+        shaderElements: {
+          type: Array,
+          value: function() { return []; }
+        },
+        shaderPass: {
+          type: Array,
+          value: function() { return []; }
+        }
+      },
+      attached: function() {
+        var rendererElement = this.getParentThreeNode('three-renderer');
+        rendererElement.shaderPassElement = this;
+      },
+      addShaderElement: function(element) {
+        this.shaderElements.push(element);
+      },
+      getShaderPass: function() {
+        return this.shaderElements.map(function(element) {
+          return element.getEffect();
+        });
+      }
+    });
+  </script>
+</dom-module>
+
+<dom-module id="three-shader">
+  <script>
+    Polymer({
+      is: 'three-shader',
+      behaviors: [
+        ThreeObjectBehavior,
+        ThreeShaderVariablesContainerBehavior
+      ],
+      properties: {
+        type: String,
+        renderToScreen: {
+          type: Boolean,
+          value: false
+        },
+        effect: Object
+      },
+      attached: function() {
+        var shaderPassElement = this.getParentThreeNode('three-shader-pass');
+        shaderPassElement.addShaderElement(this);
+      },
+      addUniformsElement: function(element) {
+        this.uniformsElements.push(element);
+      },
+      addAttributesElement: function(element) {
+        this.attributesElements.push(element);
+      },
+      getEffect: function() {
+        if (!this.effect) {
+          this.effect = new THREE.ShaderPass(eval(this.type)); // TODO
+          this.effect.renderToScreen = this.renderToScreen;
+          shaderOptions = this.getShaderOptions();
+          for (var k in shaderOptions['uniforms']) {
+            this.effect['uniforms'][k] = shaderOptions['uniforms'][k];
+          }
+        }
+        return this.effect;
       }
     });
   </script>
