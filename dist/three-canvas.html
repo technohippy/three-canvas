@@ -109,16 +109,30 @@
         readOnly: true
       }
     },
-    getParentThreeNode: function(localNames) {
+    getParentThreeNode: function(localNames, currentNode) {
+      if (typeof currentNode === 'undefined') currentNode = this;
       if (typeof localNames === 'undefined') localNames = ['three-engine'];
       if (typeof localNames === 'string') localNames = [localNames];
-      var cursor = this.parentNode;
+      var cursor = currentNode.parentNode;
+      if (cursor.nodeType === 11) { // #document-fragment
+        cursor = cursor.host.parentNode;
+      }
       while (cursor.localName !== 'body') {
         for (var i = 0; i < localNames.length; i++) {
           var localName = localNames[i];
           if (cursor.localName === localName) return cursor;
         }
+        if (cursor.shadowRoot) {
+          var contents = cursor.shadowRoot.querySelectorAll('content');
+          for (var j = 0; j < contents.length; j++) {
+            var found = this.getParentThreeNode(localNames, contents[j]);
+            if (found) return found;
+          }
+        }
         cursor = cursor.parentNode;
+        if (cursor.nodeType === 11) { // #document-fragment
+          cursor = cursor.host.parentNode;
+        }
       }
       return null;
     },
@@ -673,7 +687,7 @@
         }
       },
       start: function() {
-        var canvasElement = this.getParentThreeNode('three-canvas');
+        var canvasElement = this.getParentThreeNode('three-canvas') || this.domHost;
         if (canvasElement) {
           canvasElement.renderer = this.renderer;
           canvasElement.scene = this.scene;
